@@ -1,0 +1,644 @@
+{
+ "ok": true,
+ "nguoi": "ban",
+ "ten": "B.An",
+ "chiXem": false,
+ "homNay": "2026-10-20",
+ "tuan": "2026-10-19",
+ "cupping": "2026-10-23",
+ "lo": [
+  {
+   "khoa": "2026-10-19|30K|?TEST",
+   "ngay": "2026-10-19",
+   "thu": "T2",
+   "may": "30K",
+   "mayTen": "máy 30kg",
+   "sp": "",
+   "tenGoc": "TEST 30KG",
+   "maMe": "30K-44",
+   "soMe": 1,
+   "kgVao": 30,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "an",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Tiếp: Nhân xanh",
+   "xong": false,
+   "goiY0": [],
+   "thuc0": null,
+   "kgRa": null,
+   "nguong": null,
+   "coTron": false,
+   "tenTron": "",
+   "goiYTron": null,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  },
+  {
+   "khoa": "2026-10-19|30K|Jasmine Honey",
+   "ngay": "2026-10-19",
+   "thu": "T2",
+   "may": "30K",
+   "mayTen": "máy 30kg",
+   "sp": "Jasmine Honey",
+   "tenGoc": "JASMINE HONEY 5KG",
+   "maMe": "30K-41…30K-42",
+   "soMe": 2,
+   "kgVao": 10,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "vang",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "vang",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "vang",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xanh",
+     "nguoi": "B.An",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Tiếp: Nhân xanh",
+   "xong": false,
+   "goiY0": [
+    {
+     "vao": 5,
+     "tp": "",
+     "soMe": 2,
+     "dong": [
+      {
+       "loai": "Ethiopia Jasmine Honey",
+       "kg": 3.33
+      },
+      {
+       "loai": "Colom Choco Cherry Cake",
+       "kg": 1.67
+      }
+     ]
+    }
+   ],
+   "thuc0": null,
+   "kgRa": 8.4,
+   "nguong": [
+    "Seasonal Filter (Light Roast)",
+    12,
+    17
+   ],
+   "coTron": true,
+   "tenTron": "Java Honey",
+   "goiYTron": 19.6,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  },
+  {
+   "khoa": "2026-10-19|30K|Metal Rock Nhạt",
+   "ngay": "2026-10-19",
+   "thu": "T2",
+   "may": "30K",
+   "mayTen": "máy 30kg",
+   "sp": "Metal Rock Nhạt",
+   "tenGoc": "RO NHAT 36KG",
+   "maMe": "30K-43",
+   "soMe": 1,
+   "kgVao": 36,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "vang",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "xanh",
+     "nguoi": "Vinh",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "an",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Tiếp: Nhân xanh",
+   "xong": false,
+   "goiY0": [
+    {
+     "vao": 36,
+     "tp": "",
+     "soMe": 1,
+     "dong": [
+      {
+       "loai": "Robo Farm",
+       "kg": 12
+      },
+      {
+       "loai": "Elon Farm",
+       "kg": 12
+      },
+      {
+       "loai": "Ro Honey Like Farm",
+       "kg": 12
+      }
+     ]
+    }
+   ],
+   "thuc0": null,
+   "kgRa": null,
+   "nguong": [
+    "Intenso Blend (Dark Roast)",
+    15,
+    26
+   ],
+   "coTron": false,
+   "tenTron": "",
+   "goiYTron": null,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  },
+  {
+   "khoa": "2026-10-19|5K|Deep Blue",
+   "ngay": "2026-10-19",
+   "thu": "T2",
+   "may": "5K",
+   "mayTen": "máy 5kg",
+   "sp": "Deep Blue",
+   "tenGoc": "NEW DEEPBLUE 4.8KG",
+   "maMe": "5K-9",
+   "soMe": 1,
+   "kgVao": 4.8,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "xanh",
+     "nguoi": "Minh",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "xanh",
+     "nguoi": "Vinh",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "xanh",
+     "nguoi": "Vinh",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xanh",
+     "nguoi": "B.An",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "an",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Xong",
+   "xong": true,
+   "goiY0": [
+    {
+     "vao": 4.8,
+     "tp": "",
+     "soMe": 1,
+     "dong": [
+      {
+       "loai": "Catimor Black Grape",
+       "kg": 0.72
+      },
+      {
+       "loai": "Catimor Melon",
+       "kg": 0.24
+      },
+      {
+       "loai": "Catimor Washed",
+       "kg": 3.12
+      },
+      {
+       "loai": "Catimor Honey",
+       "kg": 0.72
+      }
+     ]
+    }
+   ],
+   "thuc0": [
+    {
+     "vao": 4.8,
+     "tp": "",
+     "dong": [
+      {
+       "loai": "Catimor Black Grape",
+       "kg": 0.72
+      },
+      {
+       "loai": "Catimor Melon",
+       "kg": 0.24
+      },
+      {
+       "loai": "Catimor Washed",
+       "kg": 3.12
+      },
+      {
+       "loai": "Catimor Honey",
+       "kg": 0.72
+      }
+     ]
+    }
+   ],
+   "kgRa": 4.1,
+   "nguong": [
+    "Signature Blend (Medium Roast)",
+    12,
+    20
+   ],
+   "coTron": false,
+   "tenTron": "",
+   "goiYTron": null,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  },
+  {
+   "khoa": "2026-10-20|30K|Red Rose",
+   "ngay": "2026-10-20",
+   "thu": "T3",
+   "may": "30K",
+   "mayTen": "máy 30kg",
+   "sp": "Red Rose",
+   "tenGoc": "RED ROSE 30KG",
+   "maMe": "30K-45…30K-46",
+   "soMe": 2,
+   "kgVao": 60,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Tiếp: Nhân xanh",
+   "xong": false,
+   "goiY0": [
+    {
+     "vao": 30,
+     "tp": "",
+     "soMe": 2,
+     "dong": [
+      {
+       "loai": "Myanmar Rose",
+       "kg": 18.75
+      },
+      {
+       "loai": "Colom Rose",
+       "kg": 11.25
+      }
+     ]
+    }
+   ],
+   "thuc0": null,
+   "kgRa": null,
+   "nguong": [
+    "Seasonal Filter (Light Roast)",
+    12,
+    17
+   ],
+   "coTron": true,
+   "tenTron": "Java Honey",
+   "goiYTron": null,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  }
+ ],
+ "tui": [
+  {
+   "sp": "Jasmine Honey",
+   "lo": [
+    "2026-10-19|30K|Jasmine Honey"
+   ],
+   "daLay": null,
+   "loMoi": [
+    "2026-10-19|30K|Jasmine Honey"
+   ]
+  },
+  {
+   "sp": "Metal Rock Nhạt",
+   "lo": [
+    "2026-10-19|30K|Metal Rock Nhạt"
+   ],
+   "daLay": null,
+   "loMoi": [
+    "2026-10-19|30K|Metal Rock Nhạt"
+   ]
+  },
+  {
+   "sp": "Deep Blue",
+   "lo": [
+    "2026-10-19|5K|Deep Blue"
+   ],
+   "daLay": {
+    "tuan": "2026-10-19",
+    "sp": "Deep Blue",
+    "khoaLo": [
+     "2026-10-19|5K|Deep Blue"
+    ],
+    "nguoi": "B.An",
+    "gio": "2026-10-19 15:30"
+   },
+   "loMoi": []
+  },
+  {
+   "sp": "Red Rose",
+   "lo": [
+    "2026-10-20|30K|Red Rose"
+   ],
+   "daLay": null,
+   "loMoi": [
+    "2026-10-20|30K|Red Rose"
+   ]
+  }
+ ],
+ "ngoaiLe": [
+  {
+   "loai": "vang",
+   "khoa": "2026-10-19|30K|Jasmine Honey",
+   "chu": "Jasmine Honey 30kg T2 19/10 — quên bấm? ⓪ Nhân xanh, ② Tách đá, ③ Sorting"
+  },
+  {
+   "loai": "vang",
+   "khoa": "2026-10-19|30K|Metal Rock Nhạt",
+   "chu": "Metal Rock Nhạt 30kg T2 19/10 — quên bấm? ⓪ Nhân xanh"
+  },
+  {
+   "loai": "xam",
+   "khoa": "2026-10-19|30K|?TEST",
+   "chu": "chưa rõ (TEST 30KG) 30kg T2 19/10 — đang chậm: chưa nhân xanh, tách đá, sorting, cân"
+  },
+  {
+   "loai": "xam",
+   "khoa": "2026-10-19|30K|Jasmine Honey",
+   "chu": "Jasmine Honey 30kg T2 19/10 — đang chậm: chưa nhân xanh, tách đá, sorting, trộn"
+  },
+  {
+   "loai": "xam",
+   "khoa": "2026-10-19|30K|Metal Rock Nhạt",
+   "chu": "Metal Rock Nhạt 30kg T2 19/10 — đang chậm: chưa nhân xanh, sorting, cân"
+  },
+  {
+   "loai": "xanh",
+   "khoa": "2026-10-19|30K|?TEST",
+   "chu": "chưa rõ (TEST 30KG) 30kg T2 19/10 — chưa rõ sản phẩm, chọn ở chi tiết lô"
+  }
+ ],
+ "sanPham": [
+  "Metal Rock Đậm",
+  "Metal Rock Nhạt",
+  "Ro Phin Đậm",
+  "Ro Phin Siêu Đậm",
+  "Bossa Nova",
+  "Bossa L2",
+  "And Brew",
+  "Im Fine",
+  "Deep Blue",
+  "Red Rose",
+  "Summer Plum",
+  "The Father",
+  "Chamomile",
+  "Jasmine Honey",
+  "Ara Darkroast",
+  "Red Velvet",
+  "Ethi Rumudamo Natural Anaerobic",
+  "Moka Typica Natural LHLT",
+  "Starmaya Natural LHLT",
+  "Starmaya 48/48",
+  "TN9-10 48/48",
+  "Java Natural",
+  "Java Honey",
+  "Colombia Sugarcane Decaf",
+  "R&B",
+  "Gia công"
+ ]
+}
