@@ -79,6 +79,7 @@
    "tiep": "Tiếp: Nhân xanh",
    "xong": false,
    "goiY0": [],
+   "tiLe": "",
    "thuc0": null,
    "kgRa": null,
    "nguong": null,
@@ -177,6 +178,7 @@
      ]
     }
    ],
+   "tiLe": "",
    "thuc0": null,
    "kgRa": 8.4,
    "nguong": [
@@ -283,6 +285,7 @@
      ]
     }
    ],
+   "tiLe": "",
    "thuc0": null,
    "kgRa": null,
    "nguong": [
@@ -393,6 +396,7 @@
      ]
     }
    ],
+   "tiLe": "",
    "thuc0": [
     {
      "vao": 4.8,
@@ -422,6 +426,116 @@
     "Signature Blend (Medium Roast)",
     12,
     20
+   ],
+   "coTron": false,
+   "tenTron": "",
+   "goiYTron": null,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  },
+  {
+   "khoa": "2026-10-20|30K|Bossa Nova",
+   "ngay": "2026-10-20",
+   "thu": "T3",
+   "may": "30K",
+   "mayTen": "máy 30kg",
+   "sp": "Bossa Nova",
+   "tenGoc": "BOSSA 35KG MEDIUM (CATIMOR THY THY WASHED) / BOSSA 35KG MEDIUM (CATIMOR THY THY HONEY)",
+   "maMe": "30K-47…30K-51",
+   "soMe": 5,
+   "kgVao": 175,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "an",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Tiếp: Nhân xanh",
+   "xong": false,
+   "goiY0": [
+    {
+     "vao": 35,
+     "tp": "Thythy Catimor Washed",
+     "soMe": 3,
+     "dong": [
+      {
+       "loai": "Thythy Catimor Washed",
+       "kg": 35
+      }
+     ]
+    },
+    {
+     "vao": 35,
+     "tp": "Thythy Catimor Honey",
+     "soMe": 2,
+     "dong": [
+      {
+       "loai": "Thythy Catimor Honey",
+       "kg": 35
+      }
+     ]
+    }
+   ],
+   "tiLe": "Thythy Catimor Washed 60% · Thythy Catimor Honey 40% (công thức 80% · 20%)",
+   "thuc0": null,
+   "kgRa": null,
+   "nguong": [
+    "Intenso Blend (Dark Roast)",
+    15,
+    26
    ],
    "coTron": false,
    "tenTron": "",
@@ -518,6 +632,7 @@
      ]
     }
    ],
+   "tiLe": "",
    "thuc0": null,
    "kgRa": null,
    "nguong": [
@@ -569,6 +684,16 @@
     "gio": "2026-10-19 15:30"
    },
    "loMoi": []
+  },
+  {
+   "sp": "Bossa Nova",
+   "lo": [
+    "2026-10-20|30K|Bossa Nova"
+   ],
+   "daLay": null,
+   "loMoi": [
+    "2026-10-20|30K|Bossa Nova"
+   ]
   },
   {
    "sp": "Red Rose",
