@@ -423,7 +423,7 @@
     // 1. Bốn ô số
     var quenBam = ds.filter(function (l) { return (l.buoc || []).some(function (b) { return b.mau === "vang"; }); }).length;
     var daXong = ds.filter(function (l) { return l.xong; }).length;
-    var tuiChua = (anhChup.tui || []).filter(function (t) { return !t.daLay; }).length;
+    var tuiChua = demTuiCanLam(anhChup.tui || []);
     var kpi = el("section", "grid grid-cols-4 gap-2 w-full");
     function oKpi(lop, lopNhan, icon, nhan, lopSo, so, lopChu, chu) {
       var c = el("div", lop);
@@ -1019,7 +1019,8 @@
   function renderSamples(main) {
     var view = el("div", "flex flex-col gap-3");
     var ds = anhChup.tui || [];
-    var daLay = ds.filter(function (t) { return t.daLay; }).length;
+    var canLam = demTuiCanLam(ds);
+    var daLay = ds.length - canLam;
     view.appendChild(dauTab("Túi mẫu tuần này", demNguoc(anhChup.homNay || "", anhChup.cupping || ""),
       daLay + " / " + ds.length + " Đã lấy", "px-2 py-1 rounded-lg bg-purple-500/20 text-purple-300 font-mono-num text-[11px] font-bold shrink-0"));
 
@@ -1031,7 +1032,7 @@
 
     var list = el("div", "flex flex-col gap-2");
     ds.forEach(function (t) {
-      if (t.daLay) {
+      if (t.daLay && (!t.loMoi || !t.loMoi.length)) {
         var c = el("div", "p-3 rounded-xl bg-surface-container-low border border-surface-container-highest flex items-center justify-between");
         var trai = el("div", "flex flex-col min-w-0");
         trai.appendChild(el("span", "text-[13px] text-on-surface font-semibold", t.sp || ""));
@@ -1039,6 +1040,46 @@
         c.appendChild(trai);
         c.appendChild(ic("check_circle", "text-secondary text-[22px]"));
         list.appendChild(c);
+        return;
+      }
+      if (t.daLay) {
+        var cardMoi = el("div", "p-3 rounded-xl bg-surface-container-low border border-purple-500/30 flex flex-col gap-2");
+        var dauMoi = el("div", "flex items-center justify-between gap-2");
+        var ttMoi = el("div", "flex flex-col min-w-0");
+        ttMoi.appendChild(el("span", "text-[13px] text-on-surface font-semibold", t.sp || ""));
+        ttMoi.appendChild(el("span", "text-[11px] text-amber-300", "✓ Đã lấy · " + (t.daLay.nguoi || "") + " " + dinhDangGio(t.daLay.gio) + " — có " + t.loMoi.length + " lô mới"));
+        dauMoi.appendChild(ttMoi);
+        dauMoi.appendChild(ic("science", "text-purple-300 text-[22px]"));
+        cardMoi.appendChild(dauMoi);
+
+        var checksMoi = [];
+        t.loMoi.forEach(function (k) {
+          var lo = (anhChup.lo || []).find(function (l) { return l.khoa === k; });
+          var row = el("label", "flex items-center gap-2 p-2 rounded-lg bg-surface-container border border-surface-container-highest/60 text-[12px] font-mono-num text-on-surface");
+          var chk = el("input", "w-4 h-4 accent-purple-400");
+          chk.type = "checkbox";
+          chk.checked = true;
+          chk.disabled = !!anhChup.chiXem;
+          chk.dataset.khoa = k;
+          checksMoi.push(chk);
+          row.appendChild(chk);
+          row.appendChild(el("span", null, lo ? (lo.thu || thuCua(lo.ngay)) + " " + dinhDangNgayThang(lo.ngay) + " · " + tenMay(lo) : k));
+          cardMoi.appendChild(row);
+        });
+
+        if (!anhChup.chiXem) {
+          var layMoi = nut(C.nutTim + " w-full !h-[44px]", "add", "Thêm vào túi đã lấy");
+          var capNhatMoi = function () { layMoi.disabled = !checksMoi.some(function (c) { return c.checked; }); };
+          checksMoi.forEach(function (c) { c.onchange = capNhatMoi; });
+          capNhatMoi();
+          layMoi.onclick = function () {
+            var chon = checksMoi.filter(function (c) { return c.checked; }).map(function (c) { return c.dataset.khoa; });
+            if (!chon.length) return;
+            thucHienThaoTac({ loai: "layMau", tuan: anhChup.tuan, sp: t.sp, khoaLo: chon });
+          };
+          cardMoi.appendChild(layMoi);
+        }
+        list.appendChild(cardMoi);
         return;
       }
       var card = el("div", "p-3 rounded-xl bg-surface-container-low border border-purple-500/30 flex flex-col gap-2");
@@ -1123,7 +1164,7 @@
     var nav = el("nav", "fixed bottom-0 w-full z-50 bg-surface/90 backdrop-blur-xl border-t border-surface-container-highest shadow-[0_-4px_20px_rgba(0,0,0,0.5)]");
     var wrap = el("div", "max-w-md mx-auto flex items-center justify-around h-16 px-2");
     var soLo = loCuaNgay(anhChup.lo || [], activeNgay, activeMay).length;
-    var soTui = (anhChup.tui || []).filter(function (t) { return !t.daLay; }).length;
+    var soTui = demTuiCanLam(anhChup.tui || []);
     var soNL = (anhChup.ngoaiLe || []).length;
     [
       { view: "today", icon: "assignment", chu: "Hôm nay", so: soLo, lopSo: "absolute -top-1 -right-2 bg-primary-container text-white text-[9px] font-mono-num font-bold px-1 rounded-full", bat: "flex-1 flex flex-col items-center justify-center py-1 text-primary font-semibold transition-colors" },

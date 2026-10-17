@@ -60,6 +60,16 @@ function demNguoc(homNay, cupping) {
   return "Cupping T6 " + cupping.slice(8, 10) + "/" + cupping.slice(5, 7) + " · " + (n > 0 ? "còn " + n + " ngày" : n === 0 ? "hôm nay" : "đã qua");
 }
 
+// Túi mẫu cần làm: chưa lấy mẫu, HOẶC đã lấy nhưng có thêm lô mới trong tuần
+function tuiCanLam(t) {
+  if (!t) return false;
+  return !t.daLay || (!!t.daLay && Array.isArray(t.loMoi) && t.loMoi.length > 0);
+}
+function demTuiCanLam(ds) {
+  return (ds || []).filter(tuiCanLam).length;
+}
+
+
 // Thẻ màn Hôm nay: lô của ngày + máy đang chọn, lô dở trên, lô xong xuống cuối (giữ thứ tự máy chủ trả)
 function loCuaNgay(lo, ngay, may) {
   var ds = lo.filter(function (l) { return l.ngay === ngay && (!may || l.may === may); });
@@ -80,5 +90,5 @@ if (typeof module !== "undefined") {
   module.exports = { LOI_GUI_LAI: LOI_GUI_LAI, guiLai: guiLai, CAU_LOI_MAY_CHU_QUA_5: CAU_LOI_MAY_CHU_QUA_5, demThuLai: demThuLai, loiDangNhap: loiDangNhap, opCuaNguoi: opCuaNguoi,
     anhChupDungNguoi: anhChupDungNguoi, dangGoVaoO: dangGoVaoO, docSo: docSo, soVN: soVN, haoHut: haoHut, mauHaoHut: mauHaoHut,
     themHangDoi: themHangDoi, boHangDoi: boHangDoi, choGuiCuaLo: choGuiCuaLo, taoMaThaoTac: taoMaThaoTac,
-    demNguoc: demNguoc, loCuaNgay: loCuaNgay, thucNhanXanh: thucNhanXanh };
+    demNguoc: demNguoc, tuiCanLam: tuiCanLam, demTuiCanLam: demTuiCanLam, loCuaNgay: loCuaNgay, thucNhanXanh: thucNhanXanh };
 }
