@@ -1,7 +1,7 @@
 {
  "ok": true,
  "nguoi": "ban",
- "ten": "B.An",
+ "ten": "Người A",
  "chiXem": false,
  "homNay": "2026-10-20",
  "tuan": "2026-10-19",
@@ -91,13 +91,13 @@
    "co": ""
   },
   {
-   "khoa": "2026-10-19|30K|Jasmine Honey",
+   "khoa": "2026-10-19|30K|Sen Trắng",
    "ngay": "2026-10-19",
    "thu": "T2",
    "may": "30K",
    "mayTen": "máy 30kg",
-   "sp": "Jasmine Honey",
-   "tenGoc": "JASMINE HONEY 5KG",
+   "sp": "Sen Trắng",
+   "tenGoc": "Sen Trắng 5KG",
    "maMe": "30K-41…30K-42",
    "soMe": 2,
    "kgVao": 10,
@@ -139,7 +139,7 @@
      "ky": "④",
      "ten": "Cân",
      "mau": "xanh",
-     "nguoi": "B.An",
+     "nguoi": "Người A",
      "gio": "2026-10-19 15:30"
     },
     {
@@ -168,11 +168,11 @@
      "soMe": 2,
      "dong": [
       {
-       "loai": "Ethiopia Jasmine Honey",
+       "loai": "Nguồn Hoa Nhài",
        "kg": 3.33
       },
       {
-       "loai": "Colom Choco Cherry Cake",
+       "loai": "Nguồn Bánh Anh Đào",
        "kg": 1.67
       }
      ]
@@ -187,20 +187,20 @@
     17
    ],
    "coTron": true,
-   "tenTron": "Java Honey",
+   "tenTron": "Đảo Mật",
    "goiYTron": 19.6,
    "kgTron": null,
    "daGhi01": false,
    "co": ""
   },
   {
-   "khoa": "2026-10-19|30K|Metal Rock Nhạt",
+   "khoa": "2026-10-19|30K|Đá Xám Nhạt",
    "ngay": "2026-10-19",
    "thu": "T2",
    "may": "30K",
    "mayTen": "máy 30kg",
-   "sp": "Metal Rock Nhạt",
-   "tenGoc": "RO NHAT 36KG",
+   "sp": "Đá Xám Nhạt",
+   "tenGoc": "DA XAM NHAT 36KG",
    "maMe": "30K-43",
    "soMe": 1,
    "kgVao": 36,
@@ -226,7 +226,7 @@
      "ky": "②",
      "ten": "Tách đá",
      "mau": "xanh",
-     "nguoi": "Vinh",
+     "nguoi": "Người C",
      "gio": "2026-10-19 15:30"
     },
     {
@@ -271,15 +271,15 @@
      "soMe": 1,
      "dong": [
       {
-       "loai": "Robo Farm",
+       "loai": "Vườn B",
        "kg": 12
       },
       {
-       "loai": "Elon Farm",
+       "loai": "Vườn E",
        "kg": 12
       },
       {
-       "loai": "Ro Honey Like Farm",
+       "loai": "Vườn Mật R",
        "kg": 12
       }
      ]
@@ -301,13 +301,13 @@
    "co": ""
   },
   {
-   "khoa": "2026-10-19|5K|Deep Blue",
+   "khoa": "2026-10-19|5K|Biển Sâu",
    "ngay": "2026-10-19",
    "thu": "T2",
    "may": "5K",
    "mayTen": "máy 5kg",
-   "sp": "Deep Blue",
-   "tenGoc": "NEW DEEPBLUE 4.8KG",
+   "sp": "Biển Sâu",
+   "tenGoc": "NEW Biển Sâu 4.8KG",
    "maMe": "5K-9",
    "soMe": 1,
    "kgVao": 4.8,
@@ -317,7 +317,7 @@
      "ky": "⓪",
      "ten": "Nhân xanh",
      "mau": "xanh",
-     "nguoi": "Minh",
+     "nguoi": "Người B",
      "gio": "2026-10-19 15:30"
     },
     {
@@ -333,7 +333,7 @@
      "ky": "②",
      "ten": "Tách đá",
      "mau": "xanh",
-     "nguoi": "Vinh",
+     "nguoi": "Người C",
      "gio": "2026-10-19 15:30"
     },
     {
@@ -341,7 +341,7 @@
      "ky": "③",
      "ten": "Sorting",
      "mau": "xanh",
-     "nguoi": "Vinh",
+     "nguoi": "Người C",
      "gio": "2026-10-19 15:30"
     },
     {
@@ -349,7 +349,7 @@
      "ky": "④",
      "ten": "Cân",
      "mau": "xanh",
-     "nguoi": "B.An",
+     "nguoi": "Người A",
      "gio": "2026-10-19 15:30"
     },
     {
@@ -378,19 +378,19 @@
      "soMe": 1,
      "dong": [
       {
-       "loai": "Catimor Black Grape",
+       "loai": "Nho Đen",
        "kg": 0.72
       },
       {
-       "loai": "Catimor Melon",
+       "loai": "Dưa Lưới",
        "kg": 0.24
       },
       {
-       "loai": "Catimor Washed",
+       "loai": "Rửa Sạch",
        "kg": 3.12
       },
       {
-       "loai": "Catimor Honey",
+       "loai": "Mật Ong",
        "kg": 0.72
       }
      ]
@@ -403,19 +403,19 @@
      "tp": "",
      "dong": [
       {
-       "loai": "Catimor Black Grape",
+       "loai": "Nho Đen",
        "kg": 0.72
       },
       {
-       "loai": "Catimor Melon",
+       "loai": "Dưa Lưới",
        "kg": 0.24
       },
       {
-       "loai": "Catimor Washed",
+       "loai": "Rửa Sạch",
        "kg": 3.12
       },
       {
-       "loai": "Catimor Honey",
+       "loai": "Mật Ong",
        "kg": 0.72
       }
      ]
@@ -435,13 +435,13 @@
    "co": ""
   },
   {
-   "khoa": "2026-10-20|30K|Bossa Nova",
+   "khoa": "2026-10-20|30K|Samba Nova",
    "ngay": "2026-10-20",
    "thu": "T3",
    "may": "30K",
    "mayTen": "máy 30kg",
-   "sp": "Bossa Nova",
-   "tenGoc": "BOSSA 35KG MEDIUM (CATIMOR THY THY WASHED) / BOSSA 35KG MEDIUM (CATIMOR THY THY HONEY)",
+   "sp": "Samba Nova",
+   "tenGoc": "SAMBA 35KG MEDIUM (CATIMOR VUON BAC WASHED) / SAMBA 35KG MEDIUM (CATIMOR VUON BAC HONEY)",
    "maMe": "30K-47…30K-51",
    "soMe": 5,
    "kgVao": 175,
@@ -508,28 +508,28 @@
    "goiY0": [
     {
      "vao": 35,
-     "tp": "Thythy Catimor Washed",
+     "tp": "Vườn Bắc Ướt",
      "soMe": 3,
      "dong": [
       {
-       "loai": "Thythy Catimor Washed",
+       "loai": "Vườn Bắc Ướt",
        "kg": 35
       }
      ]
     },
     {
      "vao": 35,
-     "tp": "Thythy Catimor Honey",
+     "tp": "Vườn Bắc Mật",
      "soMe": 2,
      "dong": [
       {
-       "loai": "Thythy Catimor Honey",
+       "loai": "Vườn Bắc Mật",
        "kg": 35
       }
      ]
     }
    ],
-   "tiLe": "Thythy Catimor Washed 60% · Thythy Catimor Honey 40% (công thức 80% · 20%)",
+   "tiLe": "Vườn Bắc Ướt 60% · Vườn Bắc Mật 40% (công thức 80% · 20%)",
    "thuc0": null,
    "kgRa": null,
    "nguong": [
@@ -545,13 +545,13 @@
    "co": ""
   },
   {
-   "khoa": "2026-10-20|30K|Red Rose",
+   "khoa": "2026-10-20|30K|Hồng Nhung",
    "ngay": "2026-10-20",
    "thu": "T3",
    "may": "30K",
    "mayTen": "máy 30kg",
-   "sp": "Red Rose",
-   "tenGoc": "RED ROSE 30KG",
+   "sp": "Hồng Nhung",
+   "tenGoc": "Hồng Nhung 30KG",
    "maMe": "30K-45…30K-46",
    "soMe": 2,
    "kgVao": 60,
@@ -622,11 +622,11 @@
      "soMe": 2,
      "dong": [
       {
-       "loai": "Myanmar Rose",
+       "loai": "Nguồn Miến",
        "kg": 18.75
       },
       {
-       "loai": "Colom Rose",
+       "loai": "Nguồn Hồng",
        "kg": 11.25
       }
      ]
@@ -641,7 +641,7 @@
     17
    ],
    "coTron": true,
-   "tenTron": "Java Honey",
+   "tenTron": "Đảo Mật",
    "goiYTron": null,
    "kgTron": null,
    "daGhi01": false,
@@ -650,72 +650,72 @@
  ],
  "tui": [
   {
-   "sp": "Jasmine Honey",
+   "sp": "Sen Trắng",
    "lo": [
-    "2026-10-19|30K|Jasmine Honey"
+    "2026-10-19|30K|Sen Trắng"
    ],
    "daLay": null,
    "loMoi": [
-    "2026-10-19|30K|Jasmine Honey"
+    "2026-10-19|30K|Sen Trắng"
    ]
   },
   {
-   "sp": "Metal Rock Nhạt",
+   "sp": "Đá Xám Nhạt",
    "lo": [
-    "2026-10-19|30K|Metal Rock Nhạt"
+    "2026-10-19|30K|Đá Xám Nhạt"
    ],
    "daLay": null,
    "loMoi": [
-    "2026-10-19|30K|Metal Rock Nhạt"
+    "2026-10-19|30K|Đá Xám Nhạt"
    ]
   },
   {
-   "sp": "Deep Blue",
+   "sp": "Biển Sâu",
    "lo": [
-    "2026-10-19|5K|Deep Blue"
+    "2026-10-19|5K|Biển Sâu"
    ],
    "daLay": {
     "tuan": "2026-10-19",
-    "sp": "Deep Blue",
+    "sp": "Biển Sâu",
     "khoaLo": [
-     "2026-10-19|5K|Deep Blue"
+     "2026-10-19|5K|Biển Sâu"
     ],
-    "nguoi": "B.An",
+    "nguoi": "Người A",
     "gio": "2026-10-19 15:30"
    },
    "loMoi": []
   },
   {
-   "sp": "Bossa Nova",
+   "sp": "Samba Nova",
    "lo": [
-    "2026-10-20|30K|Bossa Nova"
+    "2026-10-20|30K|Samba Nova"
    ],
    "daLay": null,
    "loMoi": [
-    "2026-10-20|30K|Bossa Nova"
+    "2026-10-20|30K|Samba Nova"
    ]
   },
   {
-   "sp": "Red Rose",
+   "sp": "Hồng Nhung",
    "lo": [
-    "2026-10-20|30K|Red Rose"
+    "2026-10-20|30K|Hồng Nhung"
    ],
    "daLay": null,
    "loMoi": [
-    "2026-10-20|30K|Red Rose"
+    "2026-10-20|30K|Hồng Nhung"
    ]
   }
  ],
  "ngoaiLe": [
   {
    "loai": "vang",
-   "khoa": "2026-10-19|30K|Jasmine Honey",
-   "chu": "Jasmine Honey 30kg T2 19/10 — quên bấm? ⓪ Nhân xanh, ② Tách đá, ③ Sorting"
+   "khoa": "2026-10-19|30K|Sen Trắng",
+   "chu": "Sen Trắng 30kg T2 19/10 — quên bấm? ⓪ Nhân xanh, ② Tách đá, ③ Sorting"
   },
   {
    "loai": "vang",
-   "khoa": "2026-10-19|30K|Metal Rock Nhạt",
-   "chu": "Metal Rock Nhạt 30kg T2 19/10 — quên bấm? ⓪ Nhân xanh"
+   "khoa": "2026-10-19|30K|Đá Xám Nhạt",
+   "chu": "Đá Xám Nhạt 30kg T2 19/10 — quên bấm? ⓪ Nhân xanh"
   },
   {
    "loai": "xam",
@@ -724,13 +724,13 @@
   },
   {
    "loai": "xam",
-   "khoa": "2026-10-19|30K|Jasmine Honey",
-   "chu": "Jasmine Honey 30kg T2 19/10 — đang chậm: chưa nhân xanh, tách đá, sorting, trộn"
+   "khoa": "2026-10-19|30K|Sen Trắng",
+   "chu": "Sen Trắng 30kg T2 19/10 — đang chậm: chưa nhân xanh, tách đá, sorting, trộn"
   },
   {
    "loai": "xam",
-   "khoa": "2026-10-19|30K|Metal Rock Nhạt",
-   "chu": "Metal Rock Nhạt 30kg T2 19/10 — đang chậm: chưa nhân xanh, sorting, cân"
+   "khoa": "2026-10-19|30K|Đá Xám Nhạt",
+   "chu": "Đá Xám Nhạt 30kg T2 19/10 — đang chậm: chưa nhân xanh, sorting, cân"
   },
   {
    "loai": "xanh",
@@ -739,31 +739,31 @@
   }
  ],
  "sanPham": [
-  "Metal Rock Đậm",
-  "Metal Rock Nhạt",
-  "Ro Phin Đậm",
-  "Ro Phin Siêu Đậm",
-  "Bossa Nova",
-  "Bossa L2",
-  "And Brew",
-  "Im Fine",
-  "Deep Blue",
-  "Red Rose",
-  "Summer Plum",
-  "The Father",
-  "Chamomile",
-  "Jasmine Honey",
-  "Ara Darkroast",
-  "Red Velvet",
-  "Ethi Rumudamo Natural Anaerobic",
-  "Moka Typica Natural LHLT",
-  "Starmaya Natural LHLT",
-  "Starmaya 48/48",
-  "TN9-10 48/48",
-  "Java Natural",
-  "Java Honey",
-  "Colombia Sugarcane Decaf",
-  "R&B",
+  "Đá Xám Đậm",
+  "Đá Xám Nhạt",
+  "Phin Cổ Đậm",
+  "Phin Cổ Siêu Đậm",
+  "Samba Nova",
+  "Samba L2",
+  "Và Pha",
+  "Tôi Ổn",
+  "Biển Sâu",
+  "Hồng Nhung",
+  "Mận Hạ",
+  "Người Cha",
+  "Cúc La Mã",
+  "Sen Trắng",
+  "Ara Rang Đậm",
+  "Nhung Đỏ",
+  "Tuyết Sơn Lên Men",
+  "Núi Mây Tự Nhiên",
+  "Sao Mai Tự Nhiên",
+  "Sao Mai 48",
+  "Dòng K 48",
+  "Đảo Tự Nhiên",
+  "Đảo Mật",
+  "Mía Đỏ Decaf",
+  "R&C",
   "Gia công"
  ]
 }
