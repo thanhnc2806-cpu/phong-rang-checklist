@@ -110,6 +110,13 @@
       var pFlask = document.createElementNS(SVG_NS, "path");
       pFlask.setAttribute("d", "M10 2v7.31L4.5 19.5A2 2 0 0 0 6.23 22h11.54a2 2 0 0 0 1.73-2.5L14 9.31V2");
       s.appendChild(pFlask);
+    } else if (type === "bean") {
+      var pB1 = document.createElementNS(SVG_NS, "path");
+      pB1.setAttribute("d", "M12 2c-4 0-7 4.5-7 10s3 10 7 10 7-4.5 7-10S16 2 12 2z");
+      var pB2 = document.createElementNS(SVG_NS, "path");
+      pB2.setAttribute("d", "M12 2c-2.5 3-2.5 6.5 0 10s2.5 7 0 10");
+      s.appendChild(pB1);
+      s.appendChild(pB2);
     } else {
       var cDef = document.createElementNS(SVG_NS, "circle");
       cDef.setAttribute("cx", "12");
@@ -125,6 +132,38 @@
     if (mau === "vang") return "?";
     if (mau === "do") return "!";
     return "○";
+  }
+
+  // Đếm bước hiện (bỏ "an") và bước xong của 1 lô
+  function demBuoc(batch) {
+    var hien = (batch.buoc || []).filter(function (b) { return b.mau !== "an"; });
+    return { tong: hien.length, xong: hien.filter(function (b) { return b.mau === "xanh"; }).length };
+  }
+
+  function chuTrangThai(mau) {
+    if (mau === "xanh") return "Đã xong";
+    if (mau === "vang") return "Quên bấm?";
+    if (mau === "do") return "Lệch";
+    return "Chưa làm";
+  }
+
+  // 3 ô số của lô: Số mẻ · Kg vào · Kg ra
+  function oSoLo(batch) {
+    var coRa = batch.kgRa !== null && batch.kgRa !== undefined;
+    var grid = el("div", "batch-stats");
+    [
+      ["Số mẻ", String(batch.soMe), ""],
+      ["Kg vào", soVN(batch.kgVao, 1), "kg"],
+      ["Kg ra", coRa ? soVN(batch.kgRa, 1) : "—", coRa ? "kg" : ""]
+    ].forEach(function (x) {
+      var c = el("div", "batch-stat");
+      c.appendChild(el("span", "stat-label", x[0]));
+      var v = el("span", "stat-value", x[1]);
+      if (x[2]) v.appendChild(el("small", null, " " + x[2]));
+      c.appendChild(v);
+      grid.appendChild(c);
+    });
+    return grid;
   }
 
   function dinhDangGio(isoString) {
@@ -307,6 +346,9 @@
     var container = el("div", "app-container login-view");
 
     var titleBox = el("div", "login-title-box");
+    var loginLogo = el("div", "brand-logo login-logo");
+    loginLogo.appendChild(makeSvgIcon("bean", 30, "#ffffff"));
+    titleBox.appendChild(loginLogo);
     titleBox.appendChild(el("h1", "login-title", "Checklist mẻ"));
     titleBox.appendChild(el("p", "login-sub", "Phòng rang Intenso — Chọn tên để vào ca"));
     container.appendChild(titleBox);
@@ -383,11 +425,21 @@
     // Header
     var header = el("div", "top-header");
     var brand = el("div", "header-brand");
-    brand.appendChild(el("span", "brand-title", "Checklist mẻ"));
-    brand.appendChild(el("span", "brand-user", anhChup.ten || ""));
+    var logo = el("div", "brand-logo");
+    logo.appendChild(makeSvgIcon("bean", 22, "#ffffff"));
+    brand.appendChild(logo);
+    var brandText = el("div", "brand-text");
+    brandText.appendChild(el("span", "brand-title", "Checklist mẻ"));
+    brandText.appendChild(el("span", "brand-sub", "7 bước sau rang · máy 30kg & 5kg"));
+    brand.appendChild(brandText);
     header.appendChild(brand);
 
-    var btnDoiNguoi = el("button", "btn-switch-user", "Đổi người");
+    var btnDoiNguoi = el("button", "user-chip");
+    btnDoiNguoi.appendChild(el("span", "user-avatar", (anhChup.ten || "?").replace(/^anh /, "").charAt(0)));
+    var userText = el("span", "user-text");
+    userText.appendChild(el("span", "user-name", anhChup.ten || ""));
+    userText.appendChild(el("span", "user-switch", "Đổi người"));
+    btnDoiNguoi.appendChild(userText);
     btnDoiNguoi.type = "button";
     btnDoiNguoi.onclick = function () {
       xoaMay(KHOA_DANG_NHAP);
@@ -398,6 +450,8 @@
     };
     header.appendChild(btnDoiNguoi);
     container.appendChild(header);
+    var tienDo = el("div", "day-progress"); // điền sau khi có ds
+    container.appendChild(tienDo);
 
     // Tính toán danh sách ngày
     var ngayMap = {};
@@ -431,14 +485,15 @@
     container.appendChild(chipsNgayRow);
 
     // Chip Máy
-    var chipsMayRow = el("div", "chips-row");
+    var chipsMayRow = el("div", "segmented");
     var dsMay = [
       { val: "", label: "Tất cả" },
       { val: "30K", label: "Máy 30kg" },
       { val: "5K", label: "Máy 5kg" }
     ];
     dsMay.forEach(function (m) {
-      var chip = el("button", "chip" + (activeMay === m.val ? " active" : ""), m.label);
+      var soLo = loCuaNgay(anhChup.lo || [], activeNgay, m.val).length;
+      var chip = el("button", "seg" + (activeMay === m.val ? " active" : ""), m.label + " (" + soLo + ")");
       chip.type = "button";
       chip.onclick = function () {
         activeMay = m.val;
@@ -451,6 +506,19 @@
     // Lọc danh sách lô theo ngày và máy
     var ds = loCuaNgay(anhChup.lo || [], activeNgay, activeMay);
 
+    var tdTong = 0, tdXong = 0;
+    ds.forEach(function (l) { var d = demBuoc(l); tdTong += d.tong; tdXong += d.xong; });
+    var tdPct = tdTong ? Math.round(tdXong * 100 / tdTong) : 0;
+    var tdTop = el("div", "progress-top");
+    tdTop.appendChild(el("span", null, "Tiến độ " + (ngayMap[activeNgay] || "") + " " + dinhDangNgayThang(activeNgay) + ": " + tdXong + "/" + tdTong + " bước"));
+    tdTop.appendChild(el("span", "progress-pct", tdPct + "%"));
+    tienDo.appendChild(tdTop);
+    var tdBar = el("div", "progress-bar");
+    var tdFill = el("div", "progress-fill");
+    tdFill.style.width = tdPct + "%";
+    tdBar.appendChild(tdFill);
+    tienDo.appendChild(tdBar);
+
     // 4 ô số KPI
     var quenBamCount = ds.filter(function (l) {
       return (l.buoc || []).some(function (b) { return b.mau === "vang"; });
@@ -462,30 +530,25 @@
 
     var kpiGrid = el("div", "kpi-grid");
 
-    var cTong = el("div", "kpi-card");
-    cTong.appendChild(el("span", "kpi-label", "Tổng lô"));
-    cTong.appendChild(el("span", "kpi-value mono-num", String(ds.length)));
-    kpiGrid.appendChild(cTong);
-
-    var cQuen = el("div", "kpi-card" + (quenBamCount > 0 ? " kpi-alert" : ""));
-    cQuen.appendChild(el("span", "kpi-label", "Quên bấm"));
-    cQuen.appendChild(el("span", "kpi-value mono-num", String(quenBamCount)));
-    kpiGrid.appendChild(cQuen);
-
-    var cXong = el("div", "kpi-card" + (daXongCount > 0 ? " kpi-done" : ""));
-    cXong.appendChild(el("span", "kpi-label", "Đã xong"));
-    cXong.appendChild(el("span", "kpi-value mono-num", String(daXongCount)));
-    kpiGrid.appendChild(cXong);
-
-    var cTui = el("div", "kpi-card");
-    cTui.appendChild(el("span", "kpi-label", "Túi mẫu"));
-    cTui.appendChild(el("span", "kpi-value mono-num", String(tuiChuaLayCount)));
+    function oKpi(lop, icon, nhan, so, chuThich) {
+      var c = el("div", "kpi-card " + lop);
+      var top = el("span", "kpi-label");
+      top.appendChild(makeSvgIcon(icon, 12));
+      top.appendChild(el("span", null, nhan));
+      c.appendChild(top);
+      c.appendChild(el("span", "kpi-value", String(so)));
+      c.appendChild(el("span", "kpi-cap", chuThich));
+      kpiGrid.appendChild(c);
+      return c;
+    }
+    oKpi("kpi-tong", "list", "Tổng lô", ds.length, "trong ngày");
+    oKpi(quenBamCount > 0 ? "kpi-alert" : "kpi-zero", "alert", "Quên bấm", quenBamCount, "lô cần xem");
+    oKpi(daXongCount > 0 ? "kpi-done" : "kpi-zero", "check", "Đã xong", daXongCount, "lô hoàn tất");
+    var cTui = oKpi("kpi-tui", "sample", "Túi mẫu", tuiChuaLayCount, "chưa lấy");
     cTui.onclick = function () {
       currentView = "samples";
       renderApp();
     };
-    kpiGrid.appendChild(cTui);
-
     container.appendChild(kpiGrid);
 
     // Kiểm tra lô đang làm
@@ -523,19 +586,21 @@
       queueSection.appendChild(el("span", "section-label", "Hàng chờ (" + otherBatches.length + " lô)"));
 
       otherBatches.forEach(function (b) {
-        var card = el("div", "queue-card" + (b.xong ? " done" : ""));
+        var coVang = (b.buoc || []).some(function (st) { return st.mau === "vang"; });
+        var card = el("div", "queue-card" + (b.xong ? " done" : coVang ? " st-vang" : ""));
 
         var topRow = el("div", "queue-top");
         var nameSpan = el("span", "queue-name", b.sp || ("Chưa rõ: " + b.tenGoc));
         topRow.appendChild(nameSpan);
 
-        var rightMeta = el("div", null);
+        var rightMeta = el("div", "queue-meta");
         // Có thao tác chờ gửi?
         if (choGuiCuaLo(docMay(KHOA_HANG_DOI, []), b.khoa).length > 0) {
           rightMeta.appendChild(makeSvgIcon("clock", 12, "#b45309"));
         }
-        var maySpan = el("span", "queue-sub mono-num", " · " + (b.mayTen || ""));
-        rightMeta.appendChild(maySpan);
+        var dB = demBuoc(b);
+        rightMeta.appendChild(el("span", "may-pill", b.mayTen || ""));
+        rightMeta.appendChild(el("span", "queue-sub", dB.xong + "/" + dB.tong + " bước"));
         topRow.appendChild(rightMeta);
         card.appendChild(topRow);
 
@@ -577,16 +642,17 @@
     var header = el("div", "batch-header");
     var titleGroup = el("div", "batch-title-group");
 
+    var dem = demBuoc(batch);
+    titleGroup.appendChild(el("span", "card-eyebrow", "Lô đang làm"));
+    var titleRow = el("div", "batch-title-row");
     var titleEl = el("span", "batch-title" + (!batch.sp ? " unclear" : ""));
     titleEl.textContent = batch.sp ? batch.sp : "Chưa rõ: " + batch.tenGoc;
-    titleGroup.appendChild(titleEl);
+    titleRow.appendChild(titleEl);
+    titleRow.appendChild(el("span", "step-count-pill", "Bước " + dem.xong + "/" + dem.tong));
+    titleGroup.appendChild(titleRow);
 
-    var subText = (batch.mayTen || "") + " · " + batch.soMe + " mẻ · " + soVN(batch.kgVao, 1) + " kg vào";
-    titleGroup.appendChild(el("span", "batch-sub mono-num", subText));
-
-    if (batch.tiLe) {
-      titleGroup.appendChild(el("span", "batch-tile", batch.tiLe));
-    }
+    var subText = (batch.mayTen || "") + " · " + (batch.thu || "") + " " + dinhDangNgayThang(batch.ngay);
+    titleGroup.appendChild(el("span", "batch-sub", subText));
     header.appendChild(titleGroup);
 
     var rightGroup = el("div", null);
@@ -604,6 +670,15 @@
     header.appendChild(rightGroup);
 
     card.appendChild(header);
+    card.appendChild(oSoLo(batch));
+    if (batch.tiLe) {
+      card.appendChild(el("span", "batch-tile", batch.tiLe));
+    }
+
+    var stepsHead = el("div", "steps-head");
+    stepsHead.appendChild(el("span", null, "Quy trình " + dem.tong + " bước"));
+    stepsHead.appendChild(el("span", "steps-done", dem.xong + "/" + dem.tong + " xong"));
+    card.appendChild(stepsHead);
 
     // 7 bước trong thẻ
     var stepsWrapper = el("div", "steps-wrapper");
@@ -623,25 +698,24 @@
 
       if (st.so === expStepNum) {
         // Mở rộng bước này
-        var expBox = el("div", "step-box-expanded");
+        var expBox = el("div", "step-box-expanded is-current");
         renderStepContent(expBox, st, batch, anhChup.chiXem);
         stepsWrapper.appendChild(expBox);
       } else {
         // Thu gọn bước này thành 1 dòng
-        var row = el("div", "step-row-collapsed");
+        var row = el("div", "step-row-collapsed " + (st.mau || "xam"));
 
         var left = el("div", "step-left");
         left.appendChild(el("span", "step-ky", st.ky));
-        left.appendChild(el("span", "step-name", st.ten));
+        var nameBox = el("div", "step-name-box");
+        nameBox.appendChild(el("span", "step-name", st.ten));
+        var timeStr = st.gio ? dinhDangGio(st.gio) : "";
+        nameBox.appendChild(el("span", "step-meta", st.nguoi ? st.nguoi + (timeStr ? " · " + timeStr : "") : chuTrangThai(st.mau)));
+        left.appendChild(nameBox);
         row.appendChild(left);
 
         var right = el("div", "step-right");
-        if (st.nguoi) {
-          var timeStr = st.gio ? dinhDangGio(st.gio) : "";
-          right.appendChild(el("span", "mono-num", st.nguoi + (timeStr ? " " + timeStr : "")));
-        }
-
-        var badge = el("span", "step-badge " + (st.mau || "xam"));
+        var badge = el("span", "step-badge round " + (st.mau || "xam"));
         badge.textContent = kyHieuTrangThai(st.mau);
         right.appendChild(badge);
         row.appendChild(right);
@@ -695,8 +769,7 @@
     var subLine1 = (batch.mayTen || "") + " · " + (batch.thu || "") + " " + dinhDangNgayThang(batch.ngay) + " · Mã mẻ: " + (batch.maMe || "");
     headerCard.appendChild(el("p", "detail-sub mono-num", subLine1));
 
-    var subLine2 = batch.soMe + " mẻ · " + soVN(batch.kgVao, 1) + " kg vào";
-    headerCard.appendChild(el("p", "detail-sub mono-num", subLine2));
+    headerCard.appendChild(oSoLo(batch));
 
     if (batch.co) {
       var boxCo = el("div", "banner banner-yellow", "Thêm mẻ sau khi cân — Lưu lại kg ra");
@@ -738,8 +811,8 @@
       var timeStr = step.gio ? dinhDangGio(step.gio) : "";
       right.appendChild(el("span", "mono-num text-muted", step.nguoi + (timeStr ? " " + timeStr : "")));
     }
-    var badge = el("span", "step-badge " + (step.mau || "xam"));
-    badge.textContent = kyHieuTrangThai(step.mau);
+    var badge = el("span", "status-pill " + (step.mau || "xam"));
+    badge.textContent = kyHieuTrangThai(step.mau) + " " + chuTrangThai(step.mau);
     right.appendChild(badge);
     header.appendChild(right);
     box.appendChild(header);
@@ -784,7 +857,10 @@
         thucBox.appendChild(el("span", "mono-num", "Đã xác nhận thành phần nhân xanh:"));
         batch.thuc0.forEach(function (grp) {
           (grp.dong || []).forEach(function (d) {
-            thucBox.appendChild(el("div", "mono-num", "• " + d.loai + ": " + soVN(d.kg, 2) + " kg"));
+            var tr = el("div", "kv-row");
+            tr.appendChild(el("span", null, d.loai));
+            tr.appendChild(el("b", null, soVN(d.kg, 2) + " kg"));
+            thucBox.appendChild(tr);
           });
         });
         body.appendChild(thucBox);
@@ -820,7 +896,10 @@
               editRow.appendChild(el("span", null, "kg"));
               goiYWrapper.appendChild(editRow);
             } else {
-              goiYWrapper.appendChild(el("div", "mono-num", "• " + d.loai + ": " + soVN(d.kg, 2) + " kg"));
+              var gr = el("div", "kv-row");
+              gr.appendChild(el("span", null, d.loai));
+              gr.appendChild(el("b", null, soVN(d.kg, 2) + " kg"));
+              goiYWrapper.appendChild(gr);
             }
           });
         });
@@ -942,26 +1021,34 @@
     else if (step.so === 4) {
       var canBox = el("div", null);
 
-      var inputRow = el("div", null);
-      inputRow.style.display = "flex";
-      inputRow.style.alignItems = "center";
-      inputRow.style.gap = "8px";
-
-      inputRow.appendChild(el("span", null, "Kg ra:"));
-      var inpKgRa = el("input", "form-input mono-num");
+      var canGrid = el("div", "can-grid");
+      var oKg = el("div", "can-tile");
+      oKg.appendChild(el("span", "stat-label", "Kg ra"));
+      var inputRow = el("div", "can-input-row");
+      var inpKgRa = el("input", "form-input can-input");
       inpKgRa.inputMode = "decimal";
       inpKgRa.value = batch.kgRa !== null && batch.kgRa !== undefined ? soVN(batch.kgRa) : "";
-      inpKgRa.style.maxWidth = "110px";
       inpKgRa.readOnly = chiXem;
       inputRow.appendChild(inpKgRa);
       inputRow.appendChild(el("span", null, "kg"));
-      canBox.appendChild(inputRow);
+      oKg.appendChild(inputRow);
+      canGrid.appendChild(oKg);
 
-      // Nhãn hao hụt
-      var hhLabel = el("div", "mono-num hh-label");
-      hhLabel.style.marginTop = "6px";
-      hhLabel.style.fontWeight = "600";
-      canBox.appendChild(hhLabel);
+      // Ô hao hụt: số to + nhãn ngưỡng
+      var oHH = el("div", "can-tile");
+      var hhHead = el("div", "can-tile-head");
+      hhHead.appendChild(el("span", "stat-label", "Hao hụt"));
+      var hhPill = el("span", "status-pill xam");
+      oHH.appendChild(hhHead);
+      var hhLabel = el("div", "hh-label");
+      oHH.appendChild(hhLabel);
+      var pillRow = el("div", null);
+      pillRow.appendChild(hhPill);
+      oHH.appendChild(pillRow);
+      canGrid.appendChild(oHH);
+      canBox.appendChild(canGrid);
+      var nguongLine = el("div", "nguong-line");
+      canBox.appendChild(nguongLine);
 
       // Thanh đo hao hụt trực quan
       var gaugeWrapper = el("div", "gauge-wrapper");
@@ -988,7 +1075,7 @@
       canBox.appendChild(gaugeWrapper);
 
       // Nút Lưu
-      var btnLuuCan = el("button", "btn btn-primary btn-sm btn-luu-can");
+      var btnLuuCan = el("button", "btn btn-primary btn-block btn-luu-can");
       btnLuuCan.type = "button";
       btnLuuCan.textContent = (batch.kgRa !== null && batch.kgRa !== undefined) ? "Lưu lại" : "Lưu";
       btnLuuCan.style.marginTop = "6px";
@@ -999,18 +1086,13 @@
         var hh = haoHut(batch.kgVao, num);
         var mau = mauHaoHut(hh, batch.nguong);
 
-        if (hh !== null) {
-          var nguongText = batch.nguong
-            ? " (ngưỡng " + soVN(batch.nguong[1], 1) + "–" + soVN(batch.nguong[2], 1) + " %)"
-            : " (chưa có ngưỡng)";
-          hhLabel.textContent = "Hao hụt " + soVN(hh, 1) + " %" + nguongText;
-          if (mau === "xanh") hhLabel.style.color = "var(--status-xanh)";
-          else if (mau === "do") hhLabel.style.color = "var(--status-do)";
-          else hhLabel.style.color = "var(--status-xam)";
-        } else {
-          hhLabel.textContent = "Hao hụt: — %";
-          hhLabel.style.color = "var(--text-muted)";
-        }
+        nguongLine.textContent = batch.nguong
+          ? "Ngưỡng " + soVN(batch.nguong[1], 1) + "–" + soVN(batch.nguong[2], 1) + " %"
+          : "Chưa có ngưỡng";
+        hhLabel.textContent = hh !== null ? soVN(hh, 1) + " %" : "— %";
+        hhLabel.className = "hh-label " + (hh !== null ? mau : "xam");
+        hhPill.className = "status-pill " + (hh !== null ? mau : "xam");
+        hhPill.textContent = hh === null ? "Chưa gõ" : mau === "xanh" ? "✓ Trong ngưỡng" : mau === "do" ? "! Ngoài ngưỡng" : "Chưa có ngưỡng";
 
         // Định vị vùng chuẩn trên thanh gauge (thang gLo–gHi)
         if (batch.nguong) {
@@ -1145,7 +1227,7 @@
     }
 
     listTui.forEach(function (t) {
-      var card = el("div", "sample-card");
+      var card = el("div", "sample-card" + (t.daLay ? " done" : ""));
 
       var hdr = el("div", "sample-header");
       hdr.appendChild(el("span", "sample-title", t.sp || ""));
@@ -1179,7 +1261,7 @@
         });
 
         if (!anhChup.chiXem) {
-          var btnLay = el("button", "btn btn-primary btn-sm", "Đã lấy mẫu");
+          var btnLay = el("button", "btn btn-tim btn-sm", "Đã lấy mẫu");
           btnLay.type = "button";
           btnLay.style.marginTop = "6px";
 
