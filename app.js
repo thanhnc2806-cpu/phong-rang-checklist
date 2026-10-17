@@ -220,7 +220,7 @@
     // Dải trên: trạng thái mạng + ngày hôm nay
     var matMang = !navigator.onLine || !!anhChup.cuDaLuu;
     var sub = el("div", "flex items-center justify-between bg-surface-container-low/90 px-3 py-1 rounded-lg border border-surface-container-highest/50");
-    var trai = el("div", "flex items-center gap-2");
+    var trai = el("div", "flex items-center gap-2 min-w-0");
     var cham = el("span", "flex h-2 w-2 relative");
     cham.appendChild(el("span", matMang ? "absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" : "animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"));
     cham.appendChild(el("span", matMang ? "relative inline-flex rounded-full h-2 w-2 bg-amber-400" : "relative inline-flex rounded-full h-2 w-2 bg-secondary"));
@@ -229,7 +229,7 @@
     trai.appendChild(el("span", "text-on-surface-variant text-[11px]", "•"));
     trai.appendChild(el("span", "text-[12px] text-on-surface font-medium truncate max-w-[140px]", "Phòng Rang Intenso"));
     sub.appendChild(trai);
-    var phai = el("div", "flex items-center gap-1.5 text-tertiary");
+    var phai = el("div", "flex items-center gap-1.5 text-tertiary shrink-0");
     phai.appendChild(ic("schedule", "text-[15px]"));
     phai.appendChild(el("span", "font-mono-num text-[11px] text-on-surface-variant font-medium whitespace-nowrap", thuCua(anhChup.homNay) + " " + dinhDangNgayThang(anhChup.homNay)));
     sub.appendChild(phai);
@@ -246,7 +246,7 @@
     dong1.appendChild(el("span", "text-[16px] text-on-surface font-bold truncate", "Checklist Mẻ Rang"));
     dong1.appendChild(el("span", "px-1.5 py-0.5 rounded text-[9px] font-mono-num bg-primary/20 text-primary font-bold", "INTENSO"));
     chu.appendChild(dong1);
-    chu.appendChild(el("span", "text-[11px] text-on-surface-variant font-medium", "7 bước sau rang · Máy 30kg & 5kg"));
+    chu.appendChild(el("span", "text-[11px] text-on-surface-variant font-medium truncate", "7 bước sau rang · Máy 30kg & 5kg"));
     brand.appendChild(chu);
     hang.appendChild(brand);
 
