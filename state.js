@@ -2,6 +2,15 @@
 // Lỗi tạm: thao tác nằm lại hàng đợi, tự gửi lại. Lỗi khác = máy chủ từ chối (xem src/ApiLogic.js, src/Api.js).
 var LOI_GUI_LAI = ["NETWORK", "BAN", "LOI_MAY_CHU"];
 function guiLai(loi) { return LOI_GUI_LAI.indexOf(loi) >= 0; }
+// Lỗi đăng nhập: không phải thao tác sai -> giữ nguyên hàng đợi, bắt đăng nhập lại
+var LOI_DANG_NHAP = ["SAI_MA", "KHOA", "SAI_TEN", "CHUA_CO_MA"];
+function loiDangNhap(loi) { return LOI_DANG_NHAP.indexOf(loi) >= 0; }
+// Thao tác đầu hàng đợi của đúng người đang đăng nhập (thao tác cũ chưa có "cua" coi như của người này)
+function opCuaNguoi(q, nguoi) { return q.filter(function (x) { return !x.cua || x.cua === nguoi; })[0]; }
+// Ảnh chụp lưu trên máy chỉ dùng cho đúng người đã lưu nó
+function anhChupDungNguoi(cu, nguoi) { return !!cu && cu.nguoi === nguoi; }
+// Đang gõ vào ô: việc nền (tự gửi hàng đợi) không được vẽ lại màn hình
+function dangGoVaoO(tag) { return /^(INPUT|TEXTAREA|SELECT)$/.test(tag || ""); }
 
 // "13,1" / "13.1" / 13.1 -> 13.1 · "" / "abc" / "1,2,3" -> null
 function docSo(x) {
@@ -59,7 +68,8 @@ function thucNhanXanh(goiY0, sua) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { LOI_GUI_LAI: LOI_GUI_LAI, guiLai: guiLai, docSo: docSo, soVN: soVN, haoHut: haoHut, mauHaoHut: mauHaoHut,
+  module.exports = { LOI_GUI_LAI: LOI_GUI_LAI, guiLai: guiLai, loiDangNhap: loiDangNhap, opCuaNguoi: opCuaNguoi,
+    anhChupDungNguoi: anhChupDungNguoi, dangGoVaoO: dangGoVaoO, docSo: docSo, soVN: soVN, haoHut: haoHut, mauHaoHut: mauHaoHut,
     themHangDoi: themHangDoi, boHangDoi: boHangDoi, choGuiCuaLo: choGuiCuaLo, taoMaThaoTac: taoMaThaoTac,
     demNguoc: demNguoc, loCuaNgay: loCuaNgay, thucNhanXanh: thucNhanXanh };
 }

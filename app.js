@@ -138,28 +138,42 @@
   }
 
   // ---------- Hàng đợi gửi ----------
+  // Việc nền không được vẽ lại khi anh đang gõ số: ô nhập bị tạo mới là mất chữ vừa gõ
+  function renderNen() {
+    if (dangGoVaoO(document.activeElement && document.activeElement.tagName)) return;
+    renderApp();
+  }
+  function veLaiDangNhap(chu) {
+    xoaMay(KHOA_DANG_NHAP);
+    dangNhap = null;
+    anhChup = null;
+    currentView = "login";
+    loginErrorText = chu;
+    renderApp();
+  }
   function kichHoatGuiHangDoi() {
     if (!dangNhap) return;
     xaHangDoi(dangNhap, function (evt) {
       if (evt.loai === "da") {
         taiAnhChup(dangNhap).then(function (res) {
           if (res && res.ok) anhChup = res;
-          renderApp();
+          renderNen();
         });
         if (evt.kq && evt.kq.lech) {
           globalNotice = "Đã ghi — khác gợi ý, anh Thanh sẽ được báo";
-          setTimeout(function () { globalNotice = null; renderApp(); }, 6000);
+          setTimeout(function () { globalNotice = null; renderNen(); }, 6000);
         }
       } else if (evt.loai === "tuChoi") {
         globalError = (evt.kq && (evt.kq.chu || evt.kq.loi)) || "Thao tác bị từ chối";
-        setTimeout(function () { globalError = null; renderApp(); }, 6000);
-        renderApp();
+        setTimeout(function () { globalError = null; renderNen(); }, 6000);
+        renderNen();
+      } else if (evt.loai === "dangNhapLai") {
+        veLaiDangNhap("Cần đăng nhập lại — thao tác chưa gửi vẫn được giữ trên máy");
       } else if (evt.loai === "tam") {
-        if (evt.kq && evt.kq.loi === "LOI_MAY_CHU") tamError = true;
-        renderApp();
+        var doi = !tamError && evt.kq && evt.kq.loi === "LOI_MAY_CHU";
+        if (doi) { tamError = true; renderNen(); }
       } else if (evt.loai === "xong") {
-        tamError = false;
-        renderApp();
+        if (tamError) { tamError = false; renderNen(); }  // 30 giây một lần: không có gì đổi thì không vẽ lại
       }
     });
   }
@@ -168,7 +182,7 @@
   document.addEventListener("visibilitychange", function () { if (!document.hidden && dangNhap) kichHoatGuiHangDoi(); });
 
   function thucHienThaoTac(op) {
-    guiThaoTac(op);
+    guiThaoTac(op, dangNhap.nguoi);
     kichHoatGuiHangDoi();
     renderApp();
   }
@@ -258,6 +272,7 @@
     doiNguoi.appendChild(ic("swap_horiz", "text-on-surface-variant text-[16px]"));
     doiNguoi.onclick = function () {
       xoaMay(KHOA_DANG_NHAP);
+      xoaMay(KHOA_ANH_CHUP);
       dangNhap = null;
       anhChup = null;
       activeNgay = "";
@@ -373,12 +388,14 @@
       var authPayload = { nguoi: selectedUserMa, ma: input.value.trim() };
       vao.disabled = true;
       vao.lastChild.textContent = "Đang kiểm tra...";
-      taiAnhChup(authPayload).then(function (res) {
+      taiAnhChup(authPayload, false).then(function (res) {
         if (res && res.ok) {
           dangNhap = authPayload;
           ghiMay(KHOA_DANG_NHAP, dangNhap);
           anhChup = res;
           currentView = "today";
+          loginErrorText = "";
+          kichHoatGuiHangDoi();
         } else {
           var errKey = res ? res.loi : "NETWORK";
           if (errKey === "SAI_MA") loginErrorText = "Mã chưa đúng";

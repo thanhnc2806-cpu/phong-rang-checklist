@@ -32,33 +32,38 @@ function goiGia(than) {
 }
 
 // Ảnh chụp mới nhất; mất mạng thì trả bản đã lưu (kèm cuDaLuu: true để trang hiện "dữ liệu lúc …")
-function taiAnhChup(dangNhap) {
+// choDungCu = false (màn đăng nhập): không bao giờ lấy bản cũ, vì mã chưa được máy chủ kiểm
+function taiAnhChup(dangNhap, choDungCu) {
   return goiApi(dangNhap, { loai: "doc" }).then(function (a) {
     if (a.ok) { a.luc = Date.now(); ghiMay(KHOA_ANH_CHUP, a); return a; }
     var cu = docMay(KHOA_ANH_CHUP, null);
-    return cu && guiLai(a.loi) ? Object.assign(cu, { cuDaLuu: true, loi: a.loi }) : a;
+    return choDungCu !== false && anhChupDungNguoi(cu, dangNhap.nguoi) && guiLai(a.loi) ? Object.assign(cu, { cuDaLuu: true, loi: a.loi }) : a;
   });
 }
 
 // Mỗi lần bấm: vào hàng đợi trước rồi mới gửi
-function guiThaoTac(op) {
+function guiThaoTac(op, nguoi) {
   op.id = op.id || taoMaThaoTac();
+  op.cua = nguoi;  // đổi người trên máy: thao tác chỉ gửi dưới tên người đã bấm
   ghiMay(KHOA_HANG_DOI, themHangDoi(docMay(KHOA_HANG_DOI, []), op));
   return op.id;
 }
 function soChoGui() { return docMay(KHOA_HANG_DOI, []).length; }
 
 var dangXa_ = false;
-// Gửi lần lượt từ đầu hàng đợi. Lỗi tạm -> dừng, giữ nguyên. Bị từ chối -> bỏ mục đó, báo "tuChoi".
-// suKien({ loai: "xong" | "tam" | "tuChoi" | "da", op, kq })
+// Gửi lần lượt từ đầu hàng đợi (chỉ thao tác của người đang đăng nhập). Lỗi tạm -> dừng, giữ nguyên.
+// Lỗi đăng nhập -> dừng, giữ nguyên, báo "dangNhapLai". Bị từ chối -> bỏ mục đó, báo "tuChoi".
+// suKien({ loai: "xong" | "tam" | "dangNhapLai" | "tuChoi" | "da", op, kq })
 function xaHangDoi(dangNhap, suKien) {
   if (dangXa_) return;
   dangXa_ = true;
   (function tiep() {
     var q = docMay(KHOA_HANG_DOI, []);
     if (!q.length) { dangXa_ = false; suKien({ loai: "xong" }); return; }
-    var op = q[0];
+    var op = opCuaNguoi(q, dangNhap.nguoi);
+    if (!op) { dangXa_ = false; suKien({ loai: "xong" }); return; }
     goiApi(dangNhap, op).then(function (kq) {
+      if (!kq.ok && loiDangNhap(kq.loi)) { dangXa_ = false; suKien({ loai: "dangNhapLai", op: op, kq: kq }); return; }
       if (!kq.ok && guiLai(kq.loi)) { dangXa_ = false; suKien({ loai: "tam", op: op, kq: kq }); return; }
       ghiMay(KHOA_HANG_DOI, boHangDoi(docMay(KHOA_HANG_DOI, []), op.id));
       suKien({ loai: kq.ok ? "da" : "tuChoi", op: op, kq: kq });
