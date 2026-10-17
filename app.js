@@ -1,15 +1,11 @@
-// Checklist mẻ — ứng dụng PWA phòng rang (JS thuần, không framework, không CDN)
+// Checklist mẻ — ứng dụng PWA phòng rang (JS thuần, không framework, không CDN).
+// Giao diện chép y nguyên docs/superpowers/giao-dien/checklist-stitch-pro.html (anh chọn 17/10); lớp Tailwind dựng sẵn ở styles.css (npm run css).
 (function () {
   "use strict";
 
-  // Đăng ký Service Worker
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js").catch(function () {
-      // bỏ qua lỗi đăng ký sw
-    });
+    navigator.serviceWorker.register("sw.js").catch(function () { /* bỏ qua lỗi đăng ký sw */ });
   }
-
-  var SVG_NS = "http://www.w3.org/2000/svg";
 
   // Trạng thái ứng dụng
   var currentView = "today"; // "login" | "today" | "detail" | "samples" | "exceptions"
@@ -18,14 +14,13 @@
   var activeNgay = "";
   var activeMay = "";
   var selectedBatchKeys = {}; // ngay -> khoa lô đang chọn làm thẻ to
-  var expandedStepInActiveCard = {}; // khoa -> số bước đang mở rộng
-  var editModeNhanXanh = {}; // khoa -> boolean đang bật ô sửa bước ⓪
+  var expandedStepInActiveCard = {}; // khoa -> số bước đang mở
+  var editModeNhanXanh = {}; // khoa -> đang bật ô sửa bước ⓪
   var detailBatchKhoa = "";
   var tamError = false;
   var globalError = null;
   var globalNotice = null;
 
-  // Danh sách người đăng nhập
   var DANH_SACH_NGUOI = [
     { ma: "thanh", ten: "anh Thanh" },
     { ma: "minh", ten: "Minh" },
@@ -34,95 +29,72 @@
     { ma: "doan", ten: "Đoan" }
   ];
 
-  // Trợ thủ tạo DOM an toàn
+  // ---------- Lớp Tailwind (chuỗi đầy đủ để Tailwind quét được) ----------
+  var C = {
+    nutChinh: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-stone-950 text-[12px] font-mono-num font-bold shadow-lg shadow-amber-900/40 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
+    nutPhu: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface text-[12px] font-mono-num font-semibold border border-surface-container-highest active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
+    nutTim: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[12px] font-mono-num font-bold active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
+    o: "flex flex-col bg-surface-container-lowest p-2.5 rounded-xl border border-surface-container-highest",
+    nhan: "text-[10px] font-mono-num text-on-surface-variant uppercase",
+    nhapSo: "w-full bg-surface-container text-on-surface font-mono-num text-[18px] font-bold px-2 py-1 rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary select-text",
+    nhapChu: "w-full bg-surface-container text-on-surface font-mono-num text-[14px] font-semibold px-2 py-2 rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary"
+  };
+  // Theo màu trạng thái bước: xanh ✓ · vang ? · do ! · xam ○
+  var VUONG = {
+    xanh: "w-9 h-9 rounded-lg bg-emerald-500/20 text-secondary border border-emerald-500/30 flex items-center justify-center shrink-0",
+    vang: "w-9 h-9 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center shrink-0",
+    do: "w-9 h-9 rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/40 flex items-center justify-center shrink-0",
+    xam: "w-9 h-9 rounded-lg bg-surface-container-highest text-on-surface-variant border border-surface-container-highest flex items-center justify-center shrink-0"
+  };
+  var ICON_TT = { xanh: "check_circle", vang: "help", do: "error", xam: "radio_button_unchecked" };
+  var KY = {
+    xanh: "text-[15px] leading-none text-secondary font-bold w-5 shrink-0",
+    vang: "text-[15px] leading-none text-amber-400 font-bold w-5 shrink-0",
+    do: "text-[15px] leading-none text-rose-400 font-bold w-5 shrink-0",
+    xam: "text-[15px] leading-none text-on-surface-variant font-bold w-5 shrink-0"
+  };
+  var HANG = {
+    xanh: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container border border-surface-container-highest/60 transition-all cursor-pointer",
+    vang: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container border border-amber-500/30 transition-all cursor-pointer",
+    do: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container border border-rose-500/30 transition-all cursor-pointer",
+    xam: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container/60 border border-surface-container-highest/40 opacity-80 transition-all cursor-pointer"
+  };
+  var VIEN = {
+    xanh: "px-2 py-0.5 rounded-full bg-emerald-500/20 text-secondary font-mono-num text-[9px] font-bold uppercase tracking-wider border border-emerald-500/30",
+    vang: "px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono-num text-[9px] font-bold uppercase tracking-wider border border-amber-500/40",
+    do: "px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 font-mono-num text-[9px] font-bold uppercase tracking-wider border border-rose-500/40",
+    xam: "px-2 py-0.5 rounded-full bg-primary/20 text-primary font-mono-num text-[9px] font-bold uppercase tracking-wider border border-primary/30"
+  };
+  // Hao hụt: trong ngưỡng / dưới / trên / chưa có (cùng ngưỡng của mauHaoHut, chỉ tách màu dưới–trên)
+  var HH = {
+    xanh: { the: "px-1.5 py-0.5 rounded text-[9px] font-mono-num font-bold bg-emerald-500/20 text-secondary border border-emerald-500/30", so: "font-mono-num text-[22px] font-bold text-secondary", chu: "text-secondary font-bold", kim: "w-2.5 h-full bg-secondary rounded shadow-lg shadow-emerald-500/50", nhan: "TRONG", ten: "Trong ngưỡng" },
+    thap: { the: "px-1.5 py-0.5 rounded text-[9px] font-mono-num font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40", so: "font-mono-num text-[22px] font-bold text-amber-400", chu: "text-amber-400 font-bold", kim: "w-2.5 h-full bg-amber-400 rounded shadow-lg shadow-amber-500/50", nhan: "DƯỚI", ten: "Dưới ngưỡng" },
+    cao: { the: "px-1.5 py-0.5 rounded text-[9px] font-mono-num font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40", so: "font-mono-num text-[22px] font-bold text-rose-400", chu: "text-rose-400 font-bold", kim: "w-2.5 h-full bg-rose-400 rounded shadow-lg shadow-rose-500/50", nhan: "TRÊN", ten: "Trên ngưỡng" },
+    xam: { the: "px-1.5 py-0.5 rounded text-[9px] font-mono-num font-bold bg-surface-container-highest text-on-surface-variant border border-surface-container-highest", so: "font-mono-num text-[22px] font-bold text-on-surface-variant", chu: "text-on-surface-variant font-bold", kim: "w-2.5 h-full bg-on-surface-variant rounded", nhan: "—", ten: "Chưa có ngưỡng" }
+  };
+  var ICON_BUOC = ["inventory_2", "timer", "done_all", "checklist", "scale", "blender", "science"];
+
+  // ---------- Trợ thủ DOM (chỉ textContent / createElement) ----------
   function el(tag, className, textContent) {
     var e = document.createElement(tag);
     if (className) e.className = className;
     if (textContent !== undefined && textContent !== null) e.textContent = textContent;
     return e;
   }
-
-  function makeSvgIcon(type, size, color) {
-    var s = document.createElementNS(SVG_NS, "svg");
-    var sz = size || 16;
-    s.setAttribute("width", String(sz));
-    s.setAttribute("height", String(sz));
-    s.setAttribute("viewBox", "0 0 24 24");
-    s.setAttribute("fill", "none");
-    s.setAttribute("stroke", color || "currentColor");
-    s.setAttribute("stroke-width", "2");
-    s.setAttribute("stroke-linecap", "round");
-    s.setAttribute("stroke-linejoin", "round");
-
-    if (type === "clock") {
-      var c = document.createElementNS(SVG_NS, "circle");
-      c.setAttribute("cx", "12");
-      c.setAttribute("cy", "12");
-      c.setAttribute("r", "10");
-      var p = document.createElementNS(SVG_NS, "polyline");
-      p.setAttribute("points", "12 6 12 12 16 14");
-      s.appendChild(c);
-      s.appendChild(p);
-    } else if (type === "check") {
-      var pCheck = document.createElementNS(SVG_NS, "polyline");
-      pCheck.setAttribute("points", "20 6 9 17 4 12");
-      s.appendChild(pCheck);
-    } else if (type === "alert") {
-      var pAlert = document.createElementNS(SVG_NS, "polygon");
-      pAlert.setAttribute("points", "12 2 2 22 22 22 12 2");
-      var l1 = document.createElementNS(SVG_NS, "line");
-      l1.setAttribute("x1", "12");
-      l1.setAttribute("y1", "9");
-      l1.setAttribute("x2", "12");
-      l1.setAttribute("y2", "13");
-      var l2 = document.createElementNS(SVG_NS, "line");
-      l2.setAttribute("x1", "12");
-      l2.setAttribute("y1", "17");
-      l2.setAttribute("x2", "12.01");
-      l2.setAttribute("y2", "17");
-      s.appendChild(pAlert);
-      s.appendChild(l1);
-      s.appendChild(l2);
-    } else if (type === "back") {
-      var pBack = document.createElementNS(SVG_NS, "polyline");
-      pBack.setAttribute("points", "15 18 9 12 15 6");
-      s.appendChild(pBack);
-    } else if (type === "list") {
-      var lList1 = document.createElementNS(SVG_NS, "line");
-      lList1.setAttribute("x1", "8");
-      lList1.setAttribute("y1", "6");
-      lList1.setAttribute("x2", "21");
-      lList1.setAttribute("y2", "6");
-      var lList2 = document.createElementNS(SVG_NS, "line");
-      lList2.setAttribute("x1", "8");
-      lList2.setAttribute("y1", "12");
-      lList2.setAttribute("x2", "21");
-      lList2.setAttribute("y2", "12");
-      var lList3 = document.createElementNS(SVG_NS, "line");
-      lList3.setAttribute("x1", "8");
-      lList3.setAttribute("y1", "18");
-      lList3.setAttribute("x2", "21");
-      lList3.setAttribute("y2", "18");
-      s.appendChild(lList1);
-      s.appendChild(lList2);
-      s.appendChild(lList3);
-    } else if (type === "sample") {
-      var pFlask = document.createElementNS(SVG_NS, "path");
-      pFlask.setAttribute("d", "M10 2v7.31L4.5 19.5A2 2 0 0 0 6.23 22h11.54a2 2 0 0 0 1.73-2.5L14 9.31V2");
-      s.appendChild(pFlask);
-    } else if (type === "bean") {
-      var pB1 = document.createElementNS(SVG_NS, "path");
-      pB1.setAttribute("d", "M12 2c-4 0-7 4.5-7 10s3 10 7 10 7-4.5 7-10S16 2 12 2z");
-      var pB2 = document.createElementNS(SVG_NS, "path");
-      pB2.setAttribute("d", "M12 2c-2.5 3-2.5 6.5 0 10s2.5 7 0 10");
-      s.appendChild(pB1);
-      s.appendChild(pB2);
-    } else {
-      var cDef = document.createElementNS(SVG_NS, "circle");
-      cDef.setAttribute("cx", "12");
-      cDef.setAttribute("cy", "12");
-      cDef.setAttribute("r", "9");
-      s.appendChild(cDef);
+  function ic(ten, cls) { return el("span", "material-symbols-outlined " + (cls || ""), ten); }
+  function nut(cls, icon, chu, iconCls) {
+    var b = el("button", cls);
+    b.type = "button";
+    if (icon) b.appendChild(ic(icon, iconCls || "text-[18px]"));
+    b.appendChild(el("span", null, chu));
+    return b;
+  }
+  // "10,4" + chữ "kg" nhỏ như bản stitch
+  function soKg(cls, so, chuSo) {
+    var s = el("span", cls, so === null || so === undefined ? "—" : soVN(so, chuSo === undefined ? 1 : chuSo));
+    if (so !== null && so !== undefined) {
+      s.appendChild(document.createTextNode(" "));
+      s.appendChild(el("span", "text-[10px] text-on-surface-variant font-normal", "kg"));
     }
     return s;
   }
@@ -133,51 +105,39 @@
     if (mau === "do") return "!";
     return "○";
   }
-
-  // Đếm bước hiện (bỏ "an") và bước xong của 1 lô
-  function demBuoc(batch) {
-    var hien = (batch.buoc || []).filter(function (b) { return b.mau !== "an"; });
-    return { tong: hien.length, xong: hien.filter(function (b) { return b.mau === "xanh"; }).length };
-  }
-
   function chuTrangThai(mau) {
     if (mau === "xanh") return "Đã xong";
     if (mau === "vang") return "Quên bấm?";
     if (mau === "do") return "Lệch";
     return "Chưa làm";
   }
+  function mauCua(st) { return VUONG[st.mau] ? st.mau : "xam"; }
 
-  // 3 ô số của lô: Số mẻ · Kg vào · Kg ra
-  function oSoLo(batch) {
-    var coRa = batch.kgRa !== null && batch.kgRa !== undefined;
-    var grid = el("div", "batch-stats");
-    [
-      ["Số mẻ", String(batch.soMe), ""],
-      ["Kg vào", soVN(batch.kgVao, 1), "kg"],
-      ["Kg ra", coRa ? soVN(batch.kgRa, 1) : "—", coRa ? "kg" : ""]
-    ].forEach(function (x) {
-      var c = el("div", "batch-stat");
-      c.appendChild(el("span", "stat-label", x[0]));
-      var v = el("span", "stat-value", x[1]);
-      if (x[2]) v.appendChild(el("small", null, " " + x[2]));
-      c.appendChild(v);
-      grid.appendChild(c);
-    });
-    return grid;
+  function demBuoc(batch) {
+    var hien = (batch.buoc || []).filter(function (b) { return b.mau !== "an"; });
+    return { tong: hien.length, xong: hien.filter(function (b) { return b.mau === "xanh"; }).length };
+  }
+  function tenMay(l) { return l.may ? "Máy " + String(l.may).replace(/K$/, "KG") : (l.mayTen || ""); }
+  function tenLo(l) { return l.sp ? l.sp : "Chưa rõ: " + (l.tenGoc || ""); }
+  function dinhDangGio(iso) { return iso && iso.length >= 16 ? iso.slice(11, 16) : (iso || ""); }
+  function dinhDangNgayThang(ngay) { return ngay && ngay.length >= 10 ? ngay.slice(8, 10) + "/" + ngay.slice(5, 7) : (ngay || ""); }
+  function thuCua(ngay) {
+    var d = new Date(ngay + "T00:00:00");
+    return isNaN(d) ? "" : ["CN", "T2", "T3", "T4", "T5", "T6", "T7"][d.getDay()];
+  }
+  function coChoGui(khoa) { return choGuiCuaLo(docMay(KHOA_HANG_DOI, []), khoa).length > 0; }
+  // Dòng phụ của bước: ai bấm lúc nào, không thì ký hiệu + trạng thái
+  function phuDeBuoc(st) {
+    return st.nguoi ? st.nguoi + (st.gio ? " · " + dinhDangGio(st.gio) : "") : kyHieuTrangThai(st.mau) + " " + chuTrangThai(st.mau);
+  }
+  function mo(view, khoa) {
+    currentView = view;
+    if (khoa) detailBatchKhoa = khoa;
+    renderApp();
+    window.scrollTo(0, 0);
   }
 
-  function dinhDangGio(isoString) {
-    if (!isoString) return "";
-    if (isoString.length >= 16) return isoString.slice(11, 16);
-    return isoString;
-  }
-
-  function dinhDangNgayThang(ngayStr) {
-    if (!ngayStr || ngayStr.length < 10) return ngayStr;
-    return ngayStr.slice(8, 10) + "/" + ngayStr.slice(5, 7);
-  }
-
-  // Khởi động đồng bộ hàng đợi
+  // ---------- Hàng đợi gửi ----------
   function kichHoatGuiHangDoi() {
     if (!dangNhap) return;
     xaHangDoi(dangNhap, function (evt) {
@@ -188,22 +148,14 @@
         });
         if (evt.kq && evt.kq.lech) {
           globalNotice = "Đã ghi — khác gợi ý, anh Thanh sẽ được báo";
-          setTimeout(function () {
-            globalNotice = null;
-            renderApp();
-          }, 6000);
+          setTimeout(function () { globalNotice = null; renderApp(); }, 6000);
         }
       } else if (evt.loai === "tuChoi") {
         globalError = (evt.kq && (evt.kq.chu || evt.kq.loi)) || "Thao tác bị từ chối";
-        setTimeout(function () {
-          globalError = null;
-          renderApp();
-        }, 6000);
+        setTimeout(function () { globalError = null; renderApp(); }, 6000);
         renderApp();
       } else if (evt.loai === "tam") {
-        if (evt.kq && evt.kq.loi === "LOI_MAY_CHU") {
-          tamError = true;
-        }
+        if (evt.kq && evt.kq.loi === "LOI_MAY_CHU") tamError = true;
         renderApp();
       } else if (evt.loai === "xong") {
         tamError = false;
@@ -211,21 +163,10 @@
       }
     });
   }
+  setInterval(function () { if (dangNhap) kichHoatGuiHangDoi(); }, 30000);
+  window.addEventListener("online", function () { if (dangNhap) kichHoatGuiHangDoi(); });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && dangNhap) kichHoatGuiHangDoi(); });
 
-  // Định kỳ và sự kiện kết nối
-  setInterval(function () {
-    if (dangNhap) kichHoatGuiHangDoi();
-  }, 30000);
-
-  window.addEventListener("online", function () {
-    if (dangNhap) kichHoatGuiHangDoi();
-  });
-
-  document.addEventListener("visibilitychange", function () {
-    if (!document.hidden && dangNhap) kichHoatGuiHangDoi();
-  });
-
-  // Gửi thao tác và kích hoạt xả
   function thucHienThaoTac(op) {
     guiThaoTac(op);
     kichHoatGuiHangDoi();
@@ -233,174 +174,211 @@
   }
 
   // ==========================================
-  // RENDER APP CHÍNH
+  // KHUNG APP
   // ==========================================
   function renderApp() {
     var root = document.getElementById("app");
     if (!root) return;
     root.textContent = "";
 
-    if (!dangNhap) {
-      renderLogin(root);
-      return;
-    }
-
+    if (!dangNhap) { renderLogin(root); return; }
     if (!anhChup) {
-      var loadingBox = el("div", "app-container");
-      loadingBox.appendChild(el("div", "empty-state", "Đang nạp dữ liệu..."));
-      root.appendChild(loadingBox);
+      var cho = el("main", "max-w-md mx-auto w-full px-4 pt-36 flex flex-col gap-4");
+      cho.appendChild(el("div", "p-4 rounded-xl bg-surface-container-low border border-surface-container-highest text-[12px] font-mono-num text-on-surface-variant text-center", "Đang nạp dữ liệu..."));
+      root.appendChild(cho);
       return;
     }
 
-    var container = el("div", "app-container");
+    chonNgayMacDinh();
+    renderHeader(root);
+    var main = el("main", "max-w-md mx-auto w-full px-4 pt-36 flex flex-col gap-4");
+    renderBanners(main);
+    if (currentView === "today") renderToday(main);
+    else if (currentView === "detail") renderDetail(main);
+    else if (currentView === "samples") renderSamples(main);
+    else if (currentView === "exceptions") renderExceptions(main);
+    root.appendChild(main);
+    renderBottomNav(root);
+  }
 
-    // 1. Dải trên mọi màn
-    renderTopBanners(container);
+  function dsNgayCo() {
+    var m = {};
+    (anhChup.lo || []).forEach(function (l) { if (l.ngay) m[l.ngay] = l.thu || thuCua(l.ngay); });
+    return m;
+  }
+  function chonNgayMacDinh() {
+    if (activeNgay) return;
+    var m = dsNgayCo(), ds = Object.keys(m).sort();
+    activeNgay = anhChup.homNay && m[anhChup.homNay] ? anhChup.homNay : (ds.length ? ds[ds.length - 1] : "");
+  }
 
-    // 2. Màn hình tương ứng
-    if (currentView === "today") {
-      renderToday(container);
-    } else if (currentView === "detail") {
-      renderDetail(container);
-    } else if (currentView === "samples") {
-      renderSamples(container);
-    } else if (currentView === "exceptions") {
-      renderExceptions(container);
+  // ---------- Đầu trang cố định ----------
+  function renderHeader(root) {
+    var header = el("header", "fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl border-b border-surface-container-highest shadow-[0_4px_20px_rgba(0,0,0,0.5)]");
+    var wrap = el("div", "max-w-md mx-auto px-4 py-2.5 flex flex-col gap-2");
+
+    // Dải trên: trạng thái mạng + ngày hôm nay
+    var matMang = !navigator.onLine || !!anhChup.cuDaLuu;
+    var sub = el("div", "flex items-center justify-between bg-surface-container-low/90 px-3 py-1 rounded-lg border border-surface-container-highest/50");
+    var trai = el("div", "flex items-center gap-2");
+    var cham = el("span", "flex h-2 w-2 relative");
+    cham.appendChild(el("span", matMang ? "absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" : "animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"));
+    cham.appendChild(el("span", matMang ? "relative inline-flex rounded-full h-2 w-2 bg-amber-400" : "relative inline-flex rounded-full h-2 w-2 bg-secondary"));
+    trai.appendChild(cham);
+    trai.appendChild(el("span", matMang ? "font-mono-num text-[11px] uppercase text-amber-400 font-bold tracking-wider whitespace-nowrap" : "font-mono-num text-[11px] uppercase text-secondary font-bold tracking-wider whitespace-nowrap", matMang ? "MẤT MẠNG" : "TRỰC TUYẾN"));
+    trai.appendChild(el("span", "text-on-surface-variant text-[11px]", "•"));
+    trai.appendChild(el("span", "text-[12px] text-on-surface font-medium truncate max-w-[140px]", "Phòng Rang Intenso"));
+    sub.appendChild(trai);
+    var phai = el("div", "flex items-center gap-1.5 text-tertiary");
+    phai.appendChild(ic("schedule", "text-[15px]"));
+    phai.appendChild(el("span", "font-mono-num text-[11px] text-on-surface-variant font-medium whitespace-nowrap", thuCua(anhChup.homNay) + " " + dinhDangNgayThang(anhChup.homNay)));
+    sub.appendChild(phai);
+    wrap.appendChild(sub);
+
+    // Tên app + người đang dùng
+    var hang = el("div", "flex items-center justify-between gap-2");
+    var brand = el("div", "flex items-center gap-2.5 min-w-0");
+    var logo = el("div", "w-9 h-9 rounded-xl bg-gradient-to-br from-primary-container to-amber-600 flex items-center justify-center shrink-0 shadow-lg shadow-amber-900/30");
+    logo.appendChild(ic("coffee", "text-white text-[20px]"));
+    brand.appendChild(logo);
+    var chu = el("div", "flex flex-col min-w-0");
+    var dong1 = el("div", "flex items-center gap-1.5");
+    dong1.appendChild(el("span", "text-[16px] text-on-surface font-bold truncate", "Checklist Mẻ Rang"));
+    dong1.appendChild(el("span", "px-1.5 py-0.5 rounded text-[9px] font-mono-num bg-primary/20 text-primary font-bold", "INTENSO"));
+    chu.appendChild(dong1);
+    chu.appendChild(el("span", "text-[11px] text-on-surface-variant font-medium", "7 bước sau rang · Máy 30kg & 5kg"));
+    brand.appendChild(chu);
+    hang.appendChild(brand);
+
+    var doiNguoi = el("button", "flex items-center gap-1 shrink-0 bg-surface-container-high px-2 py-1 rounded-xl border border-surface-container-highest active:scale-95 transition-transform");
+    doiNguoi.type = "button";
+    doiNguoi.title = "Đổi người";
+    doiNguoi.appendChild(ic(anhChup.chiXem ? "lock" : "badge", "text-primary text-[18px]"));
+    doiNguoi.appendChild(el("span", "text-[12px] font-mono-num text-on-surface font-semibold whitespace-nowrap", anhChup.ten || ""));
+    doiNguoi.appendChild(ic("swap_horiz", "text-on-surface-variant text-[16px]"));
+    doiNguoi.onclick = function () {
+      xoaMay(KHOA_DANG_NHAP);
+      dangNhap = null;
+      anhChup = null;
+      activeNgay = "";
+      currentView = "login";
+      renderApp();
+    };
+    hang.appendChild(doiNguoi);
+    wrap.appendChild(hang);
+
+    // Tiến độ ngày đang chọn: số bước xong / tổng bước
+    var ds = loCuaNgay(anhChup.lo || [], activeNgay, activeMay);
+    var tong = 0, xong = 0;
+    ds.forEach(function (l) { var d = demBuoc(l); tong += d.tong; xong += d.xong; });
+    var pct = tong ? Math.round(xong * 100 / tong) : 0;
+    var tienDo = el("div", "flex flex-col gap-1");
+    var td = el("div", "flex items-center justify-between text-[11px] text-on-surface-variant font-mono-num");
+    var tdTrai = el("span", null, "Tiến độ " + (dsNgayCo()[activeNgay] || "") + " " + dinhDangNgayThang(activeNgay) + ": ");
+    tdTrai.appendChild(el("strong", "text-on-surface", xong + "/" + tong + " bước"));
+    td.appendChild(tdTrai);
+    td.appendChild(el("span", "text-primary font-bold", pct + "%"));
+    tienDo.appendChild(td);
+    var thanh = el("div", "w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden");
+    var lap = el("div", "h-full bg-gradient-to-r from-amber-500 to-secondary rounded-full transition-all duration-500");
+    lap.style.width = pct + "%";
+    thanh.appendChild(lap);
+    tienDo.appendChild(thanh);
+    wrap.appendChild(tienDo);
+
+    header.appendChild(wrap);
+    root.appendChild(header);
+  }
+
+  // ---------- Dải báo (kiểu dải "chỉ xem" của stitch) ----------
+  function dai(kieu, icon, chu, dam) {
+    var cls = kieu === "do"
+      ? "bg-rose-500/10 border border-rose-500/30 p-2.5 rounded-xl flex items-center gap-2 text-rose-300 text-[12px]"
+      : kieu === "xam"
+        ? "bg-surface-container-high border border-surface-container-highest p-2.5 rounded-xl flex items-center gap-2 text-on-surface-variant text-[12px]"
+        : "bg-amber-500/10 border border-amber-500/30 p-2.5 rounded-xl flex items-center gap-2 text-amber-300 text-[12px]";
+    var d = el("div", cls);
+    d.appendChild(ic(icon, "text-[18px] shrink-0"));
+    var s = el("span");
+    if (dam) s.appendChild(el("strong", null, dam + " "));
+    s.appendChild(document.createTextNode(chu));
+    d.appendChild(s);
+    return d;
+  }
+  function renderBanners(main) {
+    var n = soChoGui();
+    if (n > 0) main.appendChild(dai("vang", "schedule", "thao tác chưa gửi — sẽ tự gửi khi có mạng", String(n)));
+    if (tamError) main.appendChild(dai("do", "sync_problem", "thao tác vẫn giữ trên máy, sẽ tự gửi lại", "Máy chủ lỗi:"));
+    if (anhChup.cuDaLuu) {
+      var luc = anhChup.luc ? new Date(anhChup.luc).toTimeString().slice(0, 5) : "";
+      main.appendChild(dai("xam", "cloud_off", "Dữ liệu lúc " + luc + " (đang mất mạng)"));
     }
-
-    // 3. Thanh điều hướng đáy (Bottom Navigation)
-    renderBottomNav(container);
-
-    root.appendChild(container);
+    if (anhChup.chiXem) main.appendChild(dai("vang", "lock", "Xem tiến độ & túi mẫu, không sửa được các bước.", "Chế độ chỉ xem:"));
+    if (globalError) main.appendChild(dai("do", "error", globalError));
+    if (globalNotice) main.appendChild(dai("vang", "info", globalNotice));
   }
 
   // ==========================================
-  // 1. DẢI TRÊN MỌI MÀN (TOP BANNERS)
-  // ==========================================
-  function renderTopBanners(container) {
-    var stack = el("div", "banner-stack");
-    var hasBanner = false;
-
-    // Số thao tác chưa gửi
-    var choGui = soChoGui();
-    if (choGui > 0) {
-      hasBanner = true;
-      var b = el("div", "banner banner-yellow");
-      b.appendChild(makeSvgIcon("clock", 14, "#b45309"));
-      b.appendChild(el("span", "mono-num", choGui + " thao tác chưa gửi"));
-      stack.appendChild(b);
-    }
-
-    // Máy chủ lỗi
-    if (tamError) {
-      hasBanner = true;
-      var bTam = el("div", "banner banner-red");
-      bTam.appendChild(makeSvgIcon("alert", 14, "#b91c1c"));
-      bTam.appendChild(el("span", null, "Máy chủ lỗi — thao tác vẫn giữ trên máy, sẽ tự gửi lại"));
-      stack.appendChild(bTam);
-    }
-
-    // Đang dùng dữ liệu cũ khi mất mạng
-    if (anhChup && anhChup.cuDaLuu) {
-      hasBanner = true;
-      var bCu = el("div", "banner banner-gray");
-      var lucStr = anhChup.luc ? new Date(anhChup.luc).toTimeString().slice(0, 5) : "";
-      bCu.appendChild(el("span", null, "Dữ liệu lúc " + lucStr + " (đang mất mạng)"));
-      stack.appendChild(bCu);
-    }
-
-    // Chế độ chỉ xem
-    if (anhChup && anhChup.chiXem) {
-      hasBanner = true;
-      var bChiXem = el("div", "banner banner-gray");
-      bChiXem.appendChild(el("span", null, "Chỉ xem"));
-      stack.appendChild(bChiXem);
-    }
-
-    // Thông báo lỗi từ chối
-    if (globalError) {
-      hasBanner = true;
-      var bLoi = el("div", "banner banner-red", globalError);
-      stack.appendChild(bLoi);
-    }
-
-    // Thông báo ghi chú
-    if (globalNotice) {
-      hasBanner = true;
-      var bNotice = el("div", "banner banner-yellow", globalNotice);
-      stack.appendChild(bNotice);
-    }
-
-    if (hasBanner) {
-      container.appendChild(stack);
-    }
-  }
-
-  // ==========================================
-  // 2. MÀN HÌNH CHỌN TÊN (ĐĂNG NHẬP)
+  // CHỌN TÊN (ĐĂNG NHẬP)
   // ==========================================
   var selectedUserMa = "thanh";
   var loginErrorText = "";
 
   function renderLogin(root) {
-    var container = el("div", "app-container login-view");
+    var main = el("main", "max-w-md mx-auto w-full px-4 pt-16 pb-8 flex flex-col gap-4");
 
-    var titleBox = el("div", "login-title-box");
-    var loginLogo = el("div", "brand-logo login-logo");
-    loginLogo.appendChild(makeSvgIcon("bean", 30, "#ffffff"));
-    titleBox.appendChild(loginLogo);
-    titleBox.appendChild(el("h1", "login-title", "Checklist mẻ"));
-    titleBox.appendChild(el("p", "login-sub", "Phòng rang Intenso — Chọn tên để vào ca"));
-    container.appendChild(titleBox);
+    var dau = el("div", "flex flex-col items-center gap-2 text-center");
+    var logo = el("div", "w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-container to-amber-600 flex items-center justify-center shadow-lg shadow-amber-900/30");
+    logo.appendChild(ic("coffee", "text-white text-[30px]"));
+    dau.appendChild(logo);
+    var t = el("div", "flex items-center gap-1.5");
+    t.appendChild(el("h1", "text-[20px] text-on-surface font-bold", "Checklist Mẻ Rang"));
+    t.appendChild(el("span", "px-1.5 py-0.5 rounded text-[9px] font-mono-num bg-primary/20 text-primary font-bold", "INTENSO"));
+    dau.appendChild(t);
+    dau.appendChild(el("p", "text-[12px] text-on-surface-variant", "Phòng Rang Intenso — chọn tên để vào ca"));
+    main.appendChild(dau);
 
-    var grid = el("div", "users-grid");
+    var the = el("section", "flex flex-col gap-3 p-4 rounded-2xl bg-surface-container-low border border-surface-container-highest shadow-2xl");
+    the.appendChild(el("span", "text-[11px] font-mono-num uppercase tracking-wider text-slate-300 font-bold", "Bạn là ai?"));
+    var luoi = el("div", "grid grid-cols-2 gap-2");
     DANH_SACH_NGUOI.forEach(function (u) {
-      var btn = el("button", "user-btn" + (selectedUserMa === u.ma ? " active" : ""), u.ten);
-      btn.type = "button";
-      btn.onclick = function () {
-        selectedUserMa = u.ma;
-        loginErrorText = "";
-        renderApp();
-      };
-      grid.appendChild(btn);
+      var chon = selectedUserMa === u.ma;
+      var b = el("button", chon
+        ? "flex items-center gap-1.5 h-[46px] px-3 rounded-xl bg-surface-container-highest text-primary border border-primary/50 text-[13px] font-semibold"
+        : "flex items-center gap-1.5 h-[46px] px-3 rounded-xl bg-surface-container text-on-surface border border-surface-container-highest text-[13px] font-semibold");
+      b.type = "button";
+      b.appendChild(ic("person", chon ? "text-[16px] text-primary" : "text-[16px] text-on-surface-variant"));
+      b.appendChild(el("span", null, u.ten));
+      b.onclick = function () { selectedUserMa = u.ma; loginErrorText = ""; renderApp(); };
+      luoi.appendChild(b);
     });
-    container.appendChild(grid);
+    the.appendChild(luoi);
 
-    var form = el("div", "login-form");
-    var lbl = el("label", null, "Mã 6 số của " + (DANH_SACH_NGUOI.find(function (x) { return x.ma === selectedUserMa; }) || {}).ten);
-    form.appendChild(lbl);
-
-    var input = el("input", "form-input mono-num");
+    var o = el("div", C.o);
+    o.appendChild(el("span", C.nhan, "Mã 6 số của " + ((DANH_SACH_NGUOI.find(function (x) { return x.ma === selectedUserMa; }) || {}).ten || "")));
+    var input = el("input", C.nhapSo + " mt-1 tracking-[0.3em]");
     input.type = "password";
     input.inputMode = "numeric";
     input.maxLength = 6;
     input.autocomplete = "one-time-code";
-    input.placeholder = "Nhập mã 6 số";
-    form.appendChild(input);
+    input.placeholder = "••••••";
+    o.appendChild(input);
+    the.appendChild(o);
 
-    if (loginErrorText) {
-      var errDiv = el("div", "banner banner-red", loginErrorText);
-      form.appendChild(errDiv);
-    }
+    if (loginErrorText) the.appendChild(dai("do", "error", loginErrorText));
 
-    var btnSubmit = el("button", "btn btn-primary", "Vào");
-    input.onkeydown = function (e) { if (e.key === "Enter") btnSubmit.click(); };
-    btnSubmit.type = "button";
-    btnSubmit.onclick = function () {
-      var maVal = input.value.trim();
-      var authPayload = { nguoi: selectedUserMa, ma: maVal };
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = "Đang kiểm tra...";
-
+    var vao = nut(C.nutChinh + " w-full", "verified", "Vào");
+    input.onkeydown = function (e) { if (e.key === "Enter") vao.click(); };
+    vao.onclick = function () {
+      var authPayload = { nguoi: selectedUserMa, ma: input.value.trim() };
+      vao.disabled = true;
+      vao.lastChild.textContent = "Đang kiểm tra...";
       taiAnhChup(authPayload).then(function (res) {
-        btnSubmit.disabled = false;
-        btnSubmit.textContent = "Vào";
         if (res && res.ok) {
           dangNhap = authPayload;
           ghiMay(KHOA_DANG_NHAP, dangNhap);
           anhChup = res;
           currentView = "today";
-          renderApp();
         } else {
           var errKey = res ? res.loi : "NETWORK";
           if (errKey === "SAI_MA") loginErrorText = "Mã chưa đúng";
@@ -408,975 +386,750 @@
           else if (errKey === "CHUA_CO_MA") loginErrorText = "Anh Thanh chưa cấp mã cho tên này";
           else if (errKey === "NETWORK") loginErrorText = "Không có mạng — thử lại";
           else loginErrorText = errKey || "Đăng nhập không thành công";
-          renderApp();
         }
+        renderApp();
       });
     };
-    form.appendChild(btnSubmit);
-
-    container.appendChild(form);
-    root.appendChild(container);
+    the.appendChild(vao);
+    main.appendChild(the);
+    root.appendChild(main);
   }
 
   // ==========================================
-  // 3. MÀN HÌNH HÔM NAY (BỐ CỤC GỘP)
+  // HÔM NAY
   // ==========================================
-  function renderToday(container) {
-    // Header
-    var header = el("div", "top-header");
-    var brand = el("div", "header-brand");
-    var logo = el("div", "brand-logo");
-    logo.appendChild(makeSvgIcon("bean", 22, "#ffffff"));
-    brand.appendChild(logo);
-    var brandText = el("div", "brand-text");
-    brandText.appendChild(el("span", "brand-title", "Checklist mẻ"));
-    brandText.appendChild(el("span", "brand-sub", "7 bước sau rang · máy 30kg & 5kg"));
-    brand.appendChild(brandText);
-    header.appendChild(brand);
-
-    var btnDoiNguoi = el("button", "user-chip");
-    btnDoiNguoi.appendChild(el("span", "user-avatar", (anhChup.ten || "?").replace(/^anh /, "").charAt(0)));
-    var userText = el("span", "user-text");
-    userText.appendChild(el("span", "user-name", anhChup.ten || ""));
-    userText.appendChild(el("span", "user-switch", "Đổi người"));
-    btnDoiNguoi.appendChild(userText);
-    btnDoiNguoi.type = "button";
-    btnDoiNguoi.onclick = function () {
-      xoaMay(KHOA_DANG_NHAP);
-      dangNhap = null;
-      anhChup = null;
-      currentView = "login";
-      renderApp();
-    };
-    header.appendChild(btnDoiNguoi);
-    container.appendChild(header);
-    var tienDo = el("div", "day-progress"); // điền sau khi có ds
-    container.appendChild(tienDo);
-
-    // Tính toán danh sách ngày
-    var ngayMap = {};
-    (anhChup.lo || []).forEach(function (l) {
-      if (l.ngay) ngayMap[l.ngay] = l.thu || "";
-    });
+  function renderToday(main) {
+    var ngayMap = dsNgayCo();
     var dsNgay = Object.keys(ngayMap).sort();
-
-    // Mặc định chọn ngày
-    if (!activeNgay) {
-      if (anhChup.homNay && ngayMap[anhChup.homNay]) {
-        activeNgay = anhChup.homNay;
-      } else if (dsNgay.length > 0) {
-        activeNgay = dsNgay[dsNgay.length - 1];
-      }
-    }
-
-    // Chip Ngày
-    var chipsNgayRow = el("div", "chips-row");
-    dsNgay.forEach(function (ngay) {
-      var thu = ngayMap[ngay];
-      var label = (thu ? thu + " " : "") + dinhDangNgayThang(ngay);
-      var chip = el("button", "chip" + (activeNgay === ngay ? " active" : ""), label);
-      chip.type = "button";
-      chip.onclick = function () {
-        activeNgay = ngay;
-        renderApp();
-      };
-      chipsNgayRow.appendChild(chip);
-    });
-    container.appendChild(chipsNgayRow);
-
-    // Chip Máy
-    var chipsMayRow = el("div", "segmented");
-    var dsMay = [
-      { val: "", label: "Tất cả" },
-      { val: "30K", label: "Máy 30kg" },
-      { val: "5K", label: "Máy 5kg" }
-    ];
-    dsMay.forEach(function (m) {
-      var soLo = loCuaNgay(anhChup.lo || [], activeNgay, m.val).length;
-      var chip = el("button", "seg" + (activeMay === m.val ? " active" : ""), m.label + " (" + soLo + ")");
-      chip.type = "button";
-      chip.onclick = function () {
-        activeMay = m.val;
-        renderApp();
-      };
-      chipsMayRow.appendChild(chip);
-    });
-    container.appendChild(chipsMayRow);
-
-    // Lọc danh sách lô theo ngày và máy
     var ds = loCuaNgay(anhChup.lo || [], activeNgay, activeMay);
 
-    var tdTong = 0, tdXong = 0;
-    ds.forEach(function (l) { var d = demBuoc(l); tdTong += d.tong; tdXong += d.xong; });
-    var tdPct = tdTong ? Math.round(tdXong * 100 / tdTong) : 0;
-    var tdTop = el("div", "progress-top");
-    tdTop.appendChild(el("span", null, "Tiến độ " + (ngayMap[activeNgay] || "") + " " + dinhDangNgayThang(activeNgay) + ": " + tdXong + "/" + tdTong + " bước"));
-    tdTop.appendChild(el("span", "progress-pct", tdPct + "%"));
-    tienDo.appendChild(tdTop);
-    var tdBar = el("div", "progress-bar");
-    var tdFill = el("div", "progress-fill");
-    tdFill.style.width = tdPct + "%";
-    tdBar.appendChild(tdFill);
-    tienDo.appendChild(tdBar);
-
-    // 4 ô số KPI
-    var quenBamCount = ds.filter(function (l) {
-      return (l.buoc || []).some(function (b) { return b.mau === "vang"; });
-    }).length;
-
-    var daXongCount = ds.filter(function (l) { return l.xong; }).length;
-
-    var tuiChuaLayCount = (anhChup.tui || []).filter(function (t) { return !t.daLay; }).length;
-
-    var kpiGrid = el("div", "kpi-grid");
-
-    function oKpi(lop, icon, nhan, so, chuThich) {
-      var c = el("div", "kpi-card " + lop);
-      var top = el("span", "kpi-label");
-      top.appendChild(makeSvgIcon(icon, 12));
-      top.appendChild(el("span", null, nhan));
+    // 1. Bốn ô số
+    var quenBam = ds.filter(function (l) { return (l.buoc || []).some(function (b) { return b.mau === "vang"; }); }).length;
+    var daXong = ds.filter(function (l) { return l.xong; }).length;
+    var tuiChua = (anhChup.tui || []).filter(function (t) { return !t.daLay; }).length;
+    var kpi = el("section", "grid grid-cols-4 gap-2 w-full");
+    function oKpi(lop, lopNhan, icon, nhan, lopSo, so, lopChu, chu) {
+      var c = el("div", lop);
+      var top = el("div", lopNhan);
+      top.appendChild(ic(icon, "text-[14px]"));
+      top.appendChild(el("span", "text-[10px] uppercase font-mono-num font-bold whitespace-nowrap", nhan));
       c.appendChild(top);
-      c.appendChild(el("span", "kpi-value", String(so)));
-      c.appendChild(el("span", "kpi-cap", chuThich));
-      kpiGrid.appendChild(c);
+      c.appendChild(el("span", lopSo, String(so)));
+      c.appendChild(el("span", lopChu, chu));
+      kpi.appendChild(c);
       return c;
     }
-    oKpi("kpi-tong", "list", "Tổng lô", ds.length, "trong ngày");
-    oKpi(quenBamCount > 0 ? "kpi-alert" : "kpi-zero", "alert", "Quên bấm", quenBamCount, "lô cần xem");
-    oKpi(daXongCount > 0 ? "kpi-done" : "kpi-zero", "check", "Đã xong", daXongCount, "lô hoàn tất");
-    var cTui = oKpi("kpi-tui", "sample", "Túi mẫu", tuiChuaLayCount, "chưa lấy");
-    cTui.onclick = function () {
-      currentView = "samples";
-      renderApp();
-    };
-    container.appendChild(kpiGrid);
+    oKpi("flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface-container-high border border-surface-container-highest/60 shadow-md",
+      "flex items-center gap-1 text-on-surface-variant mb-0.5", "inventory_2", "Tổng lô",
+      "font-mono-num text-[20px] font-bold text-on-surface", ds.length, "text-[10px] text-on-surface-variant font-mono-num", "trong ngày");
+    oKpi("flex flex-col items-center justify-center p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 shadow-md",
+      "flex items-center gap-1 text-amber-400 mb-0.5", "priority_high", "Cần xem",
+      "font-mono-num text-[20px] font-bold text-amber-400", quenBam, "text-[10px] text-amber-300/80 font-mono-num", "quên bấm");
+    oKpi("flex flex-col items-center justify-center p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 shadow-md",
+      "flex items-center gap-1 text-secondary mb-0.5", "task_alt", "Đã xong",
+      "font-mono-num text-[20px] font-bold text-secondary", daXong, "text-[10px] text-emerald-400/80 font-mono-num", "hoàn tất");
+    var oTui = oKpi("flex flex-col items-center justify-center p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/30 shadow-md cursor-pointer",
+      "flex items-center gap-1 text-purple-300 mb-0.5", "science", "Túi mẫu",
+      "font-mono-num text-[20px] font-bold text-purple-300", tuiChua, "text-[10px] text-purple-200/80 font-mono-num", "chưa lấy");
+    oTui.onclick = function () { mo("samples"); };
+    main.appendChild(kpi);
 
-    // Kiểm tra lô đang làm
-    var allDone = ds.length > 0 && ds.every(function (l) { return l.xong; });
+    // 2. Chọn ngày + máy (cùng kiểu thanh lọc máy của stitch)
+    if (dsNgay.length > 1) {
+      var hangNgay = el("section", "flex items-center justify-between gap-1 bg-surface-container-low p-1.5 rounded-xl border border-surface-container-highest");
+      dsNgay.forEach(function (ngay) {
+        var b = el("button", activeNgay === ngay
+          ? "flex-1 py-1.5 rounded-lg bg-surface-container-highest text-primary text-[11px] font-mono-num font-semibold transition-all"
+          : "flex-1 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface text-[11px] font-mono-num transition-all",
+          ngayMap[ngay] + " " + dinhDangNgayThang(ngay) + (ngay === anhChup.homNay ? " · nay" : ""));
+        b.type = "button";
+        b.onclick = function () { activeNgay = ngay; renderApp(); };
+        hangNgay.appendChild(b);
+      });
+      main.appendChild(hangNgay);
+    }
+    var hangMay = el("section", "flex items-center justify-between gap-1 bg-surface-container-low p-1.5 rounded-xl border border-surface-container-highest");
+    [{ val: "", label: "Tất cả" }, { val: "30K", label: "Máy 30KG" }, { val: "5K", label: "Máy 5KG" }].forEach(function (m) {
+      var so = loCuaNgay(anhChup.lo || [], activeNgay, m.val).length;
+      var b = el("button", activeMay === m.val
+        ? "flex-1 py-1.5 rounded-lg bg-surface-container-highest text-primary text-[11px] font-mono-num font-semibold transition-all"
+        : "flex-1 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface text-[11px] font-mono-num transition-all",
+        m.label + " (" + so + ")");
+      b.type = "button";
+      b.onclick = function () { activeMay = m.val; renderApp(); };
+      hangMay.appendChild(b);
+    });
+    main.appendChild(hangMay);
 
     if (ds.length === 0) {
-      container.appendChild(el("div", "empty-state", "Không có lô nào trong ngày và máy đã chọn."));
+      main.appendChild(el("div", "p-4 rounded-xl bg-surface-container-low border border-surface-container-highest text-[12px] font-mono-num text-on-surface-variant text-center", "Không có lô nào trong ngày và máy đã chọn."));
       return;
     }
 
+    // 3. Thẻ lô đang làm: lô đã chọn, không thì lô dở đầu tiên
+    var allDone = ds.every(function (l) { return l.xong; });
+    var active = null;
     if (allDone) {
-      container.appendChild(el("div", "empty-state", "Xong hết lô ngày này"));
+      var xongHet = el("div", "p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2 text-secondary text-[13px] font-semibold");
+      xongHet.appendChild(ic("task_alt", "text-[18px]"));
+      xongHet.appendChild(el("span", null, "Xong hết lô ngày này"));
+      main.appendChild(xongHet);
     } else {
-      // Xác định lô cho thẻ to
-      var activeBatch = null;
-      var curKey = selectedBatchKeys[activeNgay];
-      if (curKey) {
-        activeBatch = ds.find(function (l) { return l.khoa === curKey; });
-      }
-      if (!activeBatch || activeBatch.xong) {
-        activeBatch = ds.find(function (l) { return !l.xong; }) || ds[0];
-      }
-
-      // THẺ LÔ ĐANG LÀM (TO)
-      renderBigActiveCard(container, activeBatch);
+      var k = selectedBatchKeys[activeNgay];
+      active = k ? ds.find(function (l) { return l.khoa === k; }) : null;
+      if (!active || active.xong) active = ds.find(function (l) { return !l.xong; });
+      renderBigActiveCard(main, active);
     }
 
-    // HÀNG CHỜ CÁC LÔ CÒN LẠI
-    var otherBatches = ds.filter(function (l) {
-      return allDone ? true : (activeBatch && l.khoa !== activeBatch.khoa);
-    });
-
-    if (otherBatches.length > 0) {
-      var queueSection = el("div", "queue-section");
-      queueSection.appendChild(el("span", "section-label", "Hàng chờ (" + otherBatches.length + " lô)"));
-
-      otherBatches.forEach(function (b) {
-        var coVang = (b.buoc || []).some(function (st) { return st.mau === "vang"; });
-        var card = el("div", "queue-card" + (b.xong ? " done" : coVang ? " st-vang" : ""));
-
-        var topRow = el("div", "queue-top");
-        var nameSpan = el("span", "queue-name", b.sp || ("Chưa rõ: " + b.tenGoc));
-        topRow.appendChild(nameSpan);
-
-        var rightMeta = el("div", "queue-meta");
-        // Có thao tác chờ gửi?
-        if (choGuiCuaLo(docMay(KHOA_HANG_DOI, []), b.khoa).length > 0) {
-          rightMeta.appendChild(makeSvgIcon("clock", 12, "#b45309"));
-        }
-        var dB = demBuoc(b);
-        rightMeta.appendChild(el("span", "may-pill", b.mayTen || ""));
-        rightMeta.appendChild(el("span", "queue-sub", dB.xong + "/" + dB.tong + " bước"));
-        topRow.appendChild(rightMeta);
-        card.appendChild(topRow);
-
-        // 7 chấm bước
-        var dotsRow = el("div", "queue-dots");
-        (b.buoc || []).forEach(function (st) {
-          if (st.mau === "an") return;
-          var dot = el("span", "step-dot " + (st.mau || "xam"), st.ky || "");
-          dotsRow.appendChild(dot);
-        });
-        card.appendChild(dotsRow);
-
-        // Dòng tiếp
-        if (b.tiep) {
-          card.appendChild(el("span", "queue-tiep", b.tiep));
-        }
-
-        card.onclick = function () {
-          selectedBatchKeys[activeNgay] = b.khoa;
-          renderApp();
-        };
-
-        queueSection.appendChild(card);
-      });
-
-      container.appendChild(queueSection);
-    }
+    // 4. Hàng chờ
+    var con = ds.filter(function (l) { return !active || l.khoa !== active.khoa; });
+    if (con.length === 0) return;
+    var sec = el("section", "flex flex-col gap-2.5");
+    sec.appendChild(el("span", "text-[11px] font-mono-num uppercase tracking-wider text-on-surface-variant font-bold px-1", (allDone ? "Các lô trong ngày" : "Hàng chờ") + " (" + con.length + " lô còn lại)"));
+    con.forEach(function (b) { sec.appendChild(theHangCho(b)); });
+    main.appendChild(sec);
   }
 
-  // ==========================================
-  // THẺ LÔ TO (BIG ACTIVE BATCH CARD)
-  // ==========================================
-  function renderBigActiveCard(container, batch) {
-    if (!batch) return;
-
-    var card = el("div", "batch-card-active");
-
-    // Header thẻ
-    var header = el("div", "batch-header");
-    var titleGroup = el("div", "batch-title-group");
-
-    var dem = demBuoc(batch);
-    titleGroup.appendChild(el("span", "card-eyebrow", "Lô đang làm"));
-    var titleRow = el("div", "batch-title-row");
-    var titleEl = el("span", "batch-title" + (!batch.sp ? " unclear" : ""));
-    titleEl.textContent = batch.sp ? batch.sp : "Chưa rõ: " + batch.tenGoc;
-    titleRow.appendChild(titleEl);
-    titleRow.appendChild(el("span", "step-count-pill", "Bước " + dem.xong + "/" + dem.tong));
-    titleGroup.appendChild(titleRow);
-
-    var subText = (batch.mayTen || "") + " · " + (batch.thu || "") + " " + dinhDangNgayThang(batch.ngay);
-    titleGroup.appendChild(el("span", "batch-sub", subText));
-    header.appendChild(titleGroup);
-
-    var rightGroup = el("div", null);
-    if (choGuiCuaLo(docMay(KHOA_HANG_DOI, []), batch.khoa).length > 0) {
-      rightGroup.appendChild(makeSvgIcon("clock", 14, "#b45309"));
+  function theHangCho(b) {
+    var d = demBuoc(b);
+    var coVang = (b.buoc || []).some(function (st) { return st.mau === "vang"; });
+    var hh = haoHut(b.kgVao, b.kgRa);
+    var card, dot, sub, phai;
+    if (b.xong) {
+      card = el("div", "p-3 rounded-xl bg-surface-container-low border border-surface-container-highest flex items-center justify-between cursor-pointer");
+      dot = el("span", "w-2.5 h-2.5 rounded-full bg-secondary shrink-0");
+      sub = el("span", "text-[11px] font-mono-num text-on-surface-variant", tenMay(b) + " · " + (b.kgRa !== null && b.kgRa !== undefined ? soVN(b.kgRa, 1) + " kg" : "—") + (hh !== null ? " · Hao hụt: " + soVN(hh, 1) + "%" : ""));
+      phai = el("span", "px-2 py-0.5 rounded-full bg-emerald-500/10 text-secondary border border-emerald-500/30 font-mono-num text-[10px] font-bold shrink-0", "✓ ĐÃ XONG");
+    } else if (coVang) {
+      card = el("div", "p-3 rounded-xl bg-surface-container-low border border-amber-500/30 flex items-center justify-between relative overflow-hidden cursor-pointer");
+      card.appendChild(el("div", "absolute left-0 top-0 bottom-0 w-1 bg-amber-500"));
+      dot = el("span", "w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping shrink-0");
+      sub = el("span", "text-[11px] font-mono-num text-amber-300", tenMay(b) + " · " + d.xong + "/" + d.tong + " bước · ? Quên bấm");
+      phai = el("span", "px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-mono-num font-bold shrink-0", "Xem ngay");
+    } else {
+      card = el("div", "p-3 rounded-xl bg-surface-container-low border border-surface-container-highest flex items-center justify-between opacity-70 cursor-pointer");
+      dot = el("span", "w-2.5 h-2.5 rounded-full bg-surface-variant shrink-0");
+      sub = el("span", "text-[11px] font-mono-num text-on-surface-variant", tenMay(b) + " · " + d.xong + "/" + d.tong + " bước" + (b.tiep ? " · " + b.tiep : ""));
+      phai = el("span", "text-[11px] font-mono-num text-on-surface-variant shrink-0", "Hàng chờ");
     }
-    var btnXemDu = el("button", "btn-view-detail", "Xem đủ lô");
-    btnXemDu.type = "button";
-    btnXemDu.onclick = function () {
-      detailBatchKhoa = batch.khoa;
-      currentView = "detail";
+    var trai = el("div", coVang && !b.xong ? "flex items-center gap-2.5 min-w-0 pl-1" : "flex items-center gap-2.5 min-w-0");
+    trai.appendChild(dot);
+    var chu = el("div", "flex flex-col min-w-0");
+    chu.appendChild(el("span", b.sp ? "text-[13px] text-on-surface font-semibold truncate" : "text-[13px] text-amber-300 font-semibold truncate", tenLo(b)));
+    chu.appendChild(sub);
+    trai.appendChild(chu);
+    card.appendChild(trai);
+    var phaiBox = el("div", "flex items-center gap-1.5 shrink-0");
+    if (coChoGui(b.khoa)) phaiBox.appendChild(ic("schedule", "text-[16px] text-amber-400"));
+    phaiBox.appendChild(phai);
+    card.appendChild(phaiBox);
+    card.onclick = function () {
+      selectedBatchKeys[activeNgay] = b.khoa;
       renderApp();
+      window.scrollTo(0, 0);
     };
-    rightGroup.appendChild(btnXemDu);
-    header.appendChild(rightGroup);
+    return card;
+  }
 
-    card.appendChild(header);
-    card.appendChild(oSoLo(batch));
-    if (batch.tiLe) {
-      card.appendChild(el("span", "batch-tile", batch.tiLe));
+  // ---------- Đầu thẻ lô + dải 3 số (dùng chung Hôm nay / Chi tiết) ----------
+  function dauThe(the, batch, coPill) {
+    var dem = demBuoc(batch);
+    var head = el("div", "flex items-start justify-between");
+    var trai = el("div", "flex flex-col min-w-0");
+    var dong = el("div", "flex items-center gap-2 flex-wrap");
+    dong.appendChild(el("span", batch.sp ? "text-[17px] text-on-surface font-bold tracking-tight" : "text-[17px] text-amber-300 font-bold tracking-tight", tenLo(batch)));
+    if (coPill) {
+      var pill = el("span", "px-2 py-0.5 rounded-full bg-primary/20 text-primary font-mono-num text-[10px] font-bold flex items-center gap-1 border border-primary/30");
+      pill.appendChild(el("span", "w-1.5 h-1.5 rounded-full bg-primary animate-ping"));
+      pill.appendChild(el("span", null, "BƯỚC " + dem.xong + "/" + dem.tong));
+      dong.appendChild(pill);
     }
+    if (coChoGui(batch.khoa)) dong.appendChild(ic("schedule", "text-[16px] text-amber-400"));
+    trai.appendChild(dong);
+    var p = el("p", "text-[12px] text-on-surface-variant flex items-center gap-1.5 mt-0.5");
+    p.appendChild(el("span", "font-semibold text-slate-300", tenMay(batch)));
+    p.appendChild(el("span", null, "•"));
+    p.appendChild(el("span", "text-tertiary font-mono-num", "Mã mẻ: " + (batch.maMe || "—")));
+    trai.appendChild(p);
+    head.appendChild(trai);
+    var phai = el("div", "flex flex-col items-end shrink-0");
+    phai.appendChild(el("span", "text-[10px] font-mono-num text-on-surface-variant uppercase", "Ngày rang"));
+    var ngay = el("span", "text-[12px] text-on-surface font-semibold flex items-center gap-1 mt-0.5");
+    ngay.appendChild(ic("calendar_today", "text-[14px] text-secondary"));
+    ngay.appendChild(document.createTextNode((batch.thu || thuCua(batch.ngay)) + " " + dinhDangNgayThang(batch.ngay)));
+    phai.appendChild(ngay);
+    head.appendChild(phai);
+    the.appendChild(head);
 
-    var stepsHead = el("div", "steps-head");
-    stepsHead.appendChild(el("span", null, "Quy trình " + dem.tong + " bước"));
-    stepsHead.appendChild(el("span", "steps-done", dem.xong + "/" + dem.tong + " xong"));
-    card.appendChild(stepsHead);
+    var strip = el("div", "grid grid-cols-3 gap-2 bg-surface-container p-2.5 rounded-xl border border-surface-container-highest/60");
+    var c1 = el("div", "flex flex-col");
+    c1.appendChild(el("span", "text-[10px] font-mono-num text-on-surface-variant uppercase", "Số mẻ"));
+    c1.appendChild(el("span", "font-mono-num text-[14px] font-semibold text-on-surface mt-0.5", String(batch.soMe)));
+    var c2 = el("div", "flex flex-col");
+    c2.appendChild(el("span", "text-[10px] font-mono-num text-on-surface-variant uppercase", "Kg vào"));
+    c2.appendChild(soKg("font-mono-num text-[14px] font-semibold text-primary mt-0.5", batch.kgVao));
+    var c3 = el("div", "flex flex-col items-end");
+    c3.appendChild(el("span", "text-[10px] font-mono-num text-on-surface-variant uppercase", "Kg ra"));
+    c3.appendChild(soKg("font-mono-num text-[14px] font-bold text-secondary mt-0.5", batch.kgRa));
+    strip.appendChild(c1); strip.appendChild(c2); strip.appendChild(c3);
+    the.appendChild(strip);
 
-    // 7 bước trong thẻ
-    var stepsWrapper = el("div", "steps-wrapper");
+    if (batch.tiLe) the.appendChild(el("p", "text-[11px] font-mono-num text-on-surface-variant -mt-1.5", batch.tiLe)); // chỉ xem
+    if (batch.co) the.appendChild(dai("vang", "warning", "Thêm mẻ sau khi cân — Lưu lại kg ra"));
+  }
 
-    // Xác định bước mở rộng mặc định
-    var expStepNum = expandedStepInActiveCard[batch.khoa];
-    if (expStepNum === undefined || expStepNum === null) {
-      var firstNonDone = (batch.buoc || []).find(function (b) {
-        return b.mau !== "xanh" && b.mau !== "an";
-      });
-      expStepNum = firstNonDone ? firstNonDone.so : 0;
-      expandedStepInActiveCard[batch.khoa] = expStepNum;
+  function vanThe() {
+    var article = el("article", "flex flex-col w-full rounded-2xl bg-surface-container-low border border-surface-container-highest shadow-2xl overflow-hidden relative");
+    article.appendChild(el("div", "w-full h-1 bg-gradient-to-r from-secondary via-primary to-amber-500"));
+    var trong = el("div", "p-4 flex flex-col gap-3.5");
+    article.appendChild(trong);
+    return { article: article, trong: trong };
+  }
+
+  function dauQuyTrinh(trong, dem) {
+    var h = el("div", "flex items-center justify-between pb-0.5");
+    var t = el("span", "text-[11px] font-mono-num uppercase tracking-wider text-slate-300 font-bold flex items-center gap-1.5");
+    t.appendChild(ic("checklist", "text-primary text-[16px]"));
+    t.appendChild(document.createTextNode("Quy trình " + dem.tong + " bước"));
+    h.appendChild(t);
+    h.appendChild(el("span", "text-[11px] font-mono-num text-secondary font-bold", dem.xong + " / " + dem.tong + " Hoàn tất"));
+    trong.appendChild(h);
+  }
+
+  // ---------- Thẻ lô đang làm ----------
+  function renderBigActiveCard(main, batch) {
+    if (!batch) return;
+    var v = vanThe();
+    dauThe(v.trong, batch, true);
+
+    var steps = el("div", "flex flex-col gap-2 mt-1");
+    dauQuyTrinh(steps, demBuoc(batch));
+
+    var moBuoc = expandedStepInActiveCard[batch.khoa];
+    if (moBuoc === undefined || moBuoc === null) {
+      var dau = (batch.buoc || []).find(function (b) { return b.mau !== "xanh" && b.mau !== "an"; });
+      moBuoc = dau ? dau.so : 0;
+      expandedStepInActiveCard[batch.khoa] = moBuoc;
     }
-
     (batch.buoc || []).forEach(function (st) {
       if (st.mau === "an") return;
-
-      if (st.so === expStepNum) {
-        // Mở rộng bước này
-        var expBox = el("div", "step-box-expanded is-current");
-        renderStepContent(expBox, st, batch, anhChup.chiXem);
-        stepsWrapper.appendChild(expBox);
-      } else {
-        // Thu gọn bước này thành 1 dòng
-        var row = el("div", "step-row-collapsed " + (st.mau || "xam"));
-
-        var left = el("div", "step-left");
-        left.appendChild(el("span", "step-ky", st.ky));
-        var nameBox = el("div", "step-name-box");
-        nameBox.appendChild(el("span", "step-name", st.ten));
-        var timeStr = st.gio ? dinhDangGio(st.gio) : "";
-        nameBox.appendChild(el("span", "step-meta", st.nguoi ? st.nguoi + (timeStr ? " · " + timeStr : "") : chuTrangThai(st.mau)));
-        left.appendChild(nameBox);
-        row.appendChild(left);
-
-        var right = el("div", "step-right");
-        var badge = el("span", "step-badge round " + (st.mau || "xam"));
-        badge.textContent = kyHieuTrangThai(st.mau);
-        right.appendChild(badge);
-        row.appendChild(right);
-
-        row.onclick = function () {
-          expandedStepInActiveCard[batch.khoa] = st.so;
-          renderApp();
-        };
-
-        stepsWrapper.appendChild(row);
-      }
+      if (st.so === moBuoc) steps.appendChild(oBuocMo(st, batch, true));
+      else steps.appendChild(hangBuoc(st, batch));
     });
+    v.trong.appendChild(steps);
 
-    card.appendChild(stepsWrapper);
-    container.appendChild(card);
+    var chan = el("div", "flex items-center gap-2 pt-2 border-t border-surface-container-highest");
+    var xem = el("button", "flex-1 flex items-center justify-center gap-1.5 h-[46px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface border border-surface-container-highest text-[12px] font-mono-num font-semibold active:scale-95 transition-all");
+    xem.type = "button";
+    xem.appendChild(ic("checklist", "text-[16px] text-primary"));
+    xem.appendChild(el("span", null, "Xem đủ lô"));
+    xem.onclick = function () { mo("detail", batch.khoa); };
+    chan.appendChild(xem);
+    var sang = el("button", "w-[46px] h-[46px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface border border-surface-container-highest flex items-center justify-center shrink-0 active:scale-95 transition-all");
+    sang.type = "button";
+    sang.title = "Mở chi tiết lô";
+    sang.appendChild(ic("chevron_right", "text-[20px]"));
+    sang.onclick = xem.onclick;
+    chan.appendChild(sang);
+    v.trong.appendChild(chan);
+
+    main.appendChild(v.article);
+  }
+
+  // Bước thu gọn 1 dòng (bấm để mở)
+  function hangBuoc(st, batch) {
+    var m = mauCua(st);
+    var row = el("div", HANG[m]);
+    var trai = el("div", "flex items-center gap-2.5 min-w-0");
+    trai.appendChild(el("span", KY[m], st.ky));
+    var chu = el("div", "flex flex-col min-w-0");
+    var d1 = el("div", "flex items-center gap-1.5");
+    d1.appendChild(el("span", m === "xam" ? "text-[13px] text-on-surface-variant font-semibold truncate" : "text-[13px] text-on-surface font-semibold truncate", st.ten));
+    if (st.gio) d1.appendChild(el("span", "font-mono-num text-[10px] text-on-surface-variant", dinhDangGio(st.gio)));
+    chu.appendChild(d1);
+    chu.appendChild(el("span", "text-[11px] text-on-surface-variant truncate", st.nguoi ? st.nguoi : kyHieuTrangThai(st.mau) + " " + chuTrangThai(st.mau)));
+    trai.appendChild(chu);
+    row.appendChild(trai);
+    var vuong = el("div", VUONG[m]);
+    vuong.title = kyHieuTrangThai(st.mau) + " " + chuTrangThai(st.mau);
+    vuong.appendChild(ic(ICON_TT[m], "text-[20px]"));
+    row.appendChild(vuong);
+    row.onclick = function () {
+      expandedStepInActiveCard[batch.khoa] = st.so;
+      renderApp();
+    };
+    return row;
+  }
+
+  // Bước mở (khung viền cam của stitch). noiBat = bước hiện tại trên thẻ Hôm nay
+  function oBuocMo(st, batch, noiBat) {
+    var m = mauCua(st);
+    var box = el("div", noiBat
+      ? "flex flex-col p-3 rounded-2xl bg-surface-container-high border-2 border-primary/50 shadow-xl gap-3 relative overflow-hidden"
+      : "flex flex-col p-3 rounded-2xl bg-surface-container border border-surface-container-highest gap-3 relative overflow-hidden");
+    if (noiBat) box.appendChild(el("div", "absolute left-0 top-0 bottom-0 w-1.5 bg-primary"));
+
+    var head = el("div", "flex items-start justify-between pl-1");
+    var trai = el("div", "flex items-center gap-2 min-w-0");
+    trai.appendChild(el("span", noiBat ? "text-[16px] leading-none text-primary font-bold" : KY[m], st.ky));
+    var t = el("div", "min-w-0");
+    var d1 = el("div", "flex items-center gap-2 flex-wrap");
+    d1.appendChild(el("h4", "text-[14px] text-on-surface font-bold", st.ten));
+    d1.appendChild(el("span", VIEN[m], kyHieuTrangThai(st.mau) + " " + chuTrangThai(st.mau)));
+    t.appendChild(d1);
+    t.appendChild(el("p", "text-[11px] text-on-surface-variant", phuDeBuoc(st)));
+    trai.appendChild(t);
+    head.appendChild(trai);
+    head.appendChild(ic(ICON_BUOC[st.so] || "checklist", noiBat ? "text-primary text-[22px]" : "text-on-surface-variant text-[22px]"));
+    box.appendChild(head);
+
+    var body = el("div", "flex flex-col gap-3 pl-1");
+    thanBuoc(body, st, batch, !!anhChup.chiXem);
+    if (body.childNodes.length) box.appendChild(body);
+    return box;
   }
 
   // ==========================================
-  // 4. MÀN HÌNH CHI TIẾT LÔ (DETAIL VIEW)
+  // THÂN TỪNG BƯỚC
   // ==========================================
-  function renderDetail(container) {
+  function thanBuoc(body, step, batch, chiXem) {
+    if (step.so === 0) buocNhanXanh(body, batch, chiXem);
+    else if (step.so === 2 || step.so === 3) {
+      if (step.daBam) body.appendChild(el("p", "text-[11px] text-on-surface-variant", step.daBam));
+      if (!chiXem) {
+        var b = nut(C.nutChinh + " w-full", "done_all", step.so === 2 ? "Đã tách đá" : "Đã sorting");
+        b.onclick = function () { thucHienThaoTac({ loai: "buoc", khoa: batch.khoa, buoc: step.so }); };
+        body.appendChild(b);
+      }
+    }
+    else if (step.so === 4) buocCan(body, batch, chiXem);
+    else if (step.so === 5) buocTron(body, batch, chiXem);
+    else if (step.so === 6) {
+      var lay = nut(C.nutTim + " w-full", "science", "Lấy ở tab Túi mẫu");
+      lay.onclick = function () { mo("samples"); };
+      body.appendChild(lay);
+    }
+  }
+
+  function dongKg(loai, kgSo) {
+    var r = el("div", "flex items-center justify-between gap-2 py-1");
+    r.appendChild(el("span", "text-[12px] text-on-surface truncate", loai));
+    r.appendChild(soKg("font-mono-num text-[13px] font-bold text-on-surface shrink-0", kgSo, 2));
+    return r;
+  }
+
+  function buocNhanXanh(body, batch, chiXem) {
+    if (!batch.sp) {
+      var o = el("div", C.o);
+      o.appendChild(el("span", C.nhan, "Lô chưa rõ sản phẩm — chọn"));
+      var sel = el("select", C.nhapChu + " mt-1");
+      var rong = el("option", "bg-surface-container-high text-on-surface", "— chọn sản phẩm —");
+      rong.value = "";
+      sel.appendChild(rong);
+      (anhChup.sanPham || []).forEach(function (sp) {
+        var opt = el("option", "bg-surface-container-high text-on-surface", sp);
+        opt.value = sp;
+        sel.appendChild(opt);
+      });
+      sel.disabled = chiXem;
+      o.appendChild(sel);
+      body.appendChild(o);
+      if (!chiXem) {
+        var luu = nut(C.nutChinh + " w-full", "done_all", "Lưu sản phẩm");
+        luu.disabled = true;
+        sel.onchange = function () { luu.disabled = !sel.value; };
+        luu.onclick = function () { if (sel.value) thucHienThaoTac({ loai: "sanPham", khoa: batch.khoa, sp: sel.value }); };
+        body.appendChild(luu);
+      }
+      return;
+    }
+
+    if (batch.thuc0 && batch.thuc0.length > 0) {
+      var x = el("div", C.o);
+      x.appendChild(el("span", C.nhan, "✓ Đã xác nhận nhân xanh"));
+      batch.thuc0.forEach(function (g) { (g.dong || []).forEach(function (d) { x.appendChild(dongKg(d.loai, d.kg)); }); });
+      body.appendChild(x);
+      return;
+    }
+
+    var sua = !!editModeNhanXanh[batch.khoa];
+    var oNhap = {}; // "vao|tp|loai" -> ô nhập (khoá giống thucNhanXanh)
+    var coDong = false;
+    (batch.goiY0 || []).forEach(function (g) {
+      var o2 = el("div", C.o);
+      o2.appendChild(el("span", C.nhan, "Gợi ý · " + g.soMe + " mẻ × " + soVN(g.vao, 1) + " kg" + (g.tp ? " · " + g.tp : "")));
+      (g.dong || []).forEach(function (d) {
+        coDong = true;
+        if (sua) {
+          var r = el("div", "flex items-center justify-between gap-2 py-1");
+          r.appendChild(el("span", "text-[12px] text-on-surface truncate", d.loai));
+          var nhap = el("div", "flex items-center gap-1 shrink-0");
+          var inp = el("input", C.nhapSo + " !w-[90px] !text-[15px]");
+          inp.inputMode = "decimal";
+          inp.value = soVN(d.kg, 2);
+          oNhap[g.vao + "|" + g.tp + "|" + d.loai] = inp;
+          nhap.appendChild(inp);
+          nhap.appendChild(el("span", "text-[12px] font-mono-num text-on-surface-variant", "kg"));
+          r.appendChild(nhap);
+          o2.appendChild(r);
+        } else {
+          o2.appendChild(dongKg(d.loai, d.kg));
+        }
+      });
+      body.appendChild(o2);
+    });
+    if (chiXem) return;
+
+    var nhom = el("div", "grid grid-cols-2 gap-2 pt-1");
+    if (!coDong) {
+      // Như R&B: chưa có dòng thành phần
+      var xn = nut(C.nutChinh + " col-span-2", "done_all", "Xác nhận ⓪ Nhân xanh");
+      xn.onclick = function () { thucHienThaoTac({ loai: "nhanXanh", khoa: batch.khoa, thuc: thucNhanXanh(batch.goiY0 || [], {}) }); };
+      nhom.appendChild(xn);
+    } else if (!sua) {
+      var bSua = nut(C.nutPhu, "edit", "Sửa", "text-[18px] text-on-surface-variant");
+      bSua.onclick = function () { editModeNhanXanh[batch.khoa] = true; renderApp(); };
+      nhom.appendChild(bSua);
+      var dung = nut(C.nutChinh, "done_all", "Đúng ⓪ Nhân xanh");
+      dung.onclick = function () { thucHienThaoTac({ loai: "nhanXanh", khoa: batch.khoa, thuc: thucNhanXanh(batch.goiY0, {}) }); };
+      nhom.appendChild(dung);
+    } else {
+      var huy = nut(C.nutPhu, "close", "Hủy", "text-[18px] text-on-surface-variant");
+      huy.onclick = function () { editModeNhanXanh[batch.khoa] = false; renderApp(); };
+      nhom.appendChild(huy);
+      var gui = nut(C.nutChinh, "done_all", "Gửi sửa ⓪");
+      gui.onclick = function () {
+        var suaMap = {}, loi = false;
+        Object.keys(oNhap).forEach(function (k) {
+          var s = oNhap[k].value.trim();
+          if (docSo(s) === null) { oNhap[k].classList.add("loi"); loi = true; }
+          else { oNhap[k].classList.remove("loi"); suaMap[k] = s; }
+        });
+        if (loi) return;
+        editModeNhanXanh[batch.khoa] = false;
+        thucHienThaoTac({ loai: "nhanXanh", khoa: batch.khoa, thuc: thucNhanXanh(batch.goiY0, suaMap) });
+      };
+      nhom.appendChild(gui);
+    }
+    body.appendChild(nhom);
+  }
+
+  // ④ Cân + hao hụt: 2 ô + thước đo theo ngưỡng thật của lô (thang ngưỡng ±5 điểm, không ngưỡng thì 0–30 %)
+  function buocCan(body, batch, chiXem) {
+    var n = batch.nguong;
+    var gLo = n ? Math.max(0, n[1] - 5) : 0;
+    var gHi = n ? n[2] + 5 : 30;
+    var viTri = function (x) { return (x - gLo) / (gHi - gLo) * 100; };
+
+    var luoi = el("div", "grid grid-cols-2 gap-2");
+    var oKg = el("div", C.o);
+    oKg.appendChild(el("span", C.nhan, "Kg ra (cân)"));
+    var dongNhap = el("div", "flex items-center gap-1 mt-1");
+    var inp = el("input", C.nhapSo);
+    inp.inputMode = "decimal";
+    inp.value = batch.kgRa !== null && batch.kgRa !== undefined ? soVN(batch.kgRa) : "";
+    inp.readOnly = chiXem;
+    inp.placeholder = "0,0";
+    dongNhap.appendChild(inp);
+    dongNhap.appendChild(el("span", "text-[12px] font-mono-num text-on-surface-variant", "kg"));
+    oKg.appendChild(dongNhap);
+    var chenh = el("span", "text-[10px] font-mono-num text-on-surface-variant mt-1");
+    oKg.appendChild(chenh);
+    luoi.appendChild(oKg);
+
+    var oHH = el("div", C.o);
+    var hhDau = el("div", "flex items-center justify-between gap-1");
+    hhDau.appendChild(el("span", C.nhan, "Hao hụt"));
+    var the = el("span");
+    hhDau.appendChild(the);
+    oHH.appendChild(hhDau);
+    var soDong = el("div", "flex items-baseline gap-1 mt-1");
+    var so = el("span");
+    var phanTram = el("span", "text-[14px] font-mono-num font-bold", "%");
+    soDong.appendChild(so);
+    soDong.appendChild(phanTram);
+    oHH.appendChild(soDong);
+    oHH.appendChild(el("span", "text-[10px] font-mono-num text-on-surface-variant mt-0.5",
+      n ? "Ngưỡng: " + soVN(n[1], 1) + "% – " + soVN(n[2], 1) + "%" : "Chưa có ngưỡng"));
+    luoi.appendChild(oHH);
+    body.appendChild(luoi);
+
+    // Thước đo
+    var thuoc = el("div", "flex flex-col gap-1.5");
+    var nhanTren = el("div", "flex items-center justify-between text-[10px] font-mono-num text-on-surface-variant");
+    nhanTren.appendChild(el("span", null, soVN(gLo, 1) + "%"));
+    nhanTren.appendChild(el("span", n ? "text-secondary font-bold" : "text-on-surface-variant font-bold", n ? "Vùng ngưỡng (" + soVN(n[1], 1) + "% – " + soVN(n[2], 1) + "%)" : "Chưa có ngưỡng"));
+    nhanTren.appendChild(el("span", null, soVN(gHi, 1) + "%"));
+    thuoc.appendChild(nhanTren);
+    var ray = el("div", "relative w-full h-4 bg-surface-container-lowest rounded-full overflow-hidden flex items-center border border-surface-container-highest");
+    if (n) {
+      var v1 = el("div", "h-full bg-amber-500/30"); v1.style.width = viTri(n[1]) + "%";
+      var v2 = el("div", "h-full bg-emerald-500/40 relative flex items-center justify-center border-x border-emerald-500/40"); v2.style.width = (viTri(n[2]) - viTri(n[1])) + "%";
+      v2.appendChild(el("div", "w-full h-0.5 bg-emerald-400/60"));
+      var v3 = el("div", "h-full bg-rose-500/30"); v3.style.width = (100 - viTri(n[2])) + "%";
+      ray.appendChild(v1); ray.appendChild(v2); ray.appendChild(v3);
+    } else {
+      ray.appendChild(el("div", "h-full w-full bg-surface-container-highest/60"));
+    }
+    var kimBoc = el("div", "absolute top-0 bottom-0 flex flex-col items-center justify-center transition-all duration-300 pointer-events-none");
+    kimBoc.style.transform = "translateX(-50%)";
+    var kim = el("div");
+    kimBoc.appendChild(kim);
+    ray.appendChild(kimBoc);
+    thuoc.appendChild(ray);
+    var nhanDuoi = el("div", "flex items-center justify-between gap-2 text-[10px] font-mono-num text-on-surface-variant");
+    var congThuc = el("span");
+    var viTriChu = el("span");
+    nhanDuoi.appendChild(congThuc);
+    nhanDuoi.appendChild(viTriChu);
+    thuoc.appendChild(nhanDuoi);
+    body.appendChild(thuoc);
+
+    var luu = nut(C.nutChinh + " w-full", "done_all", batch.kgRa !== null && batch.kgRa !== undefined ? "Lưu lại" : "Lưu");
+
+    function capNhat() {
+      var ra = docSo(inp.value);
+      var hh = haoHut(batch.kgVao, ra);
+      var mau = mauHaoHut(hh, n);
+      var k = hh === null ? "xam" : mau === "xanh" ? "xanh" : mau === "do" ? (hh < n[1] ? "thap" : "cao") : "xam";
+      var s = HH[k];
+      the.className = s.the;
+      the.textContent = hh === null ? "—" : (k === "xanh" ? "✓ " : k === "xam" ? "" : "! ") + s.nhan;
+      so.className = s.so;
+      so.textContent = hh === null ? "—" : soVN(hh, 1);
+      phanTram.className = "text-[14px] font-mono-num font-bold " + (k === "xanh" ? "text-secondary" : k === "thap" ? "text-amber-400" : k === "cao" ? "text-rose-400" : "text-on-surface-variant");
+      chenh.textContent = hh !== null ? "Hao hụt: −" + soVN(batch.kgVao - ra, 2) + " kg" : "Kg vào: " + soVN(batch.kgVao, 1) + " kg";
+      congThuc.textContent = hh !== null ? "Công thức: (" + soVN(batch.kgVao, 2) + " − " + soVN(ra, 2) + ") / " + soVN(batch.kgVao, 2) : "Công thức: (vào − ra) / vào";
+      viTriChu.className = s.chu;
+      viTriChu.textContent = hh !== null ? "Vị trí: " + soVN(hh, 1) + "% [" + s.ten + "]" : "";
+      kim.className = s.kim;
+      if (hh !== null) {
+        kimBoc.style.display = "flex";
+        kimBoc.style.left = Math.min(98, Math.max(2, viTri(hh))) + "%";
+      } else {
+        kimBoc.style.display = "none";
+      }
+      luu.disabled = ra === null;
+    }
+    inp.oninput = capNhat;
+    capNhat();
+
+    if (!chiXem) {
+      luu.onclick = function () {
+        var s = inp.value.trim();
+        if (docSo(s) === null) return;
+        thucHienThaoTac({ loai: "can", khoa: batch.khoa, kgRa: s });
+      };
+      body.appendChild(luu);
+    }
+  }
+
+  function buocTron(body, batch, chiXem) {
+    var luoi = el("div", "grid grid-cols-2 gap-2");
+    var goiY = el("div", C.o);
+    goiY.appendChild(el("span", C.nhan, "Gợi ý trộn"));
+    goiY.appendChild(soKg("font-mono-num text-[18px] font-bold text-primary mt-1", batch.goiYTron));
+    goiY.appendChild(el("span", "text-[10px] font-mono-num text-on-surface-variant mt-0.5 truncate", batch.tenTron || "—"));
+    luoi.appendChild(goiY);
+    var o = el("div", C.o);
+    o.appendChild(el("span", C.nhan, "Kg trộn thực"));
+    var dong = el("div", "flex items-center gap-1 mt-1");
+    var inp = el("input", C.nhapSo);
+    inp.inputMode = "decimal";
+    inp.value = batch.kgTron !== null && batch.kgTron !== undefined ? soVN(batch.kgTron) : "";
+    inp.readOnly = chiXem;
+    inp.placeholder = "0,0";
+    dong.appendChild(inp);
+    dong.appendChild(el("span", "text-[12px] font-mono-num text-on-surface-variant", "kg"));
+    o.appendChild(dong);
+    luoi.appendChild(o);
+    body.appendChild(luoi);
+    if (chiXem) return;
+
+    var chuaCan = batch.kgRa === null || batch.kgRa === undefined;
+    var luu = nut(C.nutChinh + " w-full", chuaCan ? "hourglass_empty" : "done_all", chuaCan ? "Cân trước" : "Lưu");
+    luu.disabled = chuaCan || docSo(inp.value) === null;
+    inp.oninput = function () { if (!chuaCan) luu.disabled = docSo(inp.value) === null; };
+    luu.onclick = function () {
+      var s = inp.value.trim();
+      if (docSo(s) === null) return;
+      thucHienThaoTac({ loai: "tron", khoa: batch.khoa, kg: s });
+    };
+    body.appendChild(luu);
+  }
+
+  // ==========================================
+  // CHI TIẾT LÔ
+  // ==========================================
+  function renderDetail(main) {
     var batch = (anhChup.lo || []).find(function (l) { return l.khoa === detailBatchKhoa; });
 
-    var viewWrapper = el("div", "detail-view");
-
-    // Nút quay lại
-    var navRow = el("div", "detail-nav");
-    var btnBack = el("button", "btn btn-outline btn-sm");
-    btnBack.type = "button";
-    btnBack.appendChild(makeSvgIcon("back", 14, "#0f172a"));
-    btnBack.appendChild(el("span", null, "Quay lại"));
-    btnBack.onclick = function () {
-      currentView = "today";
-      renderApp();
-    };
-    navRow.appendChild(btnBack);
-    viewWrapper.appendChild(navRow);
+    var lui = el("button", "self-start flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface border border-surface-container-highest text-[12px] font-mono-num font-semibold active:scale-95 transition-all");
+    lui.type = "button";
+    lui.appendChild(ic("arrow_back", "text-[16px]"));
+    lui.appendChild(el("span", null, "Quay lại"));
+    lui.onclick = function () { mo("today"); };
+    main.appendChild(lui);
 
     if (!batch) {
-      viewWrapper.appendChild(el("div", "empty-state", "Không tìm thấy thông tin lô."));
-      container.appendChild(viewWrapper);
+      main.appendChild(el("div", "p-4 rounded-xl bg-surface-container-low border border-surface-container-highest text-[12px] font-mono-num text-on-surface-variant text-center", "Không tìm thấy thông tin lô."));
       return;
     }
-
-    // Thẻ tiêu đề lô
-    var headerCard = el("div", "detail-header-card");
-    var titleEl = el("h2", "detail-title" + (!batch.sp ? " unclear" : ""));
-    titleEl.textContent = batch.sp ? batch.sp : "Chưa rõ: " + batch.tenGoc;
-    headerCard.appendChild(titleEl);
-
-    var subLine1 = (batch.mayTen || "") + " · " + (batch.thu || "") + " " + dinhDangNgayThang(batch.ngay) + " · Mã mẻ: " + (batch.maMe || "");
-    headerCard.appendChild(el("p", "detail-sub mono-num", subLine1));
-
-    headerCard.appendChild(oSoLo(batch));
-
-    if (batch.co) {
-      var boxCo = el("div", "banner banner-yellow", "Thêm mẻ sau khi cân — Lưu lại kg ra");
-      headerCard.appendChild(boxCo);
-    }
-
-    if (batch.tiLe) {
-      headerCard.appendChild(el("p", "batch-tile", batch.tiLe));
-    }
-
-    viewWrapper.appendChild(headerCard);
-
-    // 7 bước xếp dọc
-    var stepsWrapper = el("div", "steps-wrapper");
+    var v = vanThe();
+    dauThe(v.trong, batch, true);
+    var steps = el("div", "flex flex-col gap-2 mt-1");
+    dauQuyTrinh(steps, demBuoc(batch));
     (batch.buoc || []).forEach(function (st) {
-      if (st.mau === "an") return;
-      var box = el("div", "step-box-expanded");
-      renderStepContent(box, st, batch, anhChup.chiXem);
-      stepsWrapper.appendChild(box);
+      if (st.mau !== "an") steps.appendChild(oBuocMo(st, batch, false));
     });
-
-    viewWrapper.appendChild(stepsWrapper);
-    container.appendChild(viewWrapper);
+    v.trong.appendChild(steps);
+    main.appendChild(v.article);
   }
 
   // ==========================================
-  // HÀM VẼ NỘI DUNG TỪNG BƯỚC (DÙNG CHUNG)
+  // TÚI MẪU
   // ==========================================
-  function renderStepContent(box, step, batch, chiXem) {
-    // Header bước
-    var header = el("div", "step-expanded-header");
-    var left = el("div", "step-left");
-    left.appendChild(el("span", "step-ky", step.ky));
-    left.appendChild(el("span", "step-expanded-title", step.ten));
-    header.appendChild(left);
-
-    var right = el("div", "step-right");
-    if (step.nguoi) {
-      var timeStr = step.gio ? dinhDangGio(step.gio) : "";
-      right.appendChild(el("span", "mono-num text-muted", step.nguoi + (timeStr ? " " + timeStr : "")));
-    }
-    var badge = el("span", "status-pill " + (step.mau || "xam"));
-    badge.textContent = kyHieuTrangThai(step.mau) + " " + chuTrangThai(step.mau);
-    right.appendChild(badge);
-    header.appendChild(right);
-    box.appendChild(header);
-
-    // Thân bước
-    var body = el("div", "step-body");
-
-    // ------------------------------------------
-    // BƯỚC ⓪: NHÂN XANH
-    // ------------------------------------------
-    if (step.so === 0) {
-      if (!batch.sp) {
-        // Chưa có sản phẩm -> Chọn sản phẩm
-        var selectBox = el("div", null);
-        selectBox.appendChild(el("p", null, "Lô chưa rõ sản phẩm. Vui lòng chọn:"));
-        var sel = el("select", "form-input");
-        sel.appendChild(el("option", null, "— chọn sản phẩm —"));
-        sel.firstChild.value = "";
-        sel.disabled = chiXem;
-        (anhChup.sanPham || []).forEach(function (spItem) {
-          var opt = el("option", null, spItem);
-          opt.value = spItem;
-          sel.appendChild(opt);
-        });
-        selectBox.appendChild(sel);
-
-        if (!chiXem) {
-          var btnChonSP = el("button", "btn btn-primary btn-sm", "Lưu sản phẩm");
-          btnChonSP.style.marginTop = "6px";
-          btnChonSP.type = "button";
-          btnChonSP.disabled = true;
-          sel.onchange = function () { btnChonSP.disabled = !sel.value; };
-          btnChonSP.onclick = function () {
-            thucHienThaoTac({ loai: "sanPham", khoa: batch.khoa, sp: sel.value });
-          };
-          selectBox.appendChild(btnChonSP);
-        }
-        body.appendChild(selectBox);
-      } else if (batch.thuc0 && batch.thuc0.length > 0) {
-        // Đã xác nhận công thức
-        var thucBox = el("div", null);
-        thucBox.appendChild(el("span", "mono-num", "Đã xác nhận thành phần nhân xanh:"));
-        batch.thuc0.forEach(function (grp) {
-          (grp.dong || []).forEach(function (d) {
-            var tr = el("div", "kv-row");
-            tr.appendChild(el("span", null, d.loai));
-            tr.appendChild(el("b", null, soVN(d.kg, 2) + " kg"));
-            thucBox.appendChild(tr);
-          });
-        });
-        body.appendChild(thucBox);
-      } else {
-        // Hiển thị gợi ý nhóm goiY0
-        var isEditing = !!editModeNhanXanh[batch.khoa];
-        var goiYWrapper = el("div", null);
-        var inputsMap = {}; // "vao|tp|loai" -> input element
-
-        var hasRows = false;
-        (batch.goiY0 || []).forEach(function (grp) {
-          var gTitle = grp.soMe + " mẻ × " + soVN(grp.vao, 1) + " kg" + (grp.tp ? " · " + grp.tp : "");
-          goiYWrapper.appendChild(el("div", "section-label", gTitle));
-
-          (grp.dong || []).forEach(function (d) {
-            hasRows = true;
-            var rowKey = grp.vao + "|" + (grp.tp || "") + "|" + d.loai;
-
-            if (isEditing) {
-              var editRow = el("div", null);
-              editRow.style.display = "flex";
-              editRow.style.alignItems = "center";
-              editRow.style.gap = "6px";
-              editRow.style.marginTop = "4px";
-
-              editRow.appendChild(el("span", null, d.loai + ":"));
-              var inp = el("input", "form-input mono-num");
-              inp.inputMode = "decimal";
-              inp.value = soVN(d.kg, 2);
-              inp.style.maxWidth = "90px";
-              inputsMap[rowKey] = inp;
-              editRow.appendChild(inp);
-              editRow.appendChild(el("span", null, "kg"));
-              goiYWrapper.appendChild(editRow);
-            } else {
-              var gr = el("div", "kv-row");
-              gr.appendChild(el("span", null, d.loai));
-              gr.appendChild(el("b", null, soVN(d.kg, 2) + " kg"));
-              goiYWrapper.appendChild(gr);
-            }
-          });
-        });
-        body.appendChild(goiYWrapper);
-
-        // Nút thao tác
-        if (!chiXem) {
-          var btnGroup = el("div", null);
-          btnGroup.style.display = "flex";
-          btnGroup.style.gap = "8px";
-          btnGroup.style.marginTop = "8px";
-
-          if (!hasRows) {
-            // Trường hợp như R&B: không có dòng thành phần
-            var btnXacNhan = el("button", "btn btn-primary btn-sm", "Xác nhận ⓪ Nhân xanh");
-            btnXacNhan.type = "button";
-            btnXacNhan.onclick = function () {
-              thucHienThaoTac({ loai: "nhanXanh", khoa: batch.khoa, thuc: thucNhanXanh(batch.goiY0, {}) });
-            };
-            btnGroup.appendChild(btnXacNhan);
-          } else if (!isEditing) {
-            var btnDung = el("button", "btn btn-green btn-sm", "Đúng ⓪ Nhân xanh");
-            btnDung.type = "button";
-            btnDung.onclick = function () {
-              thucHienThaoTac({ loai: "nhanXanh", khoa: batch.khoa, thuc: thucNhanXanh(batch.goiY0, {}) });
-            };
-            btnGroup.appendChild(btnDung);
-
-            var btnSua = el("button", "btn btn-outline btn-sm", "Sửa");
-            btnSua.type = "button";
-            btnSua.onclick = function () {
-              editModeNhanXanh[batch.khoa] = true;
-              renderApp();
-            };
-            btnGroup.appendChild(btnSua);
-          } else {
-            var btnGuiSua = el("button", "btn btn-primary btn-sm", "Gửi sửa ⓪");
-            btnGuiSua.type = "button";
-            btnGuiSua.onclick = function () {
-              var suaMap = {};
-              var coLoi = false;
-              Object.keys(inputsMap).forEach(function (k) {
-                var valStr = inputsMap[k].value.trim();
-                var num = docSo(valStr);
-                if (num === null) {
-                  inputsMap[k].classList.add("error");
-                  coLoi = true;
-                } else {
-                  inputsMap[k].classList.remove("error");
-                  suaMap[k] = valStr;
-                }
-              });
-              if (coLoi) return;
-              editModeNhanXanh[batch.khoa] = false;
-              thucHienThaoTac({
-                loai: "nhanXanh",
-                khoa: batch.khoa,
-                thuc: thucNhanXanh(batch.goiY0, suaMap)
-              });
-            };
-            btnGroup.appendChild(btnGuiSua);
-
-            var btnHuy = el("button", "btn btn-outline btn-sm", "Hủy");
-            btnHuy.type = "button";
-            btnHuy.onclick = function () {
-              editModeNhanXanh[batch.khoa] = false;
-              renderApp();
-            };
-            btnGroup.appendChild(btnHuy);
-          }
-          body.appendChild(btnGroup);
-        }
-      }
-    }
-
-    // ------------------------------------------
-    // BƯỚC ①: RANG XONG
-    // ------------------------------------------
-    else if (step.so === 1) {
-    }
-
-    // ------------------------------------------
-    // BƯỚC ②: TÁCH ĐÁ
-    // ------------------------------------------
-    else if (step.so === 2) {
-      if (step.daBam) {
-        body.appendChild(el("p", "text-muted", step.daBam));
-      }
-      if (!chiXem) {
-        var btnTachDa = el("button", "btn btn-outline btn-sm", "Đã tách đá");
-        btnTachDa.type = "button";
-        btnTachDa.onclick = function () {
-          thucHienThaoTac({ loai: "buoc", khoa: batch.khoa, buoc: 2 });
-        };
-        body.appendChild(btnTachDa);
-      }
-    }
-
-    // ------------------------------------------
-    // BƯỚC ③: SORTING
-    // ------------------------------------------
-    else if (step.so === 3) {
-      if (step.daBam) {
-        body.appendChild(el("p", "text-muted", step.daBam));
-      }
-      if (!chiXem) {
-        var btnSorting = el("button", "btn btn-outline btn-sm", "Đã sorting");
-        btnSorting.type = "button";
-        btnSorting.onclick = function () {
-          thucHienThaoTac({ loai: "buoc", khoa: batch.khoa, buoc: 3 });
-        };
-        body.appendChild(btnSorting);
-      }
-    }
-
-    // ------------------------------------------
-    // BƯỚC ④: CÂN VÀ HAO HỤT
-    // ------------------------------------------
-    else if (step.so === 4) {
-      var canBox = el("div", null);
-
-      var canGrid = el("div", "can-grid");
-      var oKg = el("div", "can-tile");
-      oKg.appendChild(el("span", "stat-label", "Kg ra"));
-      var inputRow = el("div", "can-input-row");
-      var inpKgRa = el("input", "form-input can-input");
-      inpKgRa.inputMode = "decimal";
-      inpKgRa.value = batch.kgRa !== null && batch.kgRa !== undefined ? soVN(batch.kgRa) : "";
-      inpKgRa.readOnly = chiXem;
-      inputRow.appendChild(inpKgRa);
-      inputRow.appendChild(el("span", null, "kg"));
-      oKg.appendChild(inputRow);
-      canGrid.appendChild(oKg);
-
-      // Ô hao hụt: số to + nhãn ngưỡng
-      var oHH = el("div", "can-tile");
-      var hhHead = el("div", "can-tile-head");
-      hhHead.appendChild(el("span", "stat-label", "Hao hụt"));
-      var hhPill = el("span", "status-pill xam");
-      oHH.appendChild(hhHead);
-      var hhLabel = el("div", "hh-label");
-      oHH.appendChild(hhLabel);
-      var pillRow = el("div", null);
-      pillRow.appendChild(hhPill);
-      oHH.appendChild(pillRow);
-      canGrid.appendChild(oHH);
-      canBox.appendChild(canGrid);
-      var nguongLine = el("div", "nguong-line");
-      canBox.appendChild(nguongLine);
-
-      // Thanh đo hao hụt trực quan
-      var gaugeWrapper = el("div", "gauge-wrapper");
-      var gaugeTrack = el("div", "gauge-track");
-
-      var zoneTarget = el("div", "gauge-zone-target");
-      gaugeTrack.appendChild(zoneTarget);
-
-      var pin = el("div", "gauge-pin");
-      gaugeTrack.appendChild(pin);
-      gaugeWrapper.appendChild(gaugeTrack);
-
-      var gaugeLabels = el("div", "gauge-labels mono-num");
-      // Thang lấy theo ngưỡng của lô (±5 điểm), không ngưỡng thì 0–30 %
-      var gLo = batch.nguong ? Math.max(0, batch.nguong[1] - 5) : 0;
-      var gHi = batch.nguong ? batch.nguong[2] + 5 : 30;
-      var lblMin = el("span", null, soVN(gLo, 1) + "%");
-      var lblMid = el("span", null, "");
-      var lblMax = el("span", null, soVN(gHi, 1) + "%");
-      gaugeLabels.appendChild(lblMin);
-      gaugeLabels.appendChild(lblMid);
-      gaugeLabels.appendChild(lblMax);
-      gaugeWrapper.appendChild(gaugeLabels);
-      canBox.appendChild(gaugeWrapper);
-
-      // Nút Lưu
-      var btnLuuCan = el("button", "btn btn-primary btn-block btn-luu-can");
-      btnLuuCan.type = "button";
-      btnLuuCan.textContent = (batch.kgRa !== null && batch.kgRa !== undefined) ? "Lưu lại" : "Lưu";
-      btnLuuCan.style.marginTop = "6px";
-
-      // Hàm tính toán và cập nhật giao diện cân
-      function capNhatHaoHut() {
-        var num = docSo(inpKgRa.value);
-        var hh = haoHut(batch.kgVao, num);
-        var mau = mauHaoHut(hh, batch.nguong);
-
-        nguongLine.textContent = batch.nguong
-          ? "Ngưỡng " + soVN(batch.nguong[1], 1) + "–" + soVN(batch.nguong[2], 1) + " %"
-          : "Chưa có ngưỡng";
-        hhLabel.textContent = hh !== null ? soVN(hh, 1) + " %" : "— %";
-        hhLabel.className = "hh-label " + (hh !== null ? mau : "xam");
-        hhPill.className = "status-pill " + (hh !== null ? mau : "xam");
-        hhPill.textContent = hh === null ? "Chưa gõ" : mau === "xanh" ? "✓ Trong ngưỡng" : mau === "do" ? "! Ngoài ngưỡng" : "Chưa có ngưỡng";
-
-        // Định vị vùng chuẩn trên thanh gauge (thang gLo–gHi)
-        if (batch.nguong) {
-          var tMin = batch.nguong[1];
-          var tMax = batch.nguong[2];
-          var leftPct = ((tMin - gLo) / (gHi - gLo)) * 100;
-          var widthPct = ((tMax - tMin) / (gHi - gLo)) * 100;
-          if (leftPct < 0) leftPct = 0;
-          if (leftPct + widthPct > 100) widthPct = 100 - leftPct;
-          zoneTarget.style.left = leftPct + "%";
-          zoneTarget.style.width = widthPct + "%";
-        } else {
-          zoneTarget.style.width = "0%";
-        }
-
-        // Định vị kim
-        if (hh !== null) {
-          var pinPos = ((hh - gLo) / (gHi - gLo)) * 100;
-          if (pinPos < 0) pinPos = 0;
-          if (pinPos > 100) pinPos = 100;
-          pin.style.left = pinPos + "%";
-          pin.style.display = "block";
-        } else {
-          pin.style.display = "none";
-        }
-
-        // Bật / tắt nút Lưu
-        btnLuuCan.disabled = (num === null);
-      }
-
-      inpKgRa.oninput = capNhatHaoHut;
-      capNhatHaoHut();
-
-      if (!chiXem) {
-        btnLuuCan.onclick = function () {
-          var textVal = inpKgRa.value.trim();
-          if (docSo(textVal) === null) return;
-          thucHienThaoTac({ loai: "can", khoa: batch.khoa, kgRa: textVal });
-        };
-        canBox.appendChild(btnLuuCan);
-      }
-
-      body.appendChild(canBox);
-    }
-
-    // ------------------------------------------
-    // BƯỚC ⑤: TRỘN POST-BLEND
-    // ------------------------------------------
-    else if (step.so === 5) {
-      var tronBox = el("div", null);
-      var goiYText = "Gợi ý: " + (batch.goiYTron !== null ? soVN(batch.goiYTron, 1) : "—") + " kg " + (batch.tenTron || "");
-      tronBox.appendChild(el("p", "mono-num", goiYText));
-
-      var tronRow = el("div", null);
-      tronRow.style.display = "flex";
-      tronRow.style.alignItems = "center";
-      tronRow.style.gap = "8px";
-      tronRow.style.marginTop = "4px";
-
-      tronRow.appendChild(el("span", null, "Kg trộn:"));
-      var inpKgTron = el("input", "form-input mono-num");
-      inpKgTron.inputMode = "decimal";
-      inpKgTron.value = batch.kgTron !== null && batch.kgTron !== undefined ? soVN(batch.kgTron) : "";
-      inpKgTron.style.maxWidth = "110px";
-      inpKgTron.readOnly = chiXem;
-      tronRow.appendChild(inpKgTron);
-      tronRow.appendChild(el("span", null, "kg"));
-      tronBox.appendChild(tronRow);
-
-      if (!chiXem) {
-        var btnLuuTron = el("button", "btn btn-primary btn-sm");
-        btnLuuTron.type = "button";
-        btnLuuTron.style.marginTop = "6px";
-
-        if (batch.kgRa === null || batch.kgRa === undefined) {
-          btnLuuTron.disabled = true;
-          btnLuuTron.textContent = "Cân trước";
-        } else {
-          btnLuuTron.textContent = "Lưu";
-          btnLuuTron.disabled = (docSo(inpKgTron.value) === null);
-        }
-
-        inpKgTron.oninput = function () {
-          if (batch.kgRa !== null && batch.kgRa !== undefined) {
-            btnLuuTron.disabled = (docSo(inpKgTron.value) === null);
-          }
-        };
-
-        btnLuuTron.onclick = function () {
-          var valStr = inpKgTron.value.trim();
-          if (docSo(valStr) === null) return;
-          thucHienThaoTac({ loai: "tron", khoa: batch.khoa, kg: valStr });
-        };
-
-        tronBox.appendChild(btnLuuTron);
-      }
-
-      body.appendChild(tronBox);
-    }
-
-    // ------------------------------------------
-    // BƯỚC ⑥: LẤY MẪU
-    // ------------------------------------------
-    else if (step.so === 6) {
-      var linkMau = el("button", "btn btn-outline btn-sm", "Lấy ở tab Túi mẫu");
-      linkMau.type = "button";
-      linkMau.onclick = function () {
-        currentView = "samples";
-        renderApp();
-      };
-      body.appendChild(linkMau);
-    }
-
-    box.appendChild(body);
+  function dauTab(tieuDe, phuDe, nhanPhai, lopNhan) {
+    var h = el("div", "flex items-center justify-between gap-2 bg-surface-container-high p-3 rounded-xl border border-surface-container-highest");
+    var t = el("div", "min-w-0");
+    t.appendChild(el("h3", "text-[15px] font-bold text-on-surface", tieuDe));
+    t.appendChild(el("p", "text-[11px] text-on-surface-variant", phuDe));
+    h.appendChild(t);
+    h.appendChild(el("span", lopNhan, nhanPhai));
+    return h;
   }
 
-  // ==========================================
-  // 5. MÀN HÌNH TÚI MẪU (SAMPLES VIEW)
-  // ==========================================
-  function renderSamples(container) {
-    var viewWrapper = el("div", "samples-view");
+  function renderSamples(main) {
+    var view = el("div", "flex flex-col gap-3");
+    var ds = anhChup.tui || [];
+    var daLay = ds.filter(function (t) { return t.daLay; }).length;
+    view.appendChild(dauTab("Túi mẫu tuần này", demNguoc(anhChup.homNay || "", anhChup.cupping || ""),
+      daLay + " / " + ds.length + " Đã lấy", "px-2 py-1 rounded-lg bg-purple-500/20 text-purple-300 font-mono-num text-[11px] font-bold shrink-0"));
 
-    // Đếm ngược cupping
-    var countdownText = demNguoc(anhChup.homNay || "", anhChup.cupping || "");
-    viewWrapper.appendChild(el("div", "sample-countdown mono-num", countdownText));
-
-    var listTui = anhChup.tui || [];
-    if (listTui.length === 0) {
-      viewWrapper.appendChild(el("div", "empty-state", "Chưa có danh sách túi mẫu tuần này."));
-      container.appendChild(viewWrapper);
+    if (ds.length === 0) {
+      view.appendChild(el("div", "p-4 rounded-xl bg-surface-container-low border border-surface-container-highest text-[12px] font-mono-num text-on-surface-variant text-center", "Chưa có danh sách túi mẫu tuần này."));
+      main.appendChild(view);
       return;
     }
 
-    listTui.forEach(function (t) {
-      var card = el("div", "sample-card" + (t.daLay ? " done" : ""));
-
-      var hdr = el("div", "sample-header");
-      hdr.appendChild(el("span", "sample-title", t.sp || ""));
-      card.appendChild(hdr);
-
+    var list = el("div", "flex flex-col gap-2");
+    ds.forEach(function (t) {
       if (t.daLay) {
-        var timeStr = t.daLay.gio ? dinhDangGio(t.daLay.gio) : "";
-        var daLayLine = el("div", "mono-num", "Đã lấy · " + (t.daLay.nguoi || "") + " " + timeStr);
-        daLayLine.style.color = "var(--status-xanh)";
-        card.appendChild(daLayLine);
-      } else {
-        // Danh sách mẻ mới cần lấy
-        var keys = (t.loMoi && t.loMoi.length > 0) ? t.loMoi : (t.lo || []);
-        var checks = [];
-
-        keys.forEach(function (k) {
-          var loObj = (anhChup.lo || []).find(function (l) { return l.khoa === k; });
-          var labelText = loObj ? (loObj.thu + " · " + (loObj.mayTen || "")) : k;
-
-          var itemRow = el("label", "sample-lo-item");
-          var chk = el("input", null);
-          chk.type = "checkbox";
-          chk.checked = true;
-          chk.disabled = !!anhChup.chiXem;
-          chk.dataset.khoa = k;
-          checks.push(chk);
-
-          itemRow.appendChild(chk);
-          itemRow.appendChild(el("span", "mono-num", labelText));
-          card.appendChild(itemRow);
-        });
-
-        if (!anhChup.chiXem) {
-          var btnLay = el("button", "btn btn-tim btn-sm", "Đã lấy mẫu");
-          btnLay.type = "button";
-          btnLay.style.marginTop = "6px";
-
-          function updateBtnState() {
-            var checkedCount = checks.filter(function (c) { return c.checked; }).length;
-            btnLay.disabled = (checkedCount === 0);
-          }
-
-          checks.forEach(function (c) {
-            c.onchange = updateBtnState;
-          });
-          updateBtnState();
-
-          btnLay.onclick = function () {
-            var selectedKhoa = checks.filter(function (c) { return c.checked; }).map(function (c) { return c.dataset.khoa; });
-            if (!selectedKhoa.length) return;
-            thucHienThaoTac({
-              loai: "layMau",
-              tuan: anhChup.tuan,
-              sp: t.sp,
-              khoaLo: selectedKhoa
-            });
-          };
-
-          card.appendChild(btnLay);
-        }
+        var c = el("div", "p-3 rounded-xl bg-surface-container-low border border-surface-container-highest flex items-center justify-between");
+        var trai = el("div", "flex flex-col min-w-0");
+        trai.appendChild(el("span", "text-[13px] text-on-surface font-semibold", t.sp || ""));
+        trai.appendChild(el("span", "text-[11px] text-on-surface-variant font-mono-num", "✓ Đã lấy · " + (t.daLay.nguoi || "") + " " + dinhDangGio(t.daLay.gio)));
+        c.appendChild(trai);
+        c.appendChild(ic("check_circle", "text-secondary text-[22px]"));
+        list.appendChild(c);
+        return;
       }
+      var card = el("div", "p-3 rounded-xl bg-surface-container-low border border-purple-500/30 flex flex-col gap-2");
+      var dau = el("div", "flex items-center justify-between gap-2");
+      var tt = el("div", "flex flex-col min-w-0");
+      tt.appendChild(el("span", "text-[13px] text-on-surface font-semibold", t.sp || ""));
+      tt.appendChild(el("span", "text-[11px] text-amber-300", "○ Chưa lấy mẫu — tích lô đã lấy"));
+      dau.appendChild(tt);
+      dau.appendChild(ic("science", "text-purple-300 text-[22px]"));
+      card.appendChild(dau);
 
-      viewWrapper.appendChild(card);
+      var keys = t.loMoi && t.loMoi.length ? t.loMoi : (t.lo || []);
+      var checks = [];
+      keys.forEach(function (k) {
+        var lo = (anhChup.lo || []).find(function (l) { return l.khoa === k; });
+        var row = el("label", "flex items-center gap-2 p-2 rounded-lg bg-surface-container border border-surface-container-highest/60 text-[12px] font-mono-num text-on-surface");
+        var chk = el("input", "w-4 h-4 accent-purple-400");
+        chk.type = "checkbox";
+        chk.checked = true;
+        chk.disabled = !!anhChup.chiXem;
+        chk.dataset.khoa = k;
+        checks.push(chk);
+        row.appendChild(chk);
+        row.appendChild(el("span", null, lo ? (lo.thu || thuCua(lo.ngay)) + " " + dinhDangNgayThang(lo.ngay) + " · " + tenMay(lo) : k));
+        card.appendChild(row);
+      });
+
+      if (!anhChup.chiXem) {
+        var lay = nut(C.nutTim + " w-full !h-[44px]", "sell", "Đã lấy mẫu");
+        var capNhat = function () { lay.disabled = !checks.some(function (c) { return c.checked; }); };
+        checks.forEach(function (c) { c.onchange = capNhat; });
+        capNhat();
+        lay.onclick = function () {
+          var chon = checks.filter(function (c) { return c.checked; }).map(function (c) { return c.dataset.khoa; });
+          if (!chon.length) return;
+          thucHienThaoTac({ loai: "layMau", tuan: anhChup.tuan, sp: t.sp, khoaLo: chon });
+        };
+        card.appendChild(lay);
+      }
+      list.appendChild(card);
     });
-
-    container.appendChild(viewWrapper);
+    view.appendChild(list);
+    main.appendChild(view);
   }
 
   // ==========================================
-  // 6. MÀN HÌNH NGOẠI LỆ (EXCEPTIONS VIEW)
+  // NGOẠI LỆ — đúng các dòng ngoaiLe máy chủ trả
   // ==========================================
-  function renderExceptions(container) {
-    var viewWrapper = el("div", "exceptions-view");
-
-    var listNL = anhChup.ngoaiLe || [];
-    if (listNL.length === 0) {
-      viewWrapper.appendChild(el("div", "empty-state", "Không có cảnh báo ngoại lệ nào."));
-      container.appendChild(viewWrapper);
+  var NL = {
+    do: { the: "p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2 cursor-pointer", icon: "error", lop: "text-rose-400 text-[18px] shrink-0" },
+    vang: { the: "p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-2 cursor-pointer", icon: "help", lop: "text-amber-400 text-[18px] shrink-0" },
+    xanh: { the: "p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-start gap-2 cursor-pointer", icon: "info", lop: "text-secondary text-[18px] shrink-0" },
+    xam: { the: "p-3 rounded-xl bg-surface-container-low border border-surface-container-highest flex items-start gap-2 cursor-pointer", icon: "timer", lop: "text-on-surface-variant text-[18px] shrink-0" }
+  };
+  function renderExceptions(main) {
+    var view = el("div", "flex flex-col gap-3");
+    var ds = anhChup.ngoaiLe || [];
+    view.appendChild(dauTab("Ngoại lệ phòng rang", "Bấm một dòng để mở lô", ds.length + " Ngoại lệ",
+      "px-2 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-mono-num text-[11px] font-bold shrink-0"));
+    if (ds.length === 0) {
+      view.appendChild(el("div", "p-4 rounded-xl bg-surface-container-low border border-surface-container-highest text-[12px] font-mono-num text-on-surface-variant text-center", "Không có ngoại lệ nào."));
+      main.appendChild(view);
       return;
     }
-
-    listNL.forEach(function (nl) {
-      var card = el("div", "exception-card " + (nl.loai || "xam"));
-      card.textContent = nl.chu || "";
-      card.onclick = function () {
-        if (nl.khoa) {
-          detailBatchKhoa = nl.khoa;
-          currentView = "detail";
-          renderApp();
-        }
-      };
-      viewWrapper.appendChild(card);
+    var list = el("div", "flex flex-col gap-2");
+    ds.forEach(function (nl) {
+      var s = NL[nl.loai] || NL.xam;
+      var c = el("div", s.the);
+      c.appendChild(ic(s.icon, s.lop));
+      c.appendChild(el("p", "text-[12px] text-on-surface", nl.chu || ""));
+      c.onclick = function () { if (nl.khoa) mo("detail", nl.khoa); };
+      list.appendChild(c);
     });
-
-    container.appendChild(viewWrapper);
+    view.appendChild(list);
+    main.appendChild(view);
   }
 
   // ==========================================
-  // 7. THANH ĐIỀU HƯỚNG ĐÁY (BOTTOM NAV)
+  // THANH ĐÁY
   // ==========================================
-  function renderBottomNav(container) {
-    var nav = el("nav", "bottom-nav");
-
-    // Tab Hôm nay
-    var tabHomNay = el("button", "nav-tab" + (currentView === "today" ? " active" : ""));
-    tabHomNay.type = "button";
-    tabHomNay.appendChild(makeSvgIcon("list", 18));
-    tabHomNay.appendChild(el("span", null, "Hôm nay"));
-    tabHomNay.onclick = function () {
-      currentView = "today";
-      renderApp();
-    };
-    nav.appendChild(tabHomNay);
-
-    // Tab Túi mẫu
-    var tabTuiMau = el("button", "nav-tab" + (currentView === "samples" ? " active" : ""));
-    tabTuiMau.type = "button";
-    tabTuiMau.appendChild(makeSvgIcon("sample", 18));
-    tabTuiMau.appendChild(el("span", null, "Túi mẫu"));
-    tabTuiMau.onclick = function () {
-      currentView = "samples";
-      renderApp();
-    };
-    nav.appendChild(tabTuiMau);
-
-    // Tab Ngoại lệ
-    var tabNgoaiLe = el("button", "nav-tab" + (currentView === "exceptions" ? " active" : ""));
-    tabNgoaiLe.type = "button";
-    tabNgoaiLe.appendChild(makeSvgIcon("alert", 18));
-    tabNgoaiLe.appendChild(el("span", null, "Ngoại lệ"));
-
-    var dsNL = (anhChup && anhChup.ngoaiLe) || [];
-    var countNL = dsNL.length;
-    var hasRed = dsNL.some(function (x) { return x.loai === "do"; });
-
-    var badge = el("span", "nav-badge" + (hasRed ? " red" : ""), String(countNL));
-    tabNgoaiLe.appendChild(badge);
-
-    tabNgoaiLe.onclick = function () {
-      currentView = "exceptions";
-      renderApp();
-    };
-    nav.appendChild(tabNgoaiLe);
-
-    container.appendChild(nav);
+  function renderBottomNav(root) {
+    var nav = el("nav", "fixed bottom-0 w-full z-50 bg-surface/90 backdrop-blur-xl border-t border-surface-container-highest shadow-[0_-4px_20px_rgba(0,0,0,0.5)]");
+    var wrap = el("div", "max-w-md mx-auto flex items-center justify-around h-16 px-2");
+    var soLo = loCuaNgay(anhChup.lo || [], activeNgay, activeMay).length;
+    var soTui = (anhChup.tui || []).filter(function (t) { return !t.daLay; }).length;
+    var soNL = (anhChup.ngoaiLe || []).length;
+    [
+      { view: "today", icon: "assignment", chu: "Hôm nay", so: soLo, lopSo: "absolute -top-1 -right-2 bg-primary-container text-white text-[9px] font-mono-num font-bold px-1 rounded-full", bat: "flex-1 flex flex-col items-center justify-center py-1 text-primary font-semibold transition-colors" },
+      { view: "samples", icon: "science", chu: "Túi mẫu", so: soTui, lopSo: "absolute -top-1 -right-2 bg-purple-600 text-white text-[9px] font-mono-num font-bold px-1 rounded-full", bat: "flex-1 flex flex-col items-center justify-center py-1 text-purple-400 font-semibold transition-colors" },
+      { view: "exceptions", icon: "warning", chu: "Ngoại lệ", so: soNL, lopSo: "absolute -top-1 -right-2 bg-amber-500 text-stone-950 text-[9px] font-mono-num font-bold px-1 rounded-full", bat: "flex-1 flex flex-col items-center justify-center py-1 text-amber-400 font-semibold transition-colors" }
+    ].forEach(function (t) {
+      var dang = currentView === t.view || (t.view === "today" && currentView === "detail");
+      var b = el("button", dang ? t.bat : "flex-1 flex flex-col items-center justify-center py-1 text-on-surface-variant hover:text-on-surface transition-colors");
+      b.type = "button";
+      var r = el("div", "relative");
+      r.appendChild(ic(t.icon, "text-[22px]"));
+      if (t.so > 0) r.appendChild(el("span", t.lopSo, String(t.so)));
+      b.appendChild(r);
+      b.appendChild(el("span", dang ? "text-[11px] font-mono-num font-semibold mt-0.5" : "text-[11px] font-mono-num mt-0.5", t.chu));
+      b.onclick = function () { mo(t.view); };
+      wrap.appendChild(b);
+    });
+    nav.appendChild(wrap);
+    root.appendChild(nav);
   }
 
   // ==========================================
-  // KHỞI ĐỘNG ỨNG DỤNG
+  // KHỞI ĐỘNG
   // ==========================================
   if (!dangNhap) {
     currentView = "login";
@@ -1387,7 +1140,6 @@
         anhChup = res;
         currentView = "today";
       } else {
-        // Lỗi xác thực -> về màn chọn tên
         dangNhap = null;
         xoaMay(KHOA_DANG_NHAP);
         currentView = "login";
