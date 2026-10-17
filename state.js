@@ -2,6 +2,15 @@
 // Lỗi tạm: thao tác nằm lại hàng đợi, tự gửi lại. Lỗi khác = máy chủ từ chối (xem src/ApiLogic.js, src/Api.js).
 var LOI_GUI_LAI = ["NETWORK", "BAN", "LOI_MAY_CHU"];
 function guiLai(loi) { return LOI_GUI_LAI.indexOf(loi) >= 0; }
+var CAU_LOI_MAY_CHU_QUA_5 = "Máy chủ lỗi nhiều lần, thao tác này bị bỏ — báo anh Thanh";
+function demThuLai(op, loi) {
+  if (loi === "LOI_MAY_CHU") {
+    op.thu = (op.thu || 0) + 1;
+    if (op.thu > 5) return { tuChoi: true, chu: CAU_LOI_MAY_CHU_QUA_5 };
+  }
+  return { tuChoi: false };
+}
+
 // Lỗi đăng nhập: không phải thao tác sai -> giữ nguyên hàng đợi, bắt đăng nhập lại
 var LOI_DANG_NHAP = ["SAI_MA", "KHOA", "SAI_TEN", "CHUA_CO_MA"];
 function loiDangNhap(loi) { return LOI_DANG_NHAP.indexOf(loi) >= 0; }
@@ -68,7 +77,7 @@ function thucNhanXanh(goiY0, sua) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { LOI_GUI_LAI: LOI_GUI_LAI, guiLai: guiLai, loiDangNhap: loiDangNhap, opCuaNguoi: opCuaNguoi,
+  module.exports = { LOI_GUI_LAI: LOI_GUI_LAI, guiLai: guiLai, CAU_LOI_MAY_CHU_QUA_5: CAU_LOI_MAY_CHU_QUA_5, demThuLai: demThuLai, loiDangNhap: loiDangNhap, opCuaNguoi: opCuaNguoi,
     anhChupDungNguoi: anhChupDungNguoi, dangGoVaoO: dangGoVaoO, docSo: docSo, soVN: soVN, haoHut: haoHut, mauHaoHut: mauHaoHut,
     themHangDoi: themHangDoi, boHangDoi: boHangDoi, choGuiCuaLo: choGuiCuaLo, taoMaThaoTac: taoMaThaoTac,
     demNguoc: demNguoc, loCuaNgay: loCuaNgay, thucNhanXanh: thucNhanXanh };

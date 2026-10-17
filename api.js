@@ -64,7 +64,19 @@ function xaHangDoi(dangNhap, suKien) {
     if (!op) { dangXa_ = false; suKien({ loai: "xong" }); return; }
     goiApi(dangNhap, op).then(function (kq) {
       if (!kq.ok && loiDangNhap(kq.loi)) { dangXa_ = false; suKien({ loai: "dangNhapLai", op: op, kq: kq }); return; }
-      if (!kq.ok && guiLai(kq.loi)) { dangXa_ = false; suKien({ loai: "tam", op: op, kq: kq }); return; }
+      if (!kq.ok && guiLai(kq.loi)) {
+        var xet = demThuLai(op, kq.loi);
+        if (xet.tuChoi) {
+          ghiMay(KHOA_HANG_DOI, boHangDoi(docMay(KHOA_HANG_DOI, []), op.id));
+          suKien({ loai: "tuChoi", op: op, kq: { ok: false, loi: kq.loi, chu: xet.chu } });
+          tiep();
+          return;
+        }
+        ghiMay(KHOA_HANG_DOI, docMay(KHOA_HANG_DOI, []).map(function (x) { return x.id === op.id ? op : x; }));
+        dangXa_ = false;
+        suKien({ loai: "tam", op: op, kq: kq });
+        return;
+      }
       ghiMay(KHOA_HANG_DOI, boHangDoi(docMay(KHOA_HANG_DOI, []), op.id));
       suKien({ loai: kq.ok ? "da" : "tuChoi", op: op, kq: kq });
       tiep();
