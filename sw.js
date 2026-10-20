@@ -21,5 +21,7 @@ self.addEventListener("fetch", function (e) {
     var sao = r.clone();
     if (r.ok) caches.open(BAN).then(function (c) { c.put(e.request, sao); });
     return r;
-  }).catch(function () { return caches.match(e.request, { ignoreSearch: true }); }));
+  }).catch(function () {
+    return caches.match(e.request, { ignoreSearch: true }).then(function (c) { return c || (e.request.mode === "navigate" ? caches.match("index.html") : null) || new Response("", { status: 504 }); });
+  }));
 });
