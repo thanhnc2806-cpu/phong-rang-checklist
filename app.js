@@ -31,7 +31,7 @@
 
   // ---------- Lớp Tailwind (chuỗi đầy đủ để Tailwind quét được) ----------
   var C = {
-    nutChinh: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-stone-950 text-[12px] font-mono-num font-bold shadow-lg shadow-amber-900/40 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
+    nutChinh: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-accent-deep hover:bg-[#8F0F15] text-white text-[12px] font-mono-num font-bold shadow-lg shadow-black/40 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
     nutPhu: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface text-[12px] font-mono-num font-semibold border border-surface-container-highest active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
     nutTim: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[12px] font-mono-num font-bold active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
     o: "flex flex-col bg-surface-container-lowest p-2.5 rounded-xl border border-surface-container-highest",
@@ -230,12 +230,12 @@
 
   // ---------- Đầu trang cố định ----------
   function renderHeader(root) {
-    var header = el("header", "fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl border-b border-surface-container-highest shadow-[0_4px_20px_rgba(0,0,0,0.5)]");
+    var header = el("header", "fixed top-0 w-full z-50 bg-navy/95 backdrop-blur-xl border-b border-surface-container-highest shadow-[0_4px_20px_rgba(0,0,0,0.5)]");
     var wrap = el("div", "max-w-md mx-auto px-4 py-2.5 flex flex-col gap-2");
 
     // Dải trên: trạng thái mạng + ngày hôm nay
     var matMang = !navigator.onLine || !!anhChup.cuDaLuu;
-    var sub = el("div", "flex items-center justify-between bg-surface-container-low/90 px-3 py-1 rounded-lg border border-surface-container-highest/50");
+    var sub = el("div", "flex items-center justify-between bg-navy-deep/70 px-3 py-1 rounded-lg border border-surface-container-highest/50");
     var trai = el("div", "flex items-center gap-2 min-w-0");
     var cham = el("span", "flex h-2 w-2 relative");
     cham.appendChild(el("span", matMang ? "absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" : "animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"));
@@ -1177,7 +1177,7 @@
   // THANH ĐÁY
   // ==========================================
   function renderBottomNav(root) {
-    var nav = el("nav", "fixed bottom-0 w-full z-50 bg-surface/90 backdrop-blur-xl border-t border-surface-container-highest shadow-[0_-4px_20px_rgba(0,0,0,0.5)]");
+    var nav = el("nav", "fixed bottom-0 w-full z-50 bg-navy/95 backdrop-blur-xl border-t border-surface-container-highest shadow-[0_-4px_20px_rgba(0,0,0,0.5)]");
     var wrap = el("div", "max-w-md mx-auto flex items-center justify-around h-16 px-2");
     var soLo = loCuaNgay(anhChup.lo || [], activeNgay, activeMay).length;
     var soTui = demTuiCanLam(anhChup.tui || []);
