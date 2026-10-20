@@ -1,8 +1,8 @@
 // Chỉ đệm vỏ trang để mở được khi mất mạng (spec §6.3). Dữ liệu lô KHÔNG đệm ở đây: api.js giữ ảnh chụp cuối trong localStorage.
 // Có mạng thì luôn lấy bản mới (sửa giao diện không bị kẹt bản cũ); mất mạng mới dùng bản đệm.
-var BAN = "checklist-v2";
+var BAN = "checklist-v3";
 var VO = ["./", "index.html", "styles.css", "config.js", "state.js", "api.js", "app.js", "manifest.webmanifest",
-  "icon-192.png", "icon-512.png", "fonts/inter-latin.woff2", "fonts/inter-latin-ext.woff2", "fonts/inter-vietnamese.woff2",
+  "icon-192.png", "icon-512.png", "logo-mark.png", "handle.png", "fonts/inter-latin.woff2", "fonts/inter-latin-ext.woff2", "fonts/inter-vietnamese.woff2",
   "fonts/jbmono-latin.woff2", "fonts/jbmono-latin-ext.woff2", "fonts/jbmono-vietnamese.woff2", "fonts/material-symbols.woff2"];
 
 self.addEventListener("install", function (e) {

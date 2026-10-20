@@ -252,8 +252,9 @@
     // Tên app + người đang dùng
     var hang = el("div", "flex items-center justify-between gap-2");
     var brand = el("div", "flex items-center gap-2.5 min-w-0");
-    var logo = el("div", "w-9 h-9 rounded-xl bg-gradient-to-br from-primary-container to-amber-600 flex items-center justify-center shrink-0 shadow-lg shadow-amber-900/30");
-    logo.appendChild(ic("coffee", "text-white text-[20px]"));
+    var logo = el("img", "w-9 h-9 rounded-xl shrink-0 shadow-lg shadow-black/40 ring-1 ring-white/10");
+    logo.src = "logo-mark.png";
+    logo.alt = "Thợ rang";
     brand.appendChild(logo);
     var chu = el("div", "flex flex-col min-w-0");
     var dong1 = el("div", "flex items-center gap-1.5");
@@ -343,14 +344,19 @@
     var main = el("main", "max-w-md mx-auto w-full px-4 pt-16 pb-8 flex flex-col gap-4");
 
     var dau = el("div", "flex flex-col items-center gap-2 text-center");
-    var logo = el("div", "w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-container to-amber-600 flex items-center justify-center shadow-lg shadow-amber-900/30");
-    logo.appendChild(ic("coffee", "text-white text-[30px]"));
+    var logo = el("img", "w-14 h-14 rounded-2xl shadow-lg shadow-black/40 ring-1 ring-white/10");
+    logo.src = "logo-mark.png";
+    logo.alt = "Thợ rang";
     dau.appendChild(logo);
     var t = el("div", "flex items-center gap-1.5");
     t.appendChild(el("h1", "text-[20px] text-on-surface font-bold", "Checklist Mẻ Rang"));
     t.appendChild(el("span", "px-1.5 py-0.5 rounded text-[9px] font-mono-num bg-primary/20 text-primary font-bold", "INTENSO"));
     dau.appendChild(t);
     dau.appendChild(el("p", "text-[12px] text-on-surface-variant", "Phòng Rang Intenso — chọn tên để vào ca"));
+    var handle = el("img", "h-4 opacity-70 mt-1");
+    handle.src = "handle.png";
+    handle.alt = "@thorang_ditour";
+    dau.appendChild(handle);
     main.appendChild(dau);
 
     var the = el("section", "flex flex-col gap-3 p-4 rounded-2xl bg-surface-container-low border border-surface-container-highest shadow-2xl");
