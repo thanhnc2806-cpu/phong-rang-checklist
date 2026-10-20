@@ -155,6 +155,7 @@
     if (!dangNhap) return;
     xaHangDoi(dangNhap, function (evt) {
       if (evt.loai === "da") {
+        if (!dangNhap) return;  // đã Đổi người trong lúc đang gửi
         taiAnhChup(dangNhap).then(function (res) {
           if (res && res.ok) anhChup = res;
           renderNen();

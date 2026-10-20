@@ -54,9 +54,11 @@ var dangXa_ = false;
 // Gửi lần lượt từ đầu hàng đợi (chỉ thao tác của người đang đăng nhập). Lỗi tạm -> dừng, giữ nguyên.
 // Lỗi đăng nhập -> dừng, giữ nguyên, báo "dangNhapLai". Bị từ chối -> bỏ mục đó, báo "tuChoi".
 // suKien({ loai: "xong" | "tam" | "dangNhapLai" | "tuChoi" | "da", op, kq })
-function xaHangDoi(dangNhap, suKien) {
+function xaHangDoi(dangNhap, suKien0) {
   if (dangXa_) return;
   dangXa_ = true;
+  // Người nghe ném lỗi (vd. đã Đổi người giữa chừng) không được làm kẹt cờ dangXa_ -> hàng đợi ngừng gửi tới khi tải lại trang
+  function suKien(e) { try { suKien0(e); } catch (x) { console.error(x); } }
   (function tiep() {
     var q = docMay(KHOA_HANG_DOI, []);
     if (!q.length) { dangXa_ = false; suKien({ loai: "xong" }); return; }
