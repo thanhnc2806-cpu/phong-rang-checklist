@@ -211,6 +211,7 @@
     else if (currentView === "detail") renderDetail(main);
     else if (currentView === "samples") renderSamples(main);
     else if (currentView === "exceptions") renderExceptions(main);
+    main.appendChild(chuKy());
     root.appendChild(main);
     renderBottomNav(root);
   }
@@ -340,6 +341,17 @@
   var selectedUserMa = "thanh";
   var loginErrorText = "";
 
+  // Chữ ký tác giả: cuối mọi màn, nằm trong luồng trang (không đè lên thanh điều hướng)
+  function chuKy() {
+    var hang = el("footer", "flex flex-col items-center gap-1.5 pt-6 pb-2");
+    hang.appendChild(el("span", "block w-8 h-px bg-surface-container-highest"));
+    var img = el("img", "h-4 opacity-60");
+    img.src = "handle.png";
+    img.alt = "@thorang_ditour";
+    hang.appendChild(img);
+    return hang;
+  }
+
   function renderLogin(root) {
     var main = el("main", "max-w-md mx-auto w-full px-4 pt-16 pb-8 flex flex-col gap-4");
 
@@ -353,10 +365,6 @@
     t.appendChild(el("span", "px-1.5 py-0.5 rounded text-[9px] font-mono-num bg-primary/20 text-primary font-bold", "INTENSO"));
     dau.appendChild(t);
     dau.appendChild(el("p", "text-[12px] text-on-surface-variant", "Phòng Rang Intenso — chọn tên để vào ca"));
-    var handle = el("img", "h-4 opacity-70 mt-1");
-    handle.src = "handle.png";
-    handle.alt = "@thorang_ditour";
-    dau.appendChild(handle);
     main.appendChild(dau);
 
     var the = el("section", "flex flex-col gap-3 p-4 rounded-2xl bg-surface-container-low border border-surface-container-highest shadow-2xl");
@@ -415,6 +423,7 @@
     };
     the.appendChild(vao);
     main.appendChild(the);
+    main.appendChild(chuKy());
     root.appendChild(main);
   }
 
