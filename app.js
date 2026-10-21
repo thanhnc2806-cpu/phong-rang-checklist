@@ -424,7 +424,8 @@
           else if (errKey === "KHOA") loginErrorText = "Sai quá nhiều lần — thử lại sau 15 phút";
           else if (errKey === "CHUA_CO_MA") loginErrorText = "Anh Thanh chưa cấp mã cho tên này";
           else if (errKey === "NETWORK") loginErrorText = "Không có mạng — thử lại";
-          else loginErrorText = errKey || "Đăng nhập không thành công";
+          else if (errKey === "BAN") loginErrorText = "Máy chủ đang bận — thử lại sau ít giây";
+          else loginErrorText = "Đăng nhập không thành công — thử lại";
         }
         renderApp();
       });
@@ -444,7 +445,7 @@
     var ds = loCuaNgay(anhChup.lo || [], activeNgay, activeMay);
 
     // 1. Bốn ô số
-    var quenBam = ds.filter(function (l) { return (l.buoc || []).some(function (b) { return b.mau === "vang"; }); }).length;
+    var quenBam = ds.filter(function (l) { return !l.xong && (l.buoc || []).some(function (b) { return b.mau === "vang"; }); }).length;
     var daXong = ds.filter(function (l) { return l.xong; }).length;
     var tuiChua = demTuiCanLam(anhChup.tui || []);
     var kpi = el("section", "grid grid-cols-4 gap-2 w-full");
@@ -525,7 +526,7 @@
     var con = ds.filter(function (l) { return !active || l.khoa !== active.khoa; });
     if (con.length === 0) return;
     var sec = el("section", "flex flex-col gap-2.5");
-    sec.appendChild(el("span", "text-[11px] font-mono-num uppercase tracking-wider text-on-surface-variant font-bold px-1", (allDone ? "Các lô trong ngày" : "Hàng chờ") + " (" + con.length + " lô còn lại)"));
+    sec.appendChild(el("span", "text-[11px] font-mono-num uppercase tracking-wider text-on-surface-variant font-bold px-1", (allDone ? "Các lô trong ngày (" + con.length + " lô)" : "Hàng chờ (" + con.filter(function (l) { return !l.xong; }).length + " lô còn lại)")));
     con.forEach(function (b) { sec.appendChild(theHangCho(b)); });
     main.appendChild(sec);
   }
