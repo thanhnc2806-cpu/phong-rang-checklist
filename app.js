@@ -143,6 +143,13 @@
     if (dangGoVaoO(document.activeElement && document.activeElement.tagName)) return;
     renderApp();
   }
+  // Bản nháp ô đang gõ: vẽ lại do việc nền (ô mất focus) không được làm mất số vừa gõ
+  var nhapTam = {};
+  function giuNhap(inp, khoa, macDinh) {
+    inp.value = nhapTam.hasOwnProperty(khoa) ? nhapTam[khoa] : macDinh;
+    inp.addEventListener("input", function () { nhapTam[khoa] = inp.value; });
+  }
+  function boNhap(tienTo) { Object.keys(nhapTam).forEach(function (k) { if (k.indexOf(tienTo) === 0) delete nhapTam[k]; }); }
   function veLaiDangNhap(chu) {
     xoaMay(KHOA_DANG_NHAP);
     dangNhap = null;
@@ -557,6 +564,7 @@
     phaiBox.appendChild(phai);
     card.appendChild(phaiBox);
     card.onclick = function () {
+      if (b.xong) { mo("detail", b.khoa); return; }  // lô đã xong không lên thẻ to: mở chi tiết để sửa lại kg ra
       selectedBatchKeys[activeNgay] = b.khoa;
       renderApp();
       window.scrollTo(0, 0);
@@ -799,7 +807,7 @@
           var nhap = el("div", "flex items-center gap-1 shrink-0");
           var inp = el("input", C.nhapSo + " !w-[90px] !text-[15px]");
           inp.inputMode = "decimal";
-          inp.value = soVN(d.kg, 2);
+          giuNhap(inp, "xanh|" + batch.khoa + "|" + g.vao + "|" + g.tp + "|" + d.loai, soVN(d.kg, 2));
           oNhap[g.vao + "|" + g.tp + "|" + d.loai] = inp;
           nhap.appendChild(inp);
           nhap.appendChild(el("span", "text-[12px] font-mono-num text-on-surface-variant", "kg"));
@@ -828,7 +836,7 @@
       nhom.appendChild(dung);
     } else {
       var huy = nut(C.nutPhu, "close", "Hủy", "text-[18px] text-on-surface-variant");
-      huy.onclick = function () { editModeNhanXanh[batch.khoa] = false; renderApp(); };
+      huy.onclick = function () { editModeNhanXanh[batch.khoa] = false; boNhap("xanh|" + batch.khoa + "|"); renderApp(); };
       nhom.appendChild(huy);
       var gui = nut(C.nutChinh, "done_all", "Gửi sửa ⓪");
       gui.onclick = function () {
@@ -840,6 +848,7 @@
         });
         if (loi) return;
         editModeNhanXanh[batch.khoa] = false;
+        boNhap("xanh|" + batch.khoa + "|");
         thucHienThaoTac({ loai: "nhanXanh", khoa: batch.khoa, thuc: thucNhanXanh(batch.goiY0, suaMap) });
       };
       nhom.appendChild(gui);
@@ -860,7 +869,7 @@
     var dongNhap = el("div", "flex items-center gap-1 mt-1");
     var inp = el("input", C.nhapSo);
     inp.inputMode = "decimal";
-    inp.value = batch.kgRa !== null && batch.kgRa !== undefined ? soVN(batch.kgRa) : "";
+    giuNhap(inp, "can|" + batch.khoa, batch.kgRa !== null && batch.kgRa !== undefined ? soVN(batch.kgRa) : "");
     inp.readOnly = chiXem;
     inp.placeholder = "0,0";
     dongNhap.appendChild(inp);
@@ -942,7 +951,7 @@
       } else {
         kimBoc.style.display = "none";
       }
-      luu.disabled = ra === null;
+      luu.disabled = hh === null;  // cùng luật máy chủ: 0 < ra ≤ kg vào
     }
     inp.oninput = capNhat;
     capNhat();
@@ -950,7 +959,8 @@
     if (!chiXem) {
       luu.onclick = function () {
         var s = inp.value.trim();
-        if (docSo(s) === null) return;
+        if (haoHut(batch.kgVao, docSo(s)) === null) return;
+        boNhap("can|" + batch.khoa);
         thucHienThaoTac({ loai: "can", khoa: batch.khoa, kgRa: s });
       };
       body.appendChild(luu);
@@ -969,7 +979,7 @@
     var dong = el("div", "flex items-center gap-1 mt-1");
     var inp = el("input", C.nhapSo);
     inp.inputMode = "decimal";
-    inp.value = batch.kgTron !== null && batch.kgTron !== undefined ? soVN(batch.kgTron) : "";
+    giuNhap(inp, "tron|" + batch.khoa, batch.kgTron !== null && batch.kgTron !== undefined ? soVN(batch.kgTron) : "");
     inp.readOnly = chiXem;
     inp.placeholder = "0,0";
     dong.appendChild(inp);
@@ -986,6 +996,7 @@
     luu.onclick = function () {
       var s = inp.value.trim();
       if (docSo(s) === null) return;
+      boNhap("tron|" + batch.khoa);
       thucHienThaoTac({ loai: "tron", khoa: batch.khoa, kg: s });
     };
     body.appendChild(luu);
