@@ -274,7 +274,7 @@
     brand.appendChild(chu);
     hang.appendChild(brand);
 
-    var doiNguoi = el("button", "flex items-center gap-1 shrink-0 bg-surface-container-high px-2 py-1 rounded-xl border border-surface-container-highest active:scale-95 transition-transform");
+    var doiNguoi = el("button", "flex items-center gap-1 shrink-0 min-h-[48px] bg-surface-container-high px-2 py-1 rounded-xl border border-surface-container-highest active:scale-95 transition-transform");
     doiNguoi.type = "button";
     doiNguoi.title = "Đổi người";
     doiNguoi.appendChild(ic(anhChup.chiXem ? "lock" : "badge", "text-primary text-[18px]"));
@@ -381,8 +381,8 @@
     DANH_SACH_NGUOI.forEach(function (u) {
       var chon = selectedUserMa === u.ma;
       var b = el("button", chon
-        ? "flex items-center gap-1.5 h-[46px] px-3 rounded-xl bg-surface-container-highest text-primary border border-primary/50 text-[13px] font-semibold"
-        : "flex items-center gap-1.5 h-[46px] px-3 rounded-xl bg-surface-container text-on-surface border border-surface-container-highest text-[13px] font-semibold");
+        ? "flex items-center gap-1.5 h-[48px] px-3 rounded-xl bg-surface-container-highest text-primary border border-primary/50 text-[13px] font-semibold"
+        : "flex items-center gap-1.5 h-[48px] px-3 rounded-xl bg-surface-container text-on-surface border border-surface-container-highest text-[13px] font-semibold");
       b.type = "button";
       b.appendChild(ic("person", chon ? "text-[16px] text-primary" : "text-[16px] text-on-surface-variant"));
       b.appendChild(el("span", null, u.ten));
@@ -480,8 +480,8 @@
       var hangNgay = el("section", "flex items-center justify-between gap-1 bg-surface-container-low p-1.5 rounded-xl border border-surface-container-highest");
       dsNgay.forEach(function (ngay) {
         var b = el("button", activeNgay === ngay
-          ? "flex-1 py-1.5 rounded-lg bg-surface-container-highest text-primary text-[11px] font-mono-num font-semibold transition-all"
-          : "flex-1 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface text-[11px] font-mono-num transition-all",
+          ? "flex-1 min-h-[48px] py-1.5 rounded-lg bg-surface-container-highest text-primary text-[11px] font-mono-num font-semibold transition-all"
+          : "flex-1 min-h-[48px] py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface text-[11px] font-mono-num transition-all",
           ngayMap[ngay] + " " + dinhDangNgayThang(ngay) + (ngay === anhChup.homNay ? " · nay" : ""));
         b.type = "button";
         b.onclick = function () { activeNgay = ngay; renderApp(); };
@@ -493,8 +493,8 @@
     [{ val: "", label: "Tất cả" }, { val: "30K", label: "Máy 30KG" }, { val: "5K", label: "Máy 5KG" }].forEach(function (m) {
       var so = loCuaNgay(anhChup.lo || [], activeNgay, m.val).length;
       var b = el("button", activeMay === m.val
-        ? "flex-1 py-1.5 rounded-lg bg-surface-container-highest text-primary text-[11px] font-mono-num font-semibold transition-all"
-        : "flex-1 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface text-[11px] font-mono-num transition-all",
+        ? "flex-1 min-h-[48px] py-1.5 rounded-lg bg-surface-container-highest text-primary text-[11px] font-mono-num font-semibold transition-all"
+        : "flex-1 min-h-[48px] py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface text-[11px] font-mono-num transition-all",
         m.label + " (" + so + ")");
       b.type = "button";
       b.onclick = function () { activeMay = m.val; renderApp(); };
@@ -661,13 +661,13 @@
     v.trong.appendChild(steps);
 
     var chan = el("div", "flex items-center gap-2 pt-2 border-t border-surface-container-highest");
-    var xem = el("button", "flex-1 flex items-center justify-center gap-1.5 h-[46px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface border border-surface-container-highest text-[12px] font-mono-num font-semibold active:scale-95 transition-all");
+    var xem = el("button", "flex-1 flex items-center justify-center gap-1.5 h-[48px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface border border-surface-container-highest text-[12px] font-mono-num font-semibold active:scale-95 transition-all");
     xem.type = "button";
     xem.appendChild(ic("checklist", "text-[16px] text-primary"));
     xem.appendChild(el("span", null, "Xem đủ lô"));
     xem.onclick = function () { mo("detail", batch.khoa); };
     chan.appendChild(xem);
-    var sang = el("button", "w-[46px] h-[46px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface border border-surface-container-highest flex items-center justify-center shrink-0 active:scale-95 transition-all");
+    var sang = el("button", "w-[48px] h-[48px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface border border-surface-container-highest flex items-center justify-center shrink-0 active:scale-95 transition-all");
     sang.type = "button";
     sang.title = "Mở chi tiết lô";
     sang.appendChild(ic("chevron_right", "text-[20px]"));
@@ -1009,7 +1009,7 @@
   function renderDetail(main) {
     var batch = (anhChup.lo || []).find(function (l) { return l.khoa === detailBatchKhoa; });
 
-    var lui = el("button", "self-start flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface border border-surface-container-highest text-[12px] font-mono-num font-semibold active:scale-95 transition-all");
+    var lui = el("button", "self-start min-h-[48px] flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface border border-surface-container-highest text-[12px] font-mono-num font-semibold active:scale-95 transition-all");
     lui.type = "button";
     lui.appendChild(ic("arrow_back", "text-[16px]"));
     lui.appendChild(el("span", null, "Quay lại"));
