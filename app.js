@@ -941,7 +941,7 @@
       so.className = s.so;
       so.textContent = hh === null ? "—" : soVN(hh, 1);
       phanTram.className = "text-[14px] font-mono-num font-bold " + (k === "xanh" ? "text-secondary" : k === "thap" ? "text-amber-400" : k === "cao" ? "text-rose-400" : "text-on-surface-variant");
-      chenh.textContent = hh !== null ? "Hao hụt: −" + soVN(batch.kgVao - ra, 2) + " kg" : "Kg vào: " + soVN(batch.kgVao, 1) + " kg";
+      chenh.textContent = hh !== null ? "Hao hụt: " + soVN(batch.kgVao - ra, 2) + " kg" : "Kg vào: " + soVN(batch.kgVao, 1) + " kg";
       congThuc.textContent = hh !== null ? "Công thức: (" + soVN(batch.kgVao, 2) + " − " + soVN(ra, 2) + ") / " + soVN(batch.kgVao, 2) : "Công thức: (vào − ra) / vào";
       viTriChu.className = s.chu;
       viTriChu.textContent = hh !== null ? "Vị trí: " + soVN(hh, 1) + "% [" + s.ten + "]" : "";
