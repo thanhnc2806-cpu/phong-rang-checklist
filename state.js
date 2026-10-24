@@ -86,9 +86,25 @@ function thucNhanXanh(goiY0, sua) {
   });
 }
 
+// Số trên tab Order: anh/Minh = lệnh chờ xác nhận; B.An/Vinh = lệnh đã chốt còn phần chênh phải xuất; Đoan = 0
+function demOrderCanLam(order, quyen) {
+  quyen = quyen || [];
+  return (order || []).filter(function (l) {
+    return (quyen.indexOf("orderXacNhan") >= 0 && l.trangThai === "cho") ||
+      (quyen.indexOf("orderXuat") >= 0 && l.trangThai === "chot" && l.chenh && l.chenh.length > 0);
+  }).length;
+}
+
+// Ô Chốt: mặc định = ds (đề xuất / chốt cũ); sua = { loai: "245" }. Có ô không phải số -> null (nút xác nhận tắt)
+function chotTuO(ds, sua) {
+  var ra = ds.map(function (d) { return { loai: d.loai, kg: sua && sua.hasOwnProperty(d.loai) ? docSo(sua[d.loai]) : d.kg }; });
+  return ra.some(function (d) { return d.kg === null; }) ? null : ra;
+}
+
 if (typeof module !== "undefined") {
   module.exports = { LOI_GUI_LAI: LOI_GUI_LAI, guiLai: guiLai, CAU_LOI_MAY_CHU_QUA_5: CAU_LOI_MAY_CHU_QUA_5, demThuLai: demThuLai, loiDangNhap: loiDangNhap, opCuaNguoi: opCuaNguoi,
     anhChupDungNguoi: anhChupDungNguoi, dangGoVaoO: dangGoVaoO, docSo: docSo, soVN: soVN, haoHut: haoHut, mauHaoHut: mauHaoHut,
     themHangDoi: themHangDoi, boHangDoi: boHangDoi, choGuiCuaLo: choGuiCuaLo, taoMaThaoTac: taoMaThaoTac,
-    demNguoc: demNguoc, tuiCanLam: tuiCanLam, demTuiCanLam: demTuiCanLam, loCuaNgay: loCuaNgay, thucNhanXanh: thucNhanXanh };
+    demNguoc: demNguoc, tuiCanLam: tuiCanLam, demTuiCanLam: demTuiCanLam, loCuaNgay: loCuaNgay, thucNhanXanh: thucNhanXanh,
+    demOrderCanLam: demOrderCanLam, chotTuO: chotTuO };
 }

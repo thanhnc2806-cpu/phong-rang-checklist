@@ -764,6 +764,309 @@
   "Đảo Tự Nhiên",
   "Đảo Mật",
   "Mía Đỏ Decaf",
-  "Gia công"
+  "THA2 Washed",
+  "Gia công",
+  "R&D"
+ ],
+ "quyenOrder": [
+  "orderXuat"
+ ],
+ "spOrder": [
+  "Đá Xám Đậm",
+  "Đá Xám Nhạt",
+  "Phin Cổ Đậm",
+  "Phin Cổ Siêu Đậm",
+  "Samba Nova",
+  "Samba L2",
+  "Và Pha",
+  "Tôi Ổn",
+  "Biển Sâu",
+  "Hồng Nhung",
+  "Mận Hạ",
+  "Người Cha",
+  "Cúc La Mã",
+  "Sen Trắng",
+  "R&C",
+  "Ara Rang Đậm",
+  "Nhung Đỏ",
+  "Tuyết Sơn Lên Men",
+  "Núi Mây Tự Nhiên",
+  "Sao Mai Tự Nhiên",
+  "Sao Mai 48",
+  "Dòng K 48",
+  "Đảo Tự Nhiên",
+  "Đảo Mật",
+  "Mía Đỏ Decaf",
+  "THA2 Washed"
+ ],
+ "order": [
+  {
+   "ma": "L2",
+   "may": "5K",
+   "tu": "2026-10-19",
+   "den": "2026-10-21",
+   "loaiLenh": "chinh",
+   "trangThai": "cho",
+   "dong": [
+    {
+     "sp": "Biển Sâu",
+     "kg": 4
+    },
+    {
+     "sp": "Hồng Nhung",
+     "kg": 6
+    },
+    {
+     "sp": "THA2 Washed",
+     "kg": 3
+    }
+   ],
+   "chot": null,
+   "daXuat": {},
+   "nguoiTao": "Đoan",
+   "gioTao": "2026-10-19 15:30",
+   "nguoiXacNhan": "",
+   "gioXacNhan": "",
+   "ngayXacNhanDau": "",
+   "deXuat": [
+    {
+     "loai": "Nho Đen",
+     "kg": 0.7
+    },
+    {
+     "loai": "Dưa Lưới",
+     "kg": 0.2
+    },
+    {
+     "loai": "Rửa Sạch",
+     "kg": 3.1
+    },
+    {
+     "loai": "Mật Ong",
+     "kg": 0.7
+    },
+    {
+     "loai": "Nguồn Miến",
+     "kg": 1.8
+    },
+    {
+     "loai": "Nguồn Hồng",
+     "kg": 1.1
+    }
+   ],
+   "chenh": [],
+   "nhac": [
+    "Đảo Mật"
+   ],
+   "khongCT": [
+    "THA2 Washed"
+   ],
+   "tienDo": [
+    {
+     "sp": "Biển Sâu",
+     "tt": "san",
+     "chu": "Sẵn sàng giao"
+    },
+    {
+     "sp": "Hồng Nhung",
+     "tt": "chua",
+     "chu": "Chưa rang"
+    },
+    {
+     "sp": "THA2 Washed",
+     "tt": "chua",
+     "chu": "Chưa rang"
+    }
+   ]
+  },
+  {
+   "ma": "L1",
+   "may": "30K",
+   "tu": "2026-10-19",
+   "den": "2026-10-25",
+   "loaiLenh": "chinh",
+   "trangThai": "chot",
+   "dong": [
+    {
+     "sp": "Sen Trắng",
+     "kg": 8
+    },
+    {
+     "sp": "Đá Xám Nhạt",
+     "kg": 30
+    },
+    {
+     "sp": "Hồng Nhung",
+     "kg": 50
+    },
+    {
+     "sp": "Samba Nova",
+     "kg": 150
+    },
+    {
+     "sp": "Đảo Mật",
+     "kg": 40
+    }
+   ],
+   "chot": [
+    {
+     "loai": "Nguồn Hoa Nhài",
+     "kg": 1.9
+    },
+    {
+     "loai": "Nguồn Bánh Anh Đào",
+     "kg": 1
+    },
+    {
+     "loai": "Vườn B",
+     "kg": 12
+    },
+    {
+     "loai": "Vườn E",
+     "kg": 12
+    },
+    {
+     "loai": "Vườn Mật R",
+     "kg": 12
+    },
+    {
+     "loai": "Nguồn Miến",
+     "kg": 15
+    },
+    {
+     "loai": "Nguồn Hồng",
+     "kg": 9
+    },
+    {
+     "loai": "Vườn Bắc Ướt",
+     "kg": 144
+    },
+    {
+     "loai": "Vườn Bắc Mật",
+     "kg": 36
+    },
+    {
+     "loai": "Đảo Mật",
+     "kg": 48
+    }
+   ],
+   "daXuat": {
+    "Vườn B": 12
+   },
+   "nguoiTao": "Đoan",
+   "gioTao": "2026-10-19 15:30",
+   "nguoiXacNhan": "Người B",
+   "gioXacNhan": "2026-10-19 15:30",
+   "ngayXacNhanDau": "2026-10-19",
+   "deXuat": [
+    {
+     "loai": "Nguồn Hoa Nhài",
+     "kg": 1.9
+    },
+    {
+     "loai": "Nguồn Bánh Anh Đào",
+     "kg": 1
+    },
+    {
+     "loai": "Vườn B",
+     "kg": 12
+    },
+    {
+     "loai": "Vườn E",
+     "kg": 12
+    },
+    {
+     "loai": "Vườn Mật R",
+     "kg": 12
+    },
+    {
+     "loai": "Nguồn Miến",
+     "kg": 15
+    },
+    {
+     "loai": "Nguồn Hồng",
+     "kg": 9
+    },
+    {
+     "loai": "Vườn Bắc Ướt",
+     "kg": 144
+    },
+    {
+     "loai": "Vườn Bắc Mật",
+     "kg": 36
+    },
+    {
+     "loai": "Đảo Mật",
+     "kg": 48
+    }
+   ],
+   "chenh": [
+    {
+     "loai": "Nguồn Hoa Nhài",
+     "kg": 1.9
+    },
+    {
+     "loai": "Nguồn Bánh Anh Đào",
+     "kg": 1
+    },
+    {
+     "loai": "Vườn E",
+     "kg": 12
+    },
+    {
+     "loai": "Vườn Mật R",
+     "kg": 12
+    },
+    {
+     "loai": "Nguồn Miến",
+     "kg": 15
+    },
+    {
+     "loai": "Nguồn Hồng",
+     "kg": 9
+    },
+    {
+     "loai": "Vườn Bắc Ướt",
+     "kg": 144
+    },
+    {
+     "loai": "Vườn Bắc Mật",
+     "kg": 36
+    },
+    {
+     "loai": "Đảo Mật",
+     "kg": 48
+    }
+   ],
+   "nhac": [],
+   "khongCT": [],
+   "tienDo": [
+    {
+     "sp": "Sen Trắng",
+     "tt": "dang",
+     "chu": "Lô 1/1 · ⓪ Nhân xanh"
+    },
+    {
+     "sp": "Đá Xám Nhạt",
+     "tt": "dang",
+     "chu": "Lô 1/1 · ⓪ Nhân xanh"
+    },
+    {
+     "sp": "Hồng Nhung",
+     "tt": "dang",
+     "chu": "Lô 1/1 · ⓪ Nhân xanh"
+    },
+    {
+     "sp": "Samba Nova",
+     "tt": "dang",
+     "chu": "Lô 1/1 · ⓪ Nhân xanh"
+    },
+    {
+     "sp": "Đảo Mật",
+     "tt": "chua",
+     "chu": "Chưa rang"
+    }
+   ]
+  }
  ]
 }

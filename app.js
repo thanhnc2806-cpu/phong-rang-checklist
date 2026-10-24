@@ -8,7 +8,7 @@
   }
 
   // Trạng thái ứng dụng
-  var currentView = "today"; // "login" | "today" | "detail" | "samples" | "exceptions"
+  var currentView = "today"; // "login" | "today" | "detail" | "samples" | "exceptions" | "order"
   var dangNhap = docMay(KHOA_DANG_NHAP, null);
   var anhChup = null;
   var activeNgay = "";
@@ -219,6 +219,7 @@
     else if (currentView === "detail") renderDetail(main);
     else if (currentView === "samples") renderSamples(main);
     else if (currentView === "exceptions") renderExceptions(main);
+    else if (currentView === "order") renderOrder(main);
     main.appendChild(chuKy());
     root.appendChild(main);
     renderBottomNav(root);
@@ -338,7 +339,7 @@
       var luc = anhChup.luc ? new Date(anhChup.luc).toTimeString().slice(0, 5) : "";
       main.appendChild(dai("xam", "cloud_off", "Dữ liệu lúc " + luc + " (đang mất mạng)"));
     }
-    if (anhChup.chiXem) main.appendChild(dai("vang", "lock", "Xem tiến độ & túi mẫu, không sửa được các bước.", "Chế độ chỉ xem:"));
+    if (anhChup.chiXem && currentView !== "order") main.appendChild(dai("vang", "lock", "Xem tiến độ & túi mẫu, không sửa được các bước.", "Chế độ chỉ xem:"));
     if (globalError) main.appendChild(dai("do", "error", globalError));
     if (globalNotice) main.appendChild(dai("vang", "info", globalNotice));
   }
@@ -1186,6 +1187,310 @@
   }
 
   // ==========================================
+  // TAB ORDER (dự án 4): Đoan tạo lệnh → anh/Minh chốt nhân → B.An/Vinh xuất → ai cũng xem tiến độ
+  // ==========================================
+  var orderForm = null;  // { ma (khi sửa), may, tu, den, loaiLenh, dong: [{ sp, kg }] } — giữ qua các lần vẽ lại
+  var daDoOrder = false;  // mỗi màn một chỗ đỏ (ADN): chỉ nút hành động đầu tiên là nút đỏ
+  var CHON = "flex-1 h-[44px] rounded-xl bg-primary-container text-primary border border-primary/40 text-[12px] font-mono-num font-bold transition-all active:scale-95 disabled:opacity-60";
+  var KHONG_CHON = "flex-1 h-[44px] rounded-xl bg-surface-container text-on-surface-variant border border-surface-container-highest text-[12px] font-mono-num transition-all active:scale-95 disabled:opacity-40";
+  var THE_LENH = "flex flex-col gap-2.5 bg-surface-container-low p-3 rounded-xl border border-surface-container-highest shadow-lg shadow-black/30";
+  var KHOI_NAVY = "flex flex-col gap-2 bg-navy p-3 rounded-xl border border-primary-container";
+  var CHIP_TD = {
+    san: "px-2 py-0.5 rounded-full bg-emerald-500/20 text-secondary font-mono-num text-[10px] font-bold border border-emerald-500/30 text-right shrink-0",
+    dang: "px-2 py-0.5 rounded-full bg-primary-container text-primary font-mono-num text-[10px] font-bold border border-primary/30 text-right shrink-0",
+    chua: "px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant font-mono-num text-[10px] border border-surface-container-highest text-right shrink-0"
+  };
+
+  function coQuyen(q) { return (anhChup.quyenOrder || []).indexOf(q) >= 0; }
+  function nutDo(icon, chu) {
+    var lop = daDoOrder ? C.nutPhu : C.nutChinh;
+    daDoOrder = true;
+    return nut(lop, icon, chu);
+  }
+  function themNgayISO(iso, n) {
+    var d = new Date(iso + "T00:00:00Z");
+    d.setUTCDate(d.getUTCDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+  // khoa "order|L1": hàng đợi nhận ra lệnh đang gửi (coChoGui) để tắt nút, tránh bấm đôi
+  function guiOrder(op) { op.khoa = "order|" + (op.ma || "moi"); thucHienThaoTac(op); }
+
+  function renderOrder(main) {
+    daDoOrder = false;
+    var view = el("div", "flex flex-col gap-3");
+    var ds = (anhChup.order || []).slice(), can = demOrderCanLam(ds, anhChup.quyenOrder);
+    view.appendChild(dauTab("Order tuần", "Máy 30kg & 5kg · một bản cho cả phòng", can > 0 ? can + " cần làm" : ds.length + " lệnh",
+      "px-2 py-1 rounded-lg bg-primary-container text-primary font-mono-num text-[11px] font-bold shrink-0"));
+    if (coQuyen("orderTao")) {
+      if (orderForm) view.appendChild(formOrder());
+      else {
+        var moi = nut(C.nutPhu + " w-full", "edit", "Lệnh order mới");
+        moi.onclick = function () {
+          var t = themNgayISO(anhChup.tuan, 7);
+          orderForm = { may: "30K", tu: t, den: themNgayISO(t, 6), loaiLenh: "chinh", dong: [{ sp: "", kg: "" }] };
+          renderApp();
+        };
+        view.appendChild(moi);
+      }
+    }
+    // Việc của người đang xem lên đầu: anh/Minh = lệnh chờ; B.An/Vinh = lệnh còn phần chênh
+    var canLam = function (l) { return demOrderCanLam([l], anhChup.quyenOrder) > 0; };
+    ds = ds.filter(canLam).concat(ds.filter(function (l) { return !canLam(l); }));
+    if (!ds.length) view.appendChild(el("div", "p-4 rounded-xl bg-surface-container-low border border-surface-container-highest text-[12px] font-mono-num text-on-surface-variant text-center", "Chưa có lệnh order nào."));
+    ds.forEach(function (l) { view.appendChild(theLenh(l)); });
+    view.appendChild(el("p", "text-[11px] text-on-surface-variant text-center px-2", "Số kg thực vào đóng gói: xem file Tồn kho như cũ."));
+    main.appendChild(view);
+  }
+
+  function nhomChon(ds, giaTri, khiChon, tat) {
+    var hang = el("div", "flex gap-2");
+    ds.forEach(function (o) {
+      var b = el("button", o[0] === giaTri ? CHON : KHONG_CHON, o[1]);
+      b.type = "button";
+      b.disabled = !!tat;
+      b.onclick = function () { khiChon(o[0]); renderApp(); };
+      hang.appendChild(b);
+    });
+    return hang;
+  }
+  function oNhan(chu, con) {
+    var o = el("div", "flex flex-col gap-1 min-w-0");
+    o.appendChild(el("span", C.nhan, chu));
+    o.appendChild(con);
+    return o;
+  }
+
+  function formOrder() {
+    var f = orderForm, sua = !!f.ma;
+    var the = el("div", THE_LENH);
+    var dau = el("div", "flex items-center justify-between");
+    dau.appendChild(el("h4", "text-[14px] font-bold text-on-surface", sua ? "Sửa lệnh " + f.ma : "Lệnh order mới"));
+    dau.appendChild(el("span", VIEN.xam, sua ? "Sửa" : "Nháp"));
+    the.appendChild(dau);
+    the.appendChild(oNhan("Máy rang", nhomChon([["30K", "Máy 30KG"], ["5K", "Máy 5KG"]], f.may, function (v) { f.may = v; }, sua)));
+    var ngay = el("div", "grid grid-cols-2 gap-2");
+    [["tu", "Từ"], ["den", "Đến"]].forEach(function (k) {
+      var i = el("input", C.nhapChu);
+      i.type = "date";
+      i.value = f[k[0]];
+      i.disabled = sua;
+      i.addEventListener("input", function () { f[k[0]] = i.value; kiem(); });
+      ngay.appendChild(oNhan(k[1], i));
+    });
+    the.appendChild(oNhan("Hiệu lực", ngay));
+    the.appendChild(oNhan("Loại lệnh", nhomChon([["chinh", "Lệnh chính"], ["bosung", "Bổ sung"]], f.loaiLenh, function (v) { f.loaiLenh = v; }, sua)));
+
+    var dsDong = el("div", "flex flex-col gap-2");
+    f.dong.forEach(function (d, i) {
+      var hang = el("div", "flex items-center gap-2");
+      var s = el("select", C.nhapChu + " flex-1 min-w-0");
+      s.appendChild(el("option", null, "— chọn sản phẩm —")).value = "";
+      (anhChup.spOrder || []).forEach(function (sp) { s.appendChild(el("option", null, sp)).value = sp; });
+      s.value = d.sp;
+      s.addEventListener("change", function () { d.sp = s.value; kiem(); });
+      var k = el("input", C.nhapSo + " !w-[84px] text-right");
+      k.inputMode = "decimal";
+      k.placeholder = "kg";
+      k.value = d.kg;
+      k.addEventListener("input", function () { d.kg = k.value; kiem(); });
+      var bo = el("button", "h-[40px] px-2 rounded-lg text-[11px] font-mono-num text-on-surface-variant border border-surface-container-highest shrink-0", "Bỏ");
+      bo.type = "button";
+      bo.onclick = function () { f.dong.splice(i, 1); renderApp(); };
+      hang.appendChild(s); hang.appendChild(k); hang.appendChild(bo);
+      dsDong.appendChild(hang);
+    });
+    the.appendChild(oNhan("Thành phẩm cần (kg)", dsDong));
+    var them = nut(C.nutPhu + " w-full !h-[40px]", null, "+ Thêm sản phẩm");
+    them.onclick = function () { f.dong.push({ sp: "", kg: "" }); renderApp(); };
+    the.appendChild(them);
+
+    var loi = el("p", "text-[11px] text-amber-300 font-mono-num min-h-[16px]");
+    var hang = el("div", "grid grid-cols-[1fr_2fr] gap-2");
+    var thoi = nut(C.nutPhu, null, "Thôi");
+    thoi.onclick = function () { orderForm = null; renderApp(); };
+    var gui = nutDo("chevron_right", sua ? "Gửi lại để xác nhận" : "Gửi thợ rang xác nhận");
+    gui.onclick = function () {
+      var dong = f.dong.map(function (d) { return { sp: d.sp, kg: docSo(d.kg) }; });
+      orderForm = null;
+      guiOrder(sua ? { loai: "orderSua", ma: f.ma, dong: dong }
+        : { loai: "orderTao", may: f.may, tu: f.tu, den: f.den, loaiLenh: f.loaiLenh, dong: dong });
+    };
+    function kiem() {
+      var thay = {}, l = "";
+      if (!f.tu || !f.den || f.tu > f.den) l = "Ngày Từ phải trước ngày Đến";
+      else if (!f.dong.length) l = "Thêm ít nhất một sản phẩm";
+      else f.dong.forEach(function (d) {
+        if (l) return;
+        if (!d.sp) l = "Chọn sản phẩm cho mọi dòng";
+        else if (thay[d.sp]) l = d.sp + " bị ghi 2 dòng";
+        else if (!(docSo(d.kg) > 0)) l = "Gõ kg cho " + d.sp;
+        thay[d.sp] = true;
+      });
+      loi.textContent = l;
+      gui.disabled = !!l;
+    }
+    kiem();
+    the.appendChild(loi);
+    hang.appendChild(thoi); hang.appendChild(gui);
+    the.appendChild(hang);
+    return the;
+  }
+
+  function theLenh(l) {
+    var the = el("div", THE_LENH), cho = coChoGui("order|" + l.ma);
+    var dau = el("div", "flex items-start justify-between gap-2");
+    var t = el("div", "min-w-0");
+    t.appendChild(el("h4", "text-[14px] font-bold text-on-surface", tenMay(l) + " · " + dinhDangNgayThang(l.tu) + "–" + dinhDangNgayThang(l.den)));
+    t.appendChild(el("p", "text-[11px] text-on-surface-variant font-mono-num", l.ma + (l.loaiLenh === "bosung" ? " · Bổ sung" : " · Lệnh chính") +
+      " · " + (l.nguoiTao || "") + " " + dinhDangNgayThang(l.gioTao) + " " + dinhDangGio(l.gioTao)));
+    dau.appendChild(t);
+    var san = (l.tienDo || []).filter(function (x) { return x.tt === "san"; }).length;
+    dau.appendChild(el("span", (l.trangThai === "cho" ? VIEN.vang : VIEN.xanh) + " shrink-0",
+      cho ? "Đang gửi…" : l.trangThai === "cho" ? "Chờ xác nhận" : san + "/" + (l.tienDo || []).length + " sẵn sàng"));
+    the.appendChild(dau);
+    if (l.trangThai === "cho" && l.nguoiXacNhan) the.appendChild(dai("vang", "swap_horiz", "Lệnh đã sửa sau khi chốt — cần xác nhận lại.", "Đã sửa:"));
+    if ((l.nhac || []).length && l.trangThai === "cho") the.appendChild(dai("vang", "warning",
+      "Blend trong lệnh cần cà rang trước mà lệnh chưa có dòng: " + l.nhac.join(", ") + ".", "Nhắc:"));
+    if (!l.dong.length) the.appendChild(dai("xam", "inventory_2", "Lệnh đã huỷ — nhân đã xuất phải trả kho.", "Huỷ:"));
+
+    if (coQuyen("orderXacNhan") && l.trangThai === "cho") khoiXacNhan(the, l, cho);
+    if (coQuyen("orderXuat") && l.trangThai === "chot") khoiXuat(the, l, cho);
+
+    if (l.dong.length) {
+      var td = el("div", "flex flex-col divide-y divide-surface-container-highest/60");
+      l.dong.forEach(function (d, i) {
+        var x = (l.tienDo || [])[i] || { tt: "chua", chu: "" };
+        var h = el("div", "flex items-center justify-between gap-2 py-1.5");
+        var ten = el("div", "min-w-0 flex items-baseline gap-1.5");
+        ten.appendChild(el("span", "text-[13px] text-on-surface truncate", d.sp));
+        ten.appendChild(soKg("text-[11px] font-mono-num text-on-surface-variant shrink-0", d.kg, 1));
+        h.appendChild(ten);
+        h.appendChild(el("span", CHIP_TD[x.tt] || CHIP_TD.chua, (x.tt === "san" ? "✓ " : "") + x.chu));
+        td.appendChild(h);
+      });
+      the.appendChild(td);
+    }
+    if (coQuyen("orderSua") && l.dong.length) {
+      var hang = el("div", "grid grid-cols-2 gap-2");
+      var s = nut(C.nutPhu + " !h-[40px]", "edit", "Sửa");
+      s.disabled = cho;
+      s.onclick = function () {
+        orderForm = { ma: l.ma, may: l.may, tu: l.tu, den: l.den, loaiLenh: l.loaiLenh,
+          dong: l.dong.map(function (d) { return { sp: d.sp, kg: soVN(d.kg, 1) }; }) };
+        renderApp();
+        window.scrollTo(0, 0);
+      };
+      var h2 = nut(C.nutPhu + " !h-[40px]", null, "Huỷ lệnh");
+      h2.disabled = cho;
+      h2.onclick = function () { if (window.confirm("Huỷ lệnh " + l.ma + "?")) guiOrder({ loai: "orderHuy", ma: l.ma }); };
+      hang.appendChild(s); hang.appendChild(h2);
+      the.appendChild(hang);
+    }
+    return the;
+  }
+
+  // anh/Minh: Loại nhân · Đề xuất · ô Chốt (mặc định = chốt cũ, không có thì đề xuất)
+  function khoiXacNhan(the, l, cho) {
+    var khoi = el("div", KHOI_NAVY), cu = {}, dx = {}, goc = [];
+    (l.chot || []).forEach(function (c) { cu[c.loai] = c.kg; });
+    (l.deXuat || []).forEach(function (d) { dx[d.loai] = d.kg; goc.push({ loai: d.loai, kg: cu.hasOwnProperty(d.loai) ? cu[d.loai] : d.kg }); });
+    (l.chot || []).forEach(function (c) { if (!dx.hasOwnProperty(c.loai)) goc.push({ loai: c.loai, kg: c.kg }); });
+    khoi.appendChild(el("p", C.nhan, "Nhân xanh cần xuất · app đề xuất → chốt"));
+    var bang = el("div", "grid grid-cols-[1fr_auto_88px] gap-x-2 gap-y-1.5 items-center");
+    ["Loại nhân", "Đề xuất", "Chốt"].forEach(function (c, i) { bang.appendChild(el("span", C.nhan + (i ? " text-right" : ""), c)); });
+    var oChot = {};
+    goc.forEach(function (g) {
+      bang.appendChild(el("span", "text-[12px] text-on-surface truncate", g.loai));
+      bang.appendChild(el("span", "text-[12px] font-mono-num text-on-surface-variant text-right", dx.hasOwnProperty(g.loai) ? soVN(dx[g.loai], 1) : "—"));
+      var i = el("input", C.nhapSo + " !text-[15px] text-right");
+      i.inputMode = "decimal";
+      giuNhap(i, "chot|" + l.ma + "|" + g.loai, soVN(g.kg, 1));
+      i.addEventListener("input", function () { kiem(); });
+      oChot[g.loai] = i;
+      bang.appendChild(i);
+    });
+    khoi.appendChild(bang);
+    // Sản phẩm chưa có công thức: người xác nhận gõ loại nhân + kg
+    var tay = [];
+    (l.khongCT || []).forEach(function (sp) {
+      var h = el("div", "grid grid-cols-[1fr_88px] gap-2 items-end");
+      var ten = el("input", C.nhapChu + " !text-[12px]");
+      ten.placeholder = "Loại nhân";
+      giuNhap(ten, "chotTay|" + l.ma + "|" + sp + "|loai", "");
+      var kg = el("input", C.nhapSo + " !text-[15px] text-right");
+      kg.inputMode = "decimal";
+      kg.placeholder = "kg";
+      giuNhap(kg, "chotTay|" + l.ma + "|" + sp + "|kg", "");
+      ten.addEventListener("input", function () { kiem(); });
+      kg.addEventListener("input", function () { kiem(); });
+      h.appendChild(oNhan(sp + " · chưa có công thức", ten)); h.appendChild(kg);
+      tay.push([ten, kg]);
+      khoi.appendChild(h);
+    });
+    khoi.appendChild(el("p", "text-[10px] text-on-surface-variant", "Đề xuất = kg thành phẩm × 1,2 × tỉ lệ RATIO (bỏ phần rang trước). Sửa ô Chốt theo nhịp mẻ."));
+    the.appendChild(khoi);
+    var xn = nutDo("verified", cho ? "Đang gửi…" : "Xác nhận lệnh");
+    function docChot() {
+      var sua = {};
+      Object.keys(oChot).forEach(function (k) { sua[k] = oChot[k].value; });
+      var ra = chotTuO(goc, sua);
+      if (!ra) return null;
+      for (var i = 0; i < tay.length; i++) {
+        var ten = tay[i][0].value.trim(), kg = docSo(tay[i][1].value);
+        if (!ten && !tay[i][1].value.trim()) continue;
+        if (!ten || kg === null) return null;
+        ra.push({ loai: ten, kg: kg });
+      }
+      return ra;
+    }
+    function kiem() { xn.disabled = cho || !docChot(); }
+    kiem();
+    xn.onclick = function () {
+      var chot = docChot();
+      if (!chot) return;
+      boNhap("chot|" + l.ma + "|"); boNhap("chotTay|" + l.ma + "|");
+      guiOrder({ loai: "orderXacNhan", ma: l.ma, chot: chot });
+    };
+    the.appendChild(xn);
+  }
+
+  // B.An/Vinh: phần chênh cần làm (xuất thêm / trả kho), rồi danh sách đã chốt
+  function khoiXuat(the, l, cho) {
+    var ch = l.chenh || [];
+    if (ch.length) {
+      var khoi = el("div", KHOI_NAVY);
+      khoi.appendChild(el("p", C.nhan, Object.keys(l.daXuat || {}).length ? "Còn phải làm · chỉ phần chênh so với đã xuất" : "Cần xuất"));
+      ch.forEach(function (c) {
+        var h = el("div", "flex items-center justify-between gap-2");
+        var chu = el("div", "min-w-0 flex flex-col");
+        chu.appendChild(el("span", "font-mono-num text-[15px] font-bold " + (c.kg > 0 ? "text-on-surface" : "text-amber-300"),
+          c.kg > 0 ? "+" + soVN(c.kg, 1) + " kg" : "Trả kho " + soVN(-c.kg, 1) + " kg"));
+        chu.appendChild(el("span", "text-[12px] text-on-surface-variant truncate", c.loai));
+        h.appendChild(chu);
+        var b = nutDo("done_all", c.kg > 0 ? "Đã xuất" : "Đã trả");
+        b.className += " !h-[40px] px-3 shrink-0";
+        b.disabled = cho;
+        b.onclick = function () { guiOrder({ loai: "orderXuat", ma: l.ma, nhan: c.loai }); };
+        h.appendChild(b);
+        khoi.appendChild(h);
+      });
+      the.appendChild(khoi);
+    }
+    var ds = el("div", "flex flex-col gap-1");
+    (l.chot || []).forEach(function (c) {
+      var du = (l.daXuat || {})[c.loai] === c.kg;
+      var h = el("div", "flex items-center justify-between text-[12px]");
+      h.appendChild(el("span", du ? "text-on-surface-variant" : "text-on-surface", c.loai));
+      var p = el("span", "flex items-center gap-1");
+      p.appendChild(soKg("font-mono-num text-on-surface", c.kg, 1));
+      if (du) p.appendChild(ic("check_circle", "text-[16px] text-secondary"));
+      h.appendChild(p);
+      ds.appendChild(h);
+    });
+    the.appendChild(ds);
+  }
+
+  // ==========================================
   // THANH ĐÁY
   // ==========================================
   function renderBottomNav(root) {
@@ -1194,10 +1499,12 @@
     var soLo = loCuaNgay(anhChup.lo || [], activeNgay, activeMay).length;
     var soTui = demTuiCanLam(anhChup.tui || []);
     var soNL = (anhChup.ngoaiLe || []).length;
+    var soOrder = demOrderCanLam(anhChup.order, anhChup.quyenOrder);
     [
       { view: "today", icon: "assignment", chu: "Hôm nay", so: soLo, lopSo: "absolute -top-1 -right-2 bg-primary-container text-white text-[9px] font-mono-num font-bold px-1 rounded-full", bat: "flex-1 flex flex-col items-center justify-center py-1 text-primary font-semibold transition-colors" },
       { view: "samples", icon: "science", chu: "Túi mẫu", so: soTui, lopSo: "absolute -top-1 -right-2 bg-purple-600 text-white text-[9px] font-mono-num font-bold px-1 rounded-full", bat: "flex-1 flex flex-col items-center justify-center py-1 text-purple-400 font-semibold transition-colors" },
-      { view: "exceptions", icon: "warning", chu: "Ngoại lệ", so: soNL, lopSo: "absolute -top-1 -right-2 bg-amber-500 text-stone-950 text-[9px] font-mono-num font-bold px-1 rounded-full", bat: "flex-1 flex flex-col items-center justify-center py-1 text-amber-400 font-semibold transition-colors" }
+      { view: "exceptions", icon: "warning", chu: "Ngoại lệ", so: soNL, lopSo: "absolute -top-1 -right-2 bg-amber-500 text-stone-950 text-[9px] font-mono-num font-bold px-1 rounded-full", bat: "flex-1 flex flex-col items-center justify-center py-1 text-amber-400 font-semibold transition-colors" },
+      { view: "order", icon: "checklist", chu: "Order", so: soOrder, lopSo: "absolute -top-1 -right-2 bg-primary-container text-white text-[9px] font-mono-num font-bold px-1 rounded-full border border-primary/40", bat: "flex-1 flex flex-col items-center justify-center py-1 text-primary font-semibold transition-colors" }
     ].forEach(function (t) {
       var dang = currentView === t.view || (t.view === "today" && currentView === "detail");
       var b = el("button", dang ? t.bat : "flex-1 flex flex-col items-center justify-center py-1 text-on-surface-variant hover:text-on-surface transition-colors");
