@@ -764,7 +764,7 @@
   "Đảo Tự Nhiên",
   "Đảo Mật",
   "Mía Đỏ Decaf",
-  "THA2 Washed",
+  "Đồi Gió Ướt",
   "Gia công",
   "R&D"
  ],
@@ -797,7 +797,7 @@
   "Đảo Tự Nhiên",
   "Đảo Mật",
   "Mía Đỏ Decaf",
-  "THA2 Washed"
+  "Đồi Gió Ướt"
  ],
  "order": [
   {
@@ -817,7 +817,7 @@
      "kg": 6
     },
     {
-     "sp": "THA2 Washed",
+     "sp": "Đồi Gió Ướt",
      "kg": 3
     }
    ],
@@ -859,7 +859,7 @@
     "Đảo Mật"
    ],
    "khongCT": [
-    "THA2 Washed"
+    "Đồi Gió Ướt"
    ],
    "tienDo": [
     {
@@ -873,7 +873,7 @@
      "chu": "Chưa rang"
     },
     {
-     "sp": "THA2 Washed",
+     "sp": "Đồi Gió Ướt",
      "tt": "chua",
      "chu": "Chưa rang"
     }

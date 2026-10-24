@@ -1318,6 +1318,9 @@
     function kiem() {
       var thay = {}, l = "";
       if (!f.tu || !f.den || f.tu > f.den) l = "Ngày Từ phải trước ngày Đến";
+      else if (!sua && f.loaiLenh === "chinh" && (anhChup.order || []).some(function (x) {
+        return x.loaiLenh === "chinh" && x.may === f.may && x.dong.length && x.tu <= f.den && f.tu <= x.den;
+      })) l = "Máy này đã có lệnh chính trùng ngày — chọn Bổ sung hoặc đổi ngày";  // chặn trước, khỏi gõ lại khi server từ chối
       else if (!f.dong.length) l = "Thêm ít nhất một sản phẩm";
       else f.dong.forEach(function (d) {
         if (l) return;
@@ -1394,7 +1397,8 @@
     var khoi = el("div", KHOI_NAVY), cu = {}, dx = {}, goc = [];
     (l.chot || []).forEach(function (c) { cu[c.loai] = c.kg; });
     (l.deXuat || []).forEach(function (d) { dx[d.loai] = d.kg; goc.push({ loai: d.loai, kg: cu.hasOwnProperty(d.loai) ? cu[d.loai] : d.kg }); });
-    (l.chot || []).forEach(function (c) { if (!dx.hasOwnProperty(c.loai)) goc.push({ loai: c.loai, kg: c.kg }); });
+    // loại đã chốt mà không còn trong đề xuất (bỏ dòng / huỷ): mặc định 0 = trả kho, người xác nhận gõ lại nếu vẫn cần
+    (l.chot || []).forEach(function (c) { if (!dx.hasOwnProperty(c.loai)) goc.push({ loai: c.loai, kg: 0 }); });
     khoi.appendChild(el("p", C.nhan, "Nhân xanh cần xuất · app đề xuất → chốt"));
     var bang = el("div", "grid grid-cols-[1fr_auto_88px] gap-x-2 gap-y-1.5 items-center");
     ["Loại nhân", "Đề xuất", "Chốt"].forEach(function (c, i) { bang.appendChild(el("span", C.nhan + (i ? " text-right" : ""), c)); });
