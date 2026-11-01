@@ -1528,6 +1528,8 @@
   // ==========================================
   // KHỞI ĐỘNG
   // ==========================================
+  // iOS/Safari chỉ bật :active (hiệu ứng lún nút) khi trang có trình nghe touchstart
+  document.addEventListener("touchstart", function () {}, { passive: true });
   if (!dangNhap) {
     currentView = "login";
     renderApp();
