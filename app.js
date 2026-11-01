@@ -31,9 +31,9 @@
 
   // ---------- Lớp Tailwind (chuỗi đầy đủ để Tailwind quét được) ----------
   var C = {
-    nutChinh: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-accent-deep hover:bg-[#8F0F15] text-white text-[12px] font-mono-num font-bold shadow-lg shadow-black/40 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
-    nutPhu: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface text-[12px] font-mono-num font-semibold border border-surface-container-highest active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
-    nutTim: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[12px] font-mono-num font-bold active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
+    nutChinh: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-accent-deep hover:bg-[#8F0F15] text-white text-[12px] font-mono-num font-bold shadow-lg shadow-black/40 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed btn-spring",
+    nutPhu: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface text-[12px] font-mono-num font-semibold border border-surface-container-highest active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed btn-spring",
+    nutTim: "flex items-center justify-center gap-1.5 h-[50px] rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[12px] font-mono-num font-bold active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed btn-spring",
     o: "flex flex-col bg-surface-container-lowest p-2.5 rounded-xl border border-surface-container-highest",
     nhan: "text-[10px] font-mono-num text-on-surface-variant uppercase",
     nhapSo: "w-full bg-surface-container text-on-surface font-mono-num text-[18px] font-bold px-2 py-1 rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary select-text",
@@ -54,10 +54,10 @@
     xam: "text-[15px] leading-none text-on-surface-variant font-bold w-5 shrink-0"
   };
   var HANG = {
-    xanh: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container border border-surface-container-highest/60 transition-all cursor-pointer",
-    vang: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container border border-amber-500/30 transition-all cursor-pointer",
-    do: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container border border-rose-500/30 transition-all cursor-pointer",
-    xam: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container/60 border border-surface-container-highest/40 opacity-80 transition-all cursor-pointer"
+    xanh: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container border border-surface-container-highest/60 transition-all cursor-pointer card-spring",
+    vang: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container border border-amber-500/30 transition-all cursor-pointer card-spring",
+    do: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container border border-rose-500/30 transition-all cursor-pointer card-spring",
+    xam: "flex items-center justify-between p-2.5 rounded-xl bg-surface-container/60 border border-surface-container-highest/40 opacity-80 transition-all cursor-pointer card-spring"
   };
   var VIEN = {
     xanh: "px-2 py-0.5 rounded-full bg-emerald-500/20 text-secondary font-mono-num text-[9px] font-bold uppercase tracking-wider border border-emerald-500/30",
@@ -213,7 +213,7 @@
 
     chonNgayMacDinh();
     renderHeader(root);
-    var main = el("main", "max-w-md mx-auto w-full px-4 pt-36 flex flex-col gap-4");
+    var main = el("main", "max-w-md mx-auto w-full px-4 pt-36 flex flex-col gap-4 view-enter");
     renderBanners(main);
     if (currentView === "today") renderToday(main);
     else if (currentView === "detail") renderDetail(main);
@@ -275,7 +275,7 @@
     brand.appendChild(chu);
     hang.appendChild(brand);
 
-    var doiNguoi = el("button", "flex items-center gap-1 shrink-0 min-h-[48px] bg-surface-container-high px-2 py-1 rounded-xl border border-surface-container-highest active:scale-95 transition-transform");
+    var doiNguoi = el("button", "flex items-center gap-1 shrink-0 min-h-[48px] bg-surface-container-high px-2 py-1 rounded-xl border border-surface-container-highest active:scale-95 transition-transform btn-spring");
     doiNguoi.type = "button";
     doiNguoi.title = "Đổi người";
     doiNguoi.appendChild(ic(anhChup.chiXem ? "lock" : "badge", "text-primary text-[18px]"));
@@ -382,8 +382,8 @@
     DANH_SACH_NGUOI.forEach(function (u) {
       var chon = selectedUserMa === u.ma;
       var b = el("button", chon
-        ? "flex items-center gap-1.5 h-[48px] px-3 rounded-xl bg-surface-container-highest text-primary border border-primary/50 text-[13px] font-semibold"
-        : "flex items-center gap-1.5 h-[48px] px-3 rounded-xl bg-surface-container text-on-surface border border-surface-container-highest text-[13px] font-semibold");
+        ? "flex items-center gap-1.5 h-[48px] px-3 rounded-xl bg-surface-container-highest text-primary border border-primary/50 text-[13px] font-semibold btn-spring"
+        : "flex items-center gap-1.5 h-[48px] px-3 rounded-xl bg-surface-container text-on-surface border border-surface-container-highest text-[13px] font-semibold btn-spring");
       b.type = "button";
       b.appendChild(ic("person", chon ? "text-[16px] text-primary" : "text-[16px] text-on-surface-variant"));
       b.appendChild(el("span", null, u.ten));
@@ -470,7 +470,7 @@
     oKpi("flex flex-col items-center justify-center p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 shadow-md",
       "flex items-center gap-1 text-secondary mb-0.5", "task_alt", "Đã xong",
       "font-mono-num text-[20px] font-bold text-secondary", daXong, "text-[10px] text-emerald-400/80 font-mono-num", "hoàn tất");
-    var oTui = oKpi("flex flex-col items-center justify-center p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/30 shadow-md cursor-pointer",
+    var oTui = oKpi("flex flex-col items-center justify-center p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/30 shadow-md cursor-pointer card-spring",
       "flex items-center gap-1 text-purple-300 mb-0.5", "science", "Túi mẫu",
       "font-mono-num text-[20px] font-bold text-purple-300", tuiChua, "text-[10px] text-purple-200/80 font-mono-num", "chưa lấy");
     oTui.onclick = function () { mo("samples"); };
@@ -481,8 +481,8 @@
       var hangNgay = el("section", "flex items-center justify-between gap-1 bg-surface-container-low p-1.5 rounded-xl border border-surface-container-highest");
       dsNgay.forEach(function (ngay) {
         var b = el("button", activeNgay === ngay
-          ? "flex-1 min-h-[48px] py-1.5 rounded-lg bg-surface-container-highest text-primary text-[11px] font-mono-num font-semibold transition-all"
-          : "flex-1 min-h-[48px] py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface text-[11px] font-mono-num transition-all",
+          ? "flex-1 min-h-[48px] py-1.5 rounded-lg bg-surface-container-highest text-primary text-[11px] font-mono-num font-semibold transition-all chip-spring"
+          : "flex-1 min-h-[48px] py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface text-[11px] font-mono-num transition-all chip-spring",
           ngayMap[ngay] + " " + dinhDangNgayThang(ngay) + (ngay === anhChup.homNay ? " · nay" : ""));
         b.type = "button";
         b.onclick = function () { activeNgay = ngay; renderApp(); };
@@ -494,8 +494,8 @@
     [{ val: "", label: "Tất cả" }, { val: "30K", label: "Máy 30KG" }, { val: "5K", label: "Máy 5KG" }].forEach(function (m) {
       var so = loCuaNgay(anhChup.lo || [], activeNgay, m.val).length;
       var b = el("button", activeMay === m.val
-        ? "flex-1 min-h-[48px] py-1.5 rounded-lg bg-surface-container-highest text-primary text-[11px] font-mono-num font-semibold transition-all"
-        : "flex-1 min-h-[48px] py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface text-[11px] font-mono-num transition-all",
+        ? "flex-1 min-h-[48px] py-1.5 rounded-lg bg-surface-container-highest text-primary text-[11px] font-mono-num font-semibold transition-all chip-spring"
+        : "flex-1 min-h-[48px] py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface text-[11px] font-mono-num transition-all chip-spring",
         m.label + " (" + so + ")");
       b.type = "button";
       b.onclick = function () { activeMay = m.val; renderApp(); };
@@ -538,18 +538,18 @@
     var hh = haoHut(b.kgVao, b.kgRa);
     var card, dot, sub, phai;
     if (b.xong) {
-      card = el("div", "p-3 rounded-xl bg-surface-container-low border border-surface-container-highest flex items-center justify-between cursor-pointer");
+      card = el("div", "p-3 rounded-xl bg-surface-container-low border border-surface-container-highest flex items-center justify-between cursor-pointer card-spring");
       dot = el("span", "w-2.5 h-2.5 rounded-full bg-secondary shrink-0");
       sub = el("span", "text-[11px] font-mono-num text-on-surface-variant", tenMay(b) + " · " + (b.kgRa !== null && b.kgRa !== undefined ? soVN(b.kgRa, 1) + " kg" : "—") + (hh !== null ? " · Hao hụt: " + soVN(hh, 1) + "%" : ""));
       phai = el("span", "px-2 py-0.5 rounded-full bg-emerald-500/10 text-secondary border border-emerald-500/30 font-mono-num text-[10px] font-bold shrink-0", "✓ ĐÃ XONG");
     } else if (coVang) {
-      card = el("div", "p-3 rounded-xl bg-surface-container-low border border-amber-500/30 flex items-center justify-between relative overflow-hidden cursor-pointer");
+      card = el("div", "p-3 rounded-xl bg-surface-container-low border border-amber-500/30 flex items-center justify-between relative overflow-hidden cursor-pointer card-spring");
       card.appendChild(el("div", "absolute left-0 top-0 bottom-0 w-1 bg-amber-500"));
       dot = el("span", "w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping shrink-0");
       sub = el("span", "text-[11px] font-mono-num text-amber-300", tenMay(b) + " · " + d.xong + "/" + d.tong + " bước · ? Quên bấm");
       phai = el("span", "px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-mono-num font-bold shrink-0", "Xem ngay");
     } else {
-      card = el("div", "p-3 rounded-xl bg-surface-container-low border border-surface-container-highest flex items-center justify-between opacity-70 cursor-pointer");
+      card = el("div", "p-3 rounded-xl bg-surface-container-low border border-surface-container-highest flex items-center justify-between opacity-70 cursor-pointer card-spring");
       dot = el("span", "w-2.5 h-2.5 rounded-full bg-surface-variant shrink-0");
       sub = el("span", "text-[11px] font-mono-num text-on-surface-variant", tenMay(b) + " · " + d.xong + "/" + d.tong + " bước" + (b.tiep ? " · " + b.tiep : ""));
       phai = el("span", "text-[11px] font-mono-num text-on-surface-variant shrink-0", "Hàng chờ");
@@ -643,6 +643,9 @@
   function renderBigActiveCard(main, batch) {
     if (!batch) return;
     var v = vanThe();
+
+    v.article.className += " sheet-drawer";
+    v.trong.appendChild(el("div", "sheet-handle"));
     dauThe(v.trong, batch, true);
 
     var steps = el("div", "flex flex-col gap-2 mt-1");
@@ -662,13 +665,13 @@
     v.trong.appendChild(steps);
 
     var chan = el("div", "flex items-center gap-2 pt-2 border-t border-surface-container-highest");
-    var xem = el("button", "flex-1 flex items-center justify-center gap-1.5 h-[48px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface border border-surface-container-highest text-[12px] font-mono-num font-semibold active:scale-95 transition-all");
+    var xem = el("button", "flex-1 flex items-center justify-center gap-1.5 h-[48px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface border border-surface-container-highest text-[12px] font-mono-num font-semibold active:scale-95 transition-all btn-spring");
     xem.type = "button";
     xem.appendChild(ic("checklist", "text-[16px] text-primary"));
     xem.appendChild(el("span", null, "Xem đủ lô"));
     xem.onclick = function () { mo("detail", batch.khoa); };
     chan.appendChild(xem);
-    var sang = el("button", "w-[48px] h-[48px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface border border-surface-container-highest flex items-center justify-center shrink-0 active:scale-95 transition-all");
+    var sang = el("button", "w-[48px] h-[48px] rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface border border-surface-container-highest flex items-center justify-center shrink-0 active:scale-95 transition-all btn-spring");
     sang.type = "button";
     sang.title = "Mở chi tiết lô";
     sang.appendChild(ic("chevron_right", "text-[20px]"));
@@ -1010,7 +1013,7 @@
   function renderDetail(main) {
     var batch = (anhChup.lo || []).find(function (l) { return l.khoa === detailBatchKhoa; });
 
-    var lui = el("button", "self-start min-h-[48px] flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface border border-surface-container-highest text-[12px] font-mono-num font-semibold active:scale-95 transition-all");
+    var lui = el("button", "self-start min-h-[48px] flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface border border-surface-container-highest text-[12px] font-mono-num font-semibold active:scale-95 transition-all btn-spring");
     lui.type = "button";
     lui.appendChild(ic("arrow_back", "text-[16px]"));
     lui.appendChild(el("span", null, "Quay lại"));
@@ -1022,6 +1025,9 @@
       return;
     }
     var v = vanThe();
+
+    v.article.className += " sheet-drawer";
+    v.trong.appendChild(el("div", "sheet-handle"));
     dauThe(v.trong, batch, true);
     var steps = el("div", "flex flex-col gap-2 mt-1");
     dauQuyTrinh(steps, demBuoc(batch));
@@ -1158,10 +1164,10 @@
   // NGOẠI LỆ — đúng các dòng ngoaiLe máy chủ trả
   // ==========================================
   var NL = {
-    do: { the: "p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2 cursor-pointer", icon: "error", lop: "text-rose-400 text-[18px] shrink-0" },
-    vang: { the: "p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-2 cursor-pointer", icon: "help", lop: "text-amber-400 text-[18px] shrink-0" },
-    xanh: { the: "p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-start gap-2 cursor-pointer", icon: "info", lop: "text-secondary text-[18px] shrink-0" },
-    xam: { the: "p-3 rounded-xl bg-surface-container-low border border-surface-container-highest flex items-start gap-2 cursor-pointer", icon: "timer", lop: "text-on-surface-variant text-[18px] shrink-0" }
+    do: { the: "p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2 cursor-pointer card-spring", icon: "error", lop: "text-rose-400 text-[18px] shrink-0" },
+    vang: { the: "p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-2 cursor-pointer card-spring", icon: "help", lop: "text-amber-400 text-[18px] shrink-0" },
+    xanh: { the: "p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-start gap-2 cursor-pointer card-spring", icon: "info", lop: "text-secondary text-[18px] shrink-0" },
+    xam: { the: "p-3 rounded-xl bg-surface-container-low border border-surface-container-highest flex items-start gap-2 cursor-pointer card-spring", icon: "timer", lop: "text-on-surface-variant text-[18px] shrink-0" }
   };
   function renderExceptions(main) {
     var view = el("div", "flex flex-col gap-3");
@@ -1191,8 +1197,8 @@
   // ==========================================
   var orderForm = null;  // { ma (khi sửa), may, tu, den, loaiLenh, dong: [{ sp, kg }] } — giữ qua các lần vẽ lại
   var daDoOrder = false;  // mỗi màn một chỗ đỏ (ADN): chỉ nút hành động đầu tiên là nút đỏ
-  var CHON = "flex-1 h-[44px] rounded-xl bg-primary-container text-primary border border-primary/40 text-[12px] font-mono-num font-bold transition-all active:scale-95 disabled:opacity-60";
-  var KHONG_CHON = "flex-1 h-[44px] rounded-xl bg-surface-container text-on-surface-variant border border-surface-container-highest text-[12px] font-mono-num transition-all active:scale-95 disabled:opacity-40";
+  var CHON = "flex-1 h-[44px] rounded-xl bg-primary-container text-primary border border-primary/40 text-[12px] font-mono-num font-bold transition-all active:scale-95 disabled:opacity-60 chip-spring";
+  var KHONG_CHON = "flex-1 h-[44px] rounded-xl bg-surface-container text-on-surface-variant border border-surface-container-highest text-[12px] font-mono-num transition-all active:scale-95 disabled:opacity-40 chip-spring";
   var THE_LENH = "flex flex-col gap-2.5 bg-surface-container-low p-3 rounded-xl border border-surface-container-highest shadow-lg shadow-black/30";
   var KHOI_NAVY = "flex flex-col gap-2 bg-navy p-3 rounded-xl border border-primary-container";
   var CHIP_TD = {
@@ -1293,7 +1299,7 @@
       k.placeholder = "kg";
       k.value = d.kg;
       k.addEventListener("input", function () { d.kg = k.value; kiem(); });
-      var bo = el("button", "h-[40px] px-2 rounded-lg text-[11px] font-mono-num text-on-surface-variant border border-surface-container-highest shrink-0", "Bỏ");
+      var bo = el("button", "h-[40px] px-2 rounded-lg text-[11px] font-mono-num text-on-surface-variant border border-surface-container-highest shrink-0 active:scale-95 btn-spring", "Bỏ");
       bo.type = "button";
       bo.onclick = function () { f.dong.splice(i, 1); renderApp(); };
       hang.appendChild(s); hang.appendChild(k); hang.appendChild(bo);
@@ -1511,7 +1517,7 @@
       { view: "order", icon: "checklist", chu: "Order", so: soOrder, lopSo: "absolute -top-1 -right-2 bg-primary-container text-white text-[9px] font-mono-num font-bold px-1 rounded-full border border-primary/40", bat: "flex-1 flex flex-col items-center justify-center py-1 text-primary font-semibold transition-colors" }
     ].forEach(function (t) {
       var dang = currentView === t.view || (t.view === "today" && currentView === "detail");
-      var b = el("button", dang ? t.bat : "flex-1 flex flex-col items-center justify-center py-1 text-on-surface-variant hover:text-on-surface transition-colors");
+      var b = el("button", (dang ? t.bat : "flex-1 flex flex-col items-center justify-center py-1 text-on-surface-variant hover:text-on-surface transition-colors") + " tab-spring");
       b.type = "button";
       var r = el("div", "relative");
       r.appendChild(ic(t.icon, "text-[22px]"));
