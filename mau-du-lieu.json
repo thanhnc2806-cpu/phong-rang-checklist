@@ -1,0 +1,1074 @@
+{
+ "ok": true,
+ "nguoi": "ban",
+ "ten": "Người A",
+ "chiXem": false,
+ "homNay": "2026-10-20",
+ "tuan": "2026-10-19",
+ "cupping": "2026-10-23",
+ "lo": [
+  {
+   "khoa": "2026-10-19|30K|?TEST",
+   "ngay": "2026-10-19",
+   "thu": "T2",
+   "may": "30K",
+   "mayTen": "máy 30kg",
+   "sp": "",
+   "tenGoc": "TEST 30KG",
+   "maMe": "30K-44",
+   "soMe": 1,
+   "kgVao": 30,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "an",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Tiếp: Nhân xanh",
+   "xong": false,
+   "goiY0": [],
+   "tiLe": "",
+   "thuc0": null,
+   "kgRa": null,
+   "nguong": null,
+   "coTron": false,
+   "tenTron": "",
+   "goiYTron": null,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  },
+  {
+   "khoa": "2026-10-19|30K|Sen Trắng",
+   "ngay": "2026-10-19",
+   "thu": "T2",
+   "may": "30K",
+   "mayTen": "máy 30kg",
+   "sp": "Sen Trắng",
+   "tenGoc": "Sen Trắng 5KG",
+   "maMe": "30K-41…30K-42",
+   "soMe": 2,
+   "kgVao": 10,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "vang",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "vang",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "vang",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xanh",
+     "nguoi": "Người A",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Tiếp: Nhân xanh",
+   "xong": false,
+   "goiY0": [
+    {
+     "vao": 5,
+     "tp": "",
+     "soMe": 2,
+     "dong": [
+      {
+       "loai": "Nguồn Hoa Nhài",
+       "kg": 3.33
+      },
+      {
+       "loai": "Nguồn Bánh Anh Đào",
+       "kg": 1.67
+      }
+     ]
+    }
+   ],
+   "tiLe": "",
+   "thuc0": null,
+   "kgRa": 8.4,
+   "nguong": [
+    "Seasonal Filter (Light Roast)",
+    12,
+    17
+   ],
+   "coTron": true,
+   "tenTron": "Đảo Mật",
+   "goiYTron": 19.6,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  },
+  {
+   "khoa": "2026-10-19|30K|Đá Xám Nhạt",
+   "ngay": "2026-10-19",
+   "thu": "T2",
+   "may": "30K",
+   "mayTen": "máy 30kg",
+   "sp": "Đá Xám Nhạt",
+   "tenGoc": "DA XAM NHAT 36KG",
+   "maMe": "30K-43",
+   "soMe": 1,
+   "kgVao": 36,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "vang",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "xanh",
+     "nguoi": "Người C",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "an",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Tiếp: Nhân xanh",
+   "xong": false,
+   "goiY0": [
+    {
+     "vao": 36,
+     "tp": "",
+     "soMe": 1,
+     "dong": [
+      {
+       "loai": "Vườn B",
+       "kg": 12
+      },
+      {
+       "loai": "Vườn E",
+       "kg": 12
+      },
+      {
+       "loai": "Vườn Mật R",
+       "kg": 12
+      }
+     ]
+    }
+   ],
+   "tiLe": "",
+   "thuc0": null,
+   "kgRa": null,
+   "nguong": [
+    "Intenso Blend (Dark Roast)",
+    15,
+    26
+   ],
+   "coTron": false,
+   "tenTron": "",
+   "goiYTron": null,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  },
+  {
+   "khoa": "2026-10-19|5K|Biển Sâu",
+   "ngay": "2026-10-19",
+   "thu": "T2",
+   "may": "5K",
+   "mayTen": "máy 5kg",
+   "sp": "Biển Sâu",
+   "tenGoc": "NEW Biển Sâu 4.8KG",
+   "maMe": "5K-9",
+   "soMe": 1,
+   "kgVao": 4.8,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "xanh",
+     "nguoi": "Người B",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "xanh",
+     "nguoi": "Người C",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "xanh",
+     "nguoi": "Người C",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xanh",
+     "nguoi": "Người A",
+     "gio": "2026-10-19 15:30"
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "an",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Xong",
+   "xong": true,
+   "goiY0": [
+    {
+     "vao": 4.8,
+     "tp": "",
+     "soMe": 1,
+     "dong": [
+      {
+       "loai": "Nho Đen",
+       "kg": 0.72
+      },
+      {
+       "loai": "Dưa Lưới",
+       "kg": 0.24
+      },
+      {
+       "loai": "Rửa Sạch",
+       "kg": 3.12
+      },
+      {
+       "loai": "Mật Ong",
+       "kg": 0.72
+      }
+     ]
+    }
+   ],
+   "tiLe": "",
+   "thuc0": [
+    {
+     "vao": 4.8,
+     "tp": "",
+     "dong": [
+      {
+       "loai": "Nho Đen",
+       "kg": 0.72
+      },
+      {
+       "loai": "Dưa Lưới",
+       "kg": 0.24
+      },
+      {
+       "loai": "Rửa Sạch",
+       "kg": 3.12
+      },
+      {
+       "loai": "Mật Ong",
+       "kg": 0.72
+      }
+     ]
+    }
+   ],
+   "kgRa": 4.1,
+   "nguong": [
+    "Signature Blend (Medium Roast)",
+    12,
+    20
+   ],
+   "coTron": false,
+   "tenTron": "",
+   "goiYTron": null,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  },
+  {
+   "khoa": "2026-10-20|30K|Samba Nova",
+   "ngay": "2026-10-20",
+   "thu": "T3",
+   "may": "30K",
+   "mayTen": "máy 30kg",
+   "sp": "Samba Nova",
+   "tenGoc": "SAMBA 35KG MEDIUM (Arabica VUON BAC WASHED) / SAMBA 35KG MEDIUM (Arabica VUON BAC HONEY)",
+   "maMe": "30K-47…30K-51",
+   "soMe": 5,
+   "kgVao": 175,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "an",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Tiếp: Nhân xanh",
+   "xong": false,
+   "goiY0": [
+    {
+     "vao": 35,
+     "tp": "Vườn Bắc Ướt",
+     "soMe": 3,
+     "dong": [
+      {
+       "loai": "Vườn Bắc Ướt",
+       "kg": 35
+      }
+     ]
+    },
+    {
+     "vao": 35,
+     "tp": "Vườn Bắc Mật",
+     "soMe": 2,
+     "dong": [
+      {
+       "loai": "Vườn Bắc Mật",
+       "kg": 35
+      }
+     ]
+    }
+   ],
+   "tiLe": "Vườn Bắc Ướt 60% · Vườn Bắc Mật 40% (công thức 80% · 20%)",
+   "thuc0": null,
+   "kgRa": null,
+   "nguong": [
+    "Intenso Blend (Dark Roast)",
+    15,
+    26
+   ],
+   "coTron": false,
+   "tenTron": "",
+   "goiYTron": null,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  },
+  {
+   "khoa": "2026-10-20|30K|Hồng Nhung",
+   "ngay": "2026-10-20",
+   "thu": "T3",
+   "may": "30K",
+   "mayTen": "máy 30kg",
+   "sp": "Hồng Nhung",
+   "tenGoc": "Hồng Nhung 30KG",
+   "maMe": "30K-45…30K-46",
+   "soMe": 2,
+   "kgVao": 60,
+   "buoc": [
+    {
+     "so": 0,
+     "ky": "⓪",
+     "ten": "Nhân xanh",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 1,
+     "ky": "①",
+     "ten": "Rang xong",
+     "mau": "xanh",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 2,
+     "ky": "②",
+     "ten": "Tách đá",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 3,
+     "ky": "③",
+     "ten": "Sorting",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 4,
+     "ky": "④",
+     "ten": "Cân",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 5,
+     "ky": "⑤",
+     "ten": "Trộn",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    },
+    {
+     "so": 6,
+     "ky": "⑥",
+     "ten": "Lấy mẫu",
+     "mau": "xam",
+     "nguoi": "",
+     "gio": ""
+    }
+   ],
+   "tiep": "Tiếp: Nhân xanh",
+   "xong": false,
+   "goiY0": [
+    {
+     "vao": 30,
+     "tp": "",
+     "soMe": 2,
+     "dong": [
+      {
+       "loai": "Nguồn Miến",
+       "kg": 18.75
+      },
+      {
+       "loai": "Nguồn Hồng",
+       "kg": 11.25
+      }
+     ]
+    }
+   ],
+   "tiLe": "",
+   "thuc0": null,
+   "kgRa": null,
+   "nguong": [
+    "Seasonal Filter (Light Roast)",
+    12,
+    17
+   ],
+   "coTron": true,
+   "tenTron": "Đảo Mật",
+   "goiYTron": null,
+   "kgTron": null,
+   "daGhi01": false,
+   "co": ""
+  }
+ ],
+ "tui": [
+  {
+   "sp": "Sen Trắng",
+   "lo": [
+    "2026-10-19|30K|Sen Trắng"
+   ],
+   "daLay": null,
+   "loMoi": [
+    "2026-10-19|30K|Sen Trắng"
+   ]
+  },
+  {
+   "sp": "Đá Xám Nhạt",
+   "lo": [
+    "2026-10-19|30K|Đá Xám Nhạt"
+   ],
+   "daLay": null,
+   "loMoi": [
+    "2026-10-19|30K|Đá Xám Nhạt"
+   ]
+  },
+  {
+   "sp": "Biển Sâu",
+   "lo": [
+    "2026-10-19|5K|Biển Sâu"
+   ],
+   "daLay": {
+    "tuan": "2026-10-19",
+    "sp": "Biển Sâu",
+    "khoaLo": [
+     "2026-10-19|5K|Biển Sâu"
+    ],
+    "nguoi": "Người A",
+    "gio": "2026-10-19 15:30"
+   },
+   "loMoi": []
+  },
+  {
+   "sp": "Samba Nova",
+   "lo": [
+    "2026-10-20|30K|Samba Nova"
+   ],
+   "daLay": null,
+   "loMoi": [
+    "2026-10-20|30K|Samba Nova"
+   ]
+  },
+  {
+   "sp": "Hồng Nhung",
+   "lo": [
+    "2026-10-20|30K|Hồng Nhung"
+   ],
+   "daLay": null,
+   "loMoi": [
+    "2026-10-20|30K|Hồng Nhung"
+   ]
+  }
+ ],
+ "ngoaiLe": [
+  {
+   "loai": "vang",
+   "khoa": "2026-10-19|30K|Sen Trắng",
+   "chu": "Sen Trắng 30kg T2 19/10 — quên bấm? ⓪ Nhân xanh, ② Tách đá, ③ Sorting"
+  },
+  {
+   "loai": "vang",
+   "khoa": "2026-10-19|30K|Đá Xám Nhạt",
+   "chu": "Đá Xám Nhạt 30kg T2 19/10 — quên bấm? ⓪ Nhân xanh"
+  },
+  {
+   "loai": "xam",
+   "khoa": "2026-10-19|30K|?TEST",
+   "chu": "chưa rõ (TEST 30KG) 30kg T2 19/10 — đang chậm: chưa nhân xanh, tách đá, sorting, cân"
+  },
+  {
+   "loai": "xam",
+   "khoa": "2026-10-19|30K|Sen Trắng",
+   "chu": "Sen Trắng 30kg T2 19/10 — đang chậm: chưa nhân xanh, tách đá, sorting, trộn"
+  },
+  {
+   "loai": "xam",
+   "khoa": "2026-10-19|30K|Đá Xám Nhạt",
+   "chu": "Đá Xám Nhạt 30kg T2 19/10 — đang chậm: chưa nhân xanh, sorting, cân"
+  },
+  {
+   "loai": "xanh",
+   "khoa": "2026-10-19|30K|?TEST",
+   "chu": "chưa rõ (TEST 30KG) 30kg T2 19/10 — chưa rõ sản phẩm, chọn ở chi tiết lô"
+  }
+ ],
+ "sanPham": [
+  "Đá Xám Đậm",
+  "Đá Xám Nhạt",
+  "Phin Cổ Đậm",
+  "Phin Cổ Siêu Đậm",
+  "Samba Nova",
+  "Samba L2 Medium Roast",
+  "Samba L2 Dark Roast",
+  "Và Pha",
+  "Tôi Ổn",
+  "Biển Sâu",
+  "Hồng Nhung",
+  "Mận Hạ",
+  "Người Cha",
+  "Cúc La Mã",
+  "Sen Trắng",
+  "R&C",
+  "Ara Rang Đậm",
+  "Nhung Đỏ",
+  "Tuyết Sơn Lên Men",
+  "Núi Mây Tự Nhiên",
+  "Sao Mai Tự Nhiên",
+  "Sao Mai 48",
+  "Dòng K 48",
+  "Đảo Tự Nhiên",
+  "Đảo Mật",
+  "Mía Đỏ Decaf",
+  "Đồi Gió Ướt",
+  "Gia công",
+  "R&D"
+ ],
+ "quyenOrder": [
+  "orderXuat"
+ ],
+ "spOrder": [
+  "Đá Xám Đậm",
+  "Đá Xám Nhạt",
+  "Phin Cổ Đậm",
+  "Phin Cổ Siêu Đậm",
+  "Samba Nova",
+  "Samba L2 Medium Roast",
+  "Samba L2 Dark Roast",
+  "Và Pha",
+  "Tôi Ổn",
+  "Biển Sâu",
+  "Hồng Nhung",
+  "Mận Hạ",
+  "Người Cha",
+  "Cúc La Mã",
+  "Sen Trắng",
+  "R&C",
+  "Ara Rang Đậm",
+  "Nhung Đỏ",
+  "Tuyết Sơn Lên Men",
+  "Núi Mây Tự Nhiên",
+  "Sao Mai Tự Nhiên",
+  "Sao Mai 48",
+  "Dòng K 48",
+  "Đảo Tự Nhiên",
+  "Đảo Mật",
+  "Mía Đỏ Decaf",
+  "Đồi Gió Ướt"
+ ],
+ "order": [
+  {
+   "ma": "L2",
+   "may": "5K",
+   "tu": "2026-10-19",
+   "den": "2026-10-21",
+   "loaiLenh": "chinh",
+   "trangThai": "cho",
+   "dong": [
+    {
+     "sp": "Biển Sâu",
+     "kg": 4
+    },
+    {
+     "sp": "Hồng Nhung",
+     "kg": 6
+    },
+    {
+     "sp": "Đồi Gió Ướt",
+     "kg": 3
+    }
+   ],
+   "chot": null,
+   "daXuat": {},
+   "nguoiTao": "Đoan",
+   "gioTao": "2026-10-19 15:30",
+   "nguoiXacNhan": "",
+   "gioXacNhan": "",
+   "ngayXacNhanDau": "",
+   "deXuat": [
+    {
+     "loai": "Nho Đen",
+     "kg": 0.7
+    },
+    {
+     "loai": "Dưa Lưới",
+     "kg": 0.2
+    },
+    {
+     "loai": "Rửa Sạch",
+     "kg": 3.1
+    },
+    {
+     "loai": "Mật Ong",
+     "kg": 0.7
+    },
+    {
+     "loai": "Nguồn Miến",
+     "kg": 1.8
+    },
+    {
+     "loai": "Nguồn Hồng",
+     "kg": 1.1
+    }
+   ],
+   "chenh": [],
+   "nhac": [
+    "Đảo Mật"
+   ],
+   "khongCT": [
+    "Đồi Gió Ướt"
+   ],
+   "tienDo": [
+    {
+     "sp": "Biển Sâu",
+     "tt": "san",
+     "chu": "Sẵn sàng giao"
+    },
+    {
+     "sp": "Hồng Nhung",
+     "tt": "chua",
+     "chu": "Chưa rang"
+    },
+    {
+     "sp": "Đồi Gió Ướt",
+     "tt": "chua",
+     "chu": "Chưa rang"
+    }
+   ]
+  },
+  {
+   "ma": "L1",
+   "may": "30K",
+   "tu": "2026-10-19",
+   "den": "2026-10-25",
+   "loaiLenh": "chinh",
+   "trangThai": "chot",
+   "dong": [
+    {
+     "sp": "Sen Trắng",
+     "kg": 8
+    },
+    {
+     "sp": "Đá Xám Nhạt",
+     "kg": 30
+    },
+    {
+     "sp": "Hồng Nhung",
+     "kg": 50
+    },
+    {
+     "sp": "Samba Nova",
+     "kg": 150
+    },
+    {
+     "sp": "Đảo Mật",
+     "kg": 40
+    }
+   ],
+   "chot": [
+    {
+     "loai": "Nguồn Hoa Nhài",
+     "kg": 1.9
+    },
+    {
+     "loai": "Nguồn Bánh Anh Đào",
+     "kg": 1
+    },
+    {
+     "loai": "Vườn B",
+     "kg": 12
+    },
+    {
+     "loai": "Vườn E",
+     "kg": 12
+    },
+    {
+     "loai": "Vườn Mật R",
+     "kg": 12
+    },
+    {
+     "loai": "Nguồn Miến",
+     "kg": 15
+    },
+    {
+     "loai": "Nguồn Hồng",
+     "kg": 9
+    },
+    {
+     "loai": "Vườn Bắc Ướt",
+     "kg": 144
+    },
+    {
+     "loai": "Vườn Bắc Mật",
+     "kg": 36
+    },
+    {
+     "loai": "Đảo Mật",
+     "kg": 48
+    }
+   ],
+   "daXuat": {
+    "Vườn B": 12
+   },
+   "nguoiTao": "Đoan",
+   "gioTao": "2026-10-19 15:30",
+   "nguoiXacNhan": "Người B",
+   "gioXacNhan": "2026-10-19 15:30",
+   "ngayXacNhanDau": "2026-10-19",
+   "deXuat": [
+    {
+     "loai": "Nguồn Hoa Nhài",
+     "kg": 1.9
+    },
+    {
+     "loai": "Nguồn Bánh Anh Đào",
+     "kg": 1
+    },
+    {
+     "loai": "Vườn B",
+     "kg": 12
+    },
+    {
+     "loai": "Vườn E",
+     "kg": 12
+    },
+    {
+     "loai": "Vườn Mật R",
+     "kg": 12
+    },
+    {
+     "loai": "Nguồn Miến",
+     "kg": 15
+    },
+    {
+     "loai": "Nguồn Hồng",
+     "kg": 9
+    },
+    {
+     "loai": "Vườn Bắc Ướt",
+     "kg": 144
+    },
+    {
+     "loai": "Vườn Bắc Mật",
+     "kg": 36
+    },
+    {
+     "loai": "Đảo Mật",
+     "kg": 48
+    }
+   ],
+   "chenh": [
+    {
+     "loai": "Nguồn Hoa Nhài",
+     "kg": 1.9
+    },
+    {
+     "loai": "Nguồn Bánh Anh Đào",
+     "kg": 1
+    },
+    {
+     "loai": "Vườn E",
+     "kg": 12
+    },
+    {
+     "loai": "Vườn Mật R",
+     "kg": 12
+    },
+    {
+     "loai": "Nguồn Miến",
+     "kg": 15
+    },
+    {
+     "loai": "Nguồn Hồng",
+     "kg": 9
+    },
+    {
+     "loai": "Vườn Bắc Ướt",
+     "kg": 144
+    },
+    {
+     "loai": "Vườn Bắc Mật",
+     "kg": 36
+    },
+    {
+     "loai": "Đảo Mật",
+     "kg": 48
+    }
+   ],
+   "nhac": [],
+   "khongCT": [],
+   "tienDo": [
+    {
+     "sp": "Sen Trắng",
+     "tt": "dang",
+     "chu": "Lô 1/1 · ⓪ Nhân xanh"
+    },
+    {
+     "sp": "Đá Xám Nhạt",
+     "tt": "dang",
+     "chu": "Lô 1/1 · ⓪ Nhân xanh"
+    },
+    {
+     "sp": "Hồng Nhung",
+     "tt": "dang",
+     "chu": "Lô 1/1 · ⓪ Nhân xanh"
+    },
+    {
+     "sp": "Samba Nova",
+     "tt": "dang",
+     "chu": "Lô 1/1 · ⓪ Nhân xanh"
+    },
+    {
+     "sp": "Đảo Mật",
+     "tt": "chua",
+     "chu": "Chưa rang"
+    }
+   ]
+  }
+ ]
+}
