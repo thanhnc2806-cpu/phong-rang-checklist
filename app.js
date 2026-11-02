@@ -21,6 +21,35 @@
   var globalError = null;
   var globalNotice = null;
 
+  // Trạng thái Bàn phím số cơ học sàn xưởng (Tactile Numpad)
+  var numpadOpen = false;
+  var numpadBuffer = "";
+  var numpadTargetInput = null;
+  var numpadOnConfirm = null;
+  var numpadTitle = "NHẬP SỐ ĐO";
+
+  function moNumpad(inputEl, title, onConfirm) {
+    numpadTargetInput = inputEl;
+    numpadBuffer = inputEl ? inputEl.value : "";
+    numpadTitle = title || "NHẬP SỐ ĐO";
+    numpadOnConfirm = onConfirm;
+    numpadOpen = true;
+    var dock = document.getElementById("numpad-dock");
+    if (dock) {
+      dock.classList.remove("translate-y-full");
+      var t = document.getElementById("numpad-target-title");
+      if (t) t.textContent = numpadTitle;
+      var p = document.getElementById("numpad-preview-val");
+      if (p) p.textContent = (numpadBuffer || "0") + " kg";
+    }
+  }
+
+  function dongNumpad() {
+    numpadOpen = false;
+    var dock = document.getElementById("numpad-dock");
+    if (dock) dock.classList.add("translate-y-full");
+  }
+
   var DANH_SACH_NGUOI = [
     { ma: "thanh", ten: "anh Thanh" },
     { ma: "minh", ten: "Minh" },
@@ -223,6 +252,109 @@
     main.appendChild(chuKy());
     root.appendChild(main);
     renderBottomNav(root);
+    renderNumpadDock(root);
+  }
+
+  // --- FLOATING WORKSHOP TACTILE NUMPAD DOCK ---
+  function renderNumpadDock(root) {
+    var aside = el("aside", "fixed bottom-0 left-0 right-0 z-50 bg-chassis/95 backdrop-blur-xl border-t border-hairline shadow-[0_-10px_30px_rgba(0,0,0,0.8)] transition-transform duration-200" + (numpadOpen ? "" : " translate-y-full"));
+    aside.id = "numpad-dock";
+    var wrap = el("div", "max-w-md mx-auto p-3 flex flex-col gap-2");
+
+    var top = el("div", "flex items-center justify-between pb-1.5 border-b border-hairline");
+    var tl = el("div", "flex items-center gap-2");
+    tl.appendChild(ic("pin", "text-[16px] text-amber"));
+    tl.appendChild(el("span", "text-[12px] font-mono-num text-chalk tracking-wide uppercase font-bold", numpadTitle));
+    top.appendChild(tl);
+
+    var tr = el("div", "flex items-center gap-3");
+    var prev = el("span", "font-mono-num text-[16px] font-bold text-mint");
+    prev.id = "numpad-preview-val";
+    prev.textContent = (numpadBuffer || "0").replace(".", ",") + " kg";
+    tr.appendChild(prev);
+
+    var closeBtn = el("button", "btn-tactile text-titanium hover:text-chalk p-1");
+    closeBtn.type = "button";
+    closeBtn.appendChild(ic("keyboard_arrow_down", "text-[20px]"));
+    closeBtn.onclick = dongNumpad;
+    tr.appendChild(closeBtn);
+    top.appendChild(tr);
+    wrap.appendChild(top);
+
+    var grid = el("div", "grid grid-cols-4 gap-1.5 font-mono-num");
+    function btn(txt, fn, cls, colSpan) {
+      var b = el("button", "btn-tactile h-12 rounded-lg " + (cls || "bg-well border border-hairline text-chalk text-[18px] font-bold shadow-inner") + (colSpan ? " " + colSpan : ""));
+      b.type = "button";
+      b.textContent = txt;
+      b.onclick = fn;
+      grid.appendChild(b);
+      return b;
+    }
+
+    function bamSo(c) {
+      if (c === "," && numpadBuffer.indexOf(",") >= 0) return;
+      if (numpadBuffer === "0" && c !== ",") numpadBuffer = "";
+      numpadBuffer += c;
+      if (numpadTargetInput) {
+        numpadTargetInput.value = numpadBuffer;
+        numpadTargetInput.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      var p = document.getElementById("numpad-preview-val");
+      if (p) p.textContent = (numpadBuffer || "0") + " kg";
+    }
+
+    function congTru(d) {
+      var v = docSo(numpadBuffer) || 0;
+      v = Math.max(0, Math.round((v + d) * 10) / 10);
+      numpadBuffer = soVN(v, 1);
+      if (numpadTargetInput) {
+        numpadTargetInput.value = numpadBuffer;
+        numpadTargetInput.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      var p = document.getElementById("numpad-preview-val");
+      if (p) p.textContent = numpadBuffer + " kg";
+    }
+
+    function xoa1() {
+      numpadBuffer = numpadBuffer.slice(0, -1);
+      if (!numpadBuffer) numpadBuffer = "0";
+      if (numpadTargetInput) {
+        numpadTargetInput.value = numpadBuffer;
+        numpadTargetInput.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      var p = document.getElementById("numpad-preview-val");
+      if (p) p.textContent = numpadBuffer + " kg";
+    }
+
+    // Row 1
+    btn("7", function() { bamSo("7"); });
+    btn("8", function() { bamSo("8"); });
+    btn("9", function() { bamSo("9"); });
+    btn("+0,1", function() { congTru(0.1); }, "bg-channel border border-hairline text-titanium text-[13px] font-bold");
+
+    // Row 2
+    btn("4", function() { bamSo("4"); });
+    btn("5", function() { bamSo("5"); });
+    btn("6", function() { bamSo("6"); });
+    btn("-0,1", function() { congTru(-0.1); }, "bg-channel border border-hairline text-titanium text-[13px] font-bold");
+
+    // Row 3
+    btn("1", function() { bamSo("1"); });
+    btn("2", function() { bamSo("2"); });
+    btn("3", function() { bamSo("3"); });
+    btn("⌫", xoa1, "bg-channel border border-hairline text-redline text-[16px] font-bold flex items-center justify-center");
+
+    // Row 4
+    btn("0", function() { bamSo("0"); }, null, "col-span-2");
+    btn(",", function() { bamSo(","); });
+    btn("XONG", function() {
+      dongNumpad();
+      if (typeof numpadOnConfirm === "function") numpadOnConfirm();
+    }, "bg-mint text-obsidian text-[14px] font-bold shadow-lg shadow-mint/20 flex items-center justify-center");
+
+    wrap.appendChild(grid);
+    aside.appendChild(wrap);
+    root.appendChild(aside);
   }
 
   function dsNgayCo() {
@@ -558,7 +690,17 @@
     trai.appendChild(dot);
     var chu = el("div", "flex flex-col min-w-0");
     chu.appendChild(el("span", b.sp ? "text-[13px] text-on-surface font-semibold truncate" : "text-[13px] text-amber-300 font-semibold truncate", tenLo(b)));
+    // Mini 7 trạm cho lô hàng chờ
+    var miniPipeline = el("div", "flex items-center gap-1 mt-1");
+    (b.buoc || []).forEach(function (st) {
+      if (st.mau === "an") return;
+      var dotCls = st.mau === "xanh" ? "bg-mint" : st.mau === "vang" ? "bg-amber animate-signal" : st.mau === "do" ? "bg-redline animate-redline" : "bg-hairline";
+      var mDot = el("span", "w-3 h-1.5 rounded-sm " + dotCls);
+      mDot.title = st.ky + " " + st.ten;
+      miniPipeline.appendChild(mDot);
+    });
     chu.appendChild(sub);
+    chu.appendChild(miniPipeline);
     trai.appendChild(chu);
     card.appendChild(trai);
     var phaiBox = el("div", "flex items-center gap-1.5 shrink-0");
@@ -657,11 +799,66 @@
       moBuoc = dau ? dau.so : 0;
       expandedStepInActiveCard[batch.khoa] = moBuoc;
     }
+
+    // --- KIẾN TRÚC KÊNH DÒNG CHẢY 7 TRẠM (PHYSICAL CHANNEL STRIP) ---
+    var pipeline = el("div", "grid grid-cols-7 gap-1 bg-obsidian p-1.5 rounded-xl border border-hairline laser-rule my-1 shadow-inner");
     (batch.buoc || []).forEach(function (st) {
-      if (st.mau === "an") return;
-      if (st.so === moBuoc) steps.appendChild(oBuocMo(st, batch, true));
-      else steps.appendChild(hangBuoc(st, batch));
+      if (st.mau === "an") {
+        var an = el("div", "h-14 rounded-lg bg-well/40 border border-dashed border-hairline/40 flex flex-col items-center justify-center text-titanium/30 opacity-40");
+        an.appendChild(el("span", "font-mono-num text-[11px]", st.ky));
+        an.appendChild(el("span", "text-[8px] font-mono-num uppercase", "Bỏ qua"));
+        pipeline.appendChild(an);
+        return;
+      }
+      var isCurrent = (st.so === moBuoc);
+      var borderClass = "border-hairline";
+      var bgClass = "bg-channel text-titanium";
+      var iconHtml = '<span class="w-1.5 h-1.5 rounded-full bg-hairline-bright"></span>';
+
+      if (st.mau === "xanh") {
+        borderClass = "border-mint/50";
+        bgClass = "bg-mint/10 text-mint";
+        iconHtml = '<span class="material-symbols-outlined text-[13px] text-mint">check</span>';
+      } else if (st.mau === "vang") {
+        borderClass = "border-amber/70 animate-signal";
+        bgClass = "bg-amber/15 text-amber";
+        iconHtml = '<span class="material-symbols-outlined text-[13px] text-amber">priority_high</span>';
+      } else if (st.mau === "do") {
+        borderClass = "border-redline animate-redline";
+        bgClass = "bg-redline/20 text-redline";
+        iconHtml = '<span class="material-symbols-outlined text-[13px] text-redline">error</span>';
+      }
+      if (isCurrent) {
+        borderClass = "border-chalk ring-1 ring-chalk";
+        bgClass += " shadow-md shadow-white/5";
+      }
+
+      var btn = el("button", "btn-tactile h-14 rounded-lg border " + borderClass + " " + bgClass + " flex flex-col items-center justify-center p-1 relative overflow-hidden group chip-spring");
+      btn.type = "button";
+      var topRow = el("div", "flex items-center gap-0.5");
+      topRow.appendChild(el("span", "font-mono-num text-[12px] font-extrabold leading-none", st.ky));
+      var icoSpan = el("span", "leading-none");
+      icoSpan.innerHTML = iconHtml;
+      topRow.appendChild(icoSpan);
+      btn.appendChild(topRow);
+
+      btn.appendChild(el("span", "text-[8.5px] font-mono-num uppercase tracking-tighter truncate max-w-full mt-1 " + (st.mau === "xanh" ? "text-mint font-bold" : st.mau === "vang" ? "text-amber font-bold" : st.mau === "do" ? "text-redline font-bold" : "text-titanium"), st.ten));
+      if (st.nguoi) {
+        btn.appendChild(el("span", "text-[7.5px] font-mono-num text-titanium truncate max-w-full leading-none opacity-80", st.nguoi));
+      }
+      btn.onclick = function () {
+        expandedStepInActiveCard[batch.khoa] = st.so;
+        renderApp();
+      };
+      pipeline.appendChild(btn);
     });
+    steps.appendChild(pipeline);
+
+    // Mở đúng trạm đo đạc của bước được chọn
+    var activeSt = (batch.buoc || []).find(function (b) { return b.so === moBuoc; });
+    if (activeSt) {
+      steps.appendChild(oBuocMo(activeSt, batch, true));
+    }
     v.trong.appendChild(steps);
 
     var chan = el("div", "flex items-center gap-2 pt-2 border-t border-surface-container-highest");
@@ -872,13 +1069,26 @@
     var oKg = el("div", C.o);
     oKg.appendChild(el("span", C.nhan, "Kg ra (cân)"));
     var dongNhap = el("div", "flex items-center gap-1 mt-1");
-    var inp = el("input", C.nhapSo);
+    var inp = el("input", C.nhapSo + " flex-1");
     inp.inputMode = "decimal";
     giuNhap(inp, "can|" + batch.khoa, batch.kgRa !== null && batch.kgRa !== undefined ? soVN(batch.kgRa) : "");
     inp.readOnly = chiXem;
     inp.placeholder = "0,0";
     dongNhap.appendChild(inp);
-    dongNhap.appendChild(el("span", "text-[12px] font-mono-num text-on-surface-variant", "kg"));
+    dongNhap.appendChild(el("span", "text-[12px] font-mono-num text-on-surface-variant mr-1", "kg"));
+
+    if (!chiXem) {
+      var nutPhimSo = el("button", "btn-tactile px-2 py-1.5 rounded-lg bg-surface-container-high border border-surface-container-highest hover:border-amber text-amber text-[10px] font-mono-num font-bold flex items-center gap-1 shrink-0");
+      nutPhimSo.type = "button";
+      nutPhimSo.appendChild(ic("dialpad", "text-[14px]"));
+      nutPhimSo.appendChild(el("span", null, "Phím số"));
+      nutPhimSo.onclick = function () {
+        moNumpad(inp, "CÂN RA · " + tenLo(batch), function () {
+          luu.click();
+        });
+      };
+      dongNhap.appendChild(nutPhimSo);
+    }
     oKg.appendChild(dongNhap);
     var chenh = el("span", "text-[10px] font-mono-num text-on-surface-variant mt-1");
     oKg.appendChild(chenh);
