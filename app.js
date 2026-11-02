@@ -383,7 +383,7 @@
     trai.appendChild(cham);
     trai.appendChild(el("span", matMang ? "font-mono-num text-[11px] uppercase text-amber-400 font-bold tracking-wider whitespace-nowrap" : "font-mono-num text-[11px] uppercase text-secondary font-bold tracking-wider whitespace-nowrap", matMang ? "MẤT MẠNG" : "TRỰC TUYẾN"));
     trai.appendChild(el("span", "text-on-surface-variant text-[11px]", "•"));
-    trai.appendChild(el("span", "text-[12px] text-on-surface font-medium truncate max-w-[140px]", "Phòng Rang Intenso"));
+    trai.appendChild(el("span", "text-[12px] text-on-surface font-medium truncate max-w-[140px]", "Phòng Rang · @thorang_ditour"));
     sub.appendChild(trai);
     var phai = el("div", "flex items-center gap-1.5 text-tertiary shrink-0");
     phai.appendChild(ic("schedule", "text-[15px]"));
@@ -401,7 +401,7 @@
     var chu = el("div", "flex flex-col min-w-0");
     var dong1 = el("div", "flex items-center gap-1.5");
     dong1.appendChild(el("span", "text-[16px] text-on-surface font-bold truncate", "Checklist Mẻ Rang"));
-    dong1.appendChild(el("span", "px-1.5 py-0.5 rounded text-[9px] font-mono-num bg-primary/20 text-primary font-bold", "INTENSO"));
+    dong1.appendChild(el("span", "px-1.5 py-0.5 rounded text-[9px] font-mono-num bg-primary/20 text-primary font-bold", "@THORANG_DITOUR"));
     chu.appendChild(dong1);
     chu.appendChild(el("span", "text-[11px] text-on-surface-variant font-medium truncate", "7 bước sau rang · Máy 30kg & 5kg"));
     brand.appendChild(chu);
@@ -487,7 +487,7 @@
     var hang = el("footer", "flex flex-col items-center gap-1.5 pt-6 pb-2");
     hang.appendChild(el("span", "block w-8 h-px bg-surface-container-highest"));
     var img = el("img", "h-4 opacity-60");
-    img.src = "handle.png";
+    img.src = "logo-compact.svg"; img.className = "h-4 opacity-75";
     img.alt = "@thorang_ditour";
     hang.appendChild(img);
     return hang;
@@ -503,9 +503,9 @@
     dau.appendChild(logo);
     var t = el("div", "flex items-center gap-1.5");
     t.appendChild(el("h1", "text-[20px] text-on-surface font-bold", "Checklist Mẻ Rang"));
-    t.appendChild(el("span", "px-1.5 py-0.5 rounded text-[9px] font-mono-num bg-primary/20 text-primary font-bold", "INTENSO"));
+    t.appendChild(el("span", "px-1.5 py-0.5 rounded text-[9px] font-mono-num bg-primary/20 text-primary font-bold", "@THORANG_DITOUR"));
     dau.appendChild(t);
-    dau.appendChild(el("p", "text-[12px] text-on-surface-variant", "Phòng Rang Intenso — chọn tên để vào ca"));
+    dau.appendChild(el("p", "text-[12px] text-on-surface-variant", "Buồng Rang Chuyên Nghiệp — chọn tên để vào ca"));
     main.appendChild(dau);
 
     var the = el("section", "flex flex-col gap-3 p-4 rounded-2xl bg-surface-container-low border border-surface-container-highest shadow-2xl");

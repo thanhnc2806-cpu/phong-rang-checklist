@@ -1,12 +1,13 @@
 {
-  "name": "Checklist mẻ — phòng rang",
-  "short_name": "Checklist mẻ",
+  "name": "Checklist Mẻ Rang · @thorang_ditour",
+  "short_name": "Checklist",
+  "description": "Ứng dụng vận hành và checklist mẻ rang cà phê @thorang_ditour",
   "lang": "vi",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#1B1E1A",
-  "theme_color": "#0A1B2B",
+  "background_color": "#080A0C",
+  "theme_color": "#080A0C",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
