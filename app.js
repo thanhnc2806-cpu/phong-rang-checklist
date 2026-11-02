@@ -1291,7 +1291,7 @@
         var cardMoi = el("div", "p-3 rounded-xl bg-surface-container-low border border-purple-500/30 flex flex-col gap-2");
         var dauMoi = el("div", "flex items-center justify-between gap-2");
         var ttMoi = el("div", "flex flex-col min-w-0");
-        ttMoi.appendChild(el("span", "text-[13px] text-on-surface font-semibold", t.sp || ""));
+        ttMoi.appendChild(el("span", "text-[13px] text-on-surface font-semibold", (t.sp || "") + (t.tuan && t.tuan !== anhChup.tuan ? " · tuần trước" : "")));
         ttMoi.appendChild(el("span", "text-[11px] text-amber-300", "✓ Đã lấy · " + (t.daLay.nguoi || "") + " " + dinhDangGio(t.daLay.gio) + " — có " + t.loMoi.length + " lô mới"));
         dauMoi.appendChild(ttMoi);
         dauMoi.appendChild(ic("science", "text-purple-300 text-[22px]"));
@@ -1320,7 +1320,7 @@
           layMoi.onclick = function () {
             var chon = checksMoi.filter(function (c) { return c.checked; }).map(function (c) { return c.dataset.khoa; });
             if (!chon.length) return;
-            thucHienThaoTac({ loai: "layMau", tuan: anhChup.tuan, sp: t.sp, khoaLo: chon });
+            thucHienThaoTac({ loai: "layMau", tuan: t.tuan || anhChup.tuan, sp: t.sp, khoaLo: chon });
           };
           cardMoi.appendChild(layMoi);
         }
@@ -1330,7 +1330,7 @@
       var card = el("div", "p-3 rounded-xl bg-surface-container-low border border-purple-500/30 flex flex-col gap-2");
       var dau = el("div", "flex items-center justify-between gap-2");
       var tt = el("div", "flex flex-col min-w-0");
-      tt.appendChild(el("span", "text-[13px] text-on-surface font-semibold", t.sp || ""));
+      tt.appendChild(el("span", "text-[13px] text-on-surface font-semibold", (t.sp || "") + (t.tuan && t.tuan !== anhChup.tuan ? " · tuần trước" : "")));
       tt.appendChild(el("span", "text-[11px] text-amber-300", "○ Chưa lấy mẫu — tích lô đã lấy"));
       dau.appendChild(tt);
       dau.appendChild(ic("science", "text-purple-300 text-[22px]"));
@@ -1360,7 +1360,7 @@
         lay.onclick = function () {
           var chon = checks.filter(function (c) { return c.checked; }).map(function (c) { return c.dataset.khoa; });
           if (!chon.length) return;
-          thucHienThaoTac({ loai: "layMau", tuan: anhChup.tuan, sp: t.sp, khoaLo: chon });
+          thucHienThaoTac({ loai: "layMau", tuan: t.tuan || anhChup.tuan, sp: t.sp, khoaLo: chon });
         };
         card.appendChild(lay);
       }
