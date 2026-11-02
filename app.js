@@ -1437,17 +1437,15 @@
     var ds = (anhChup.order || []).slice(), can = demOrderCanLam(ds, anhChup.quyenOrder);
     view.appendChild(dauTab("Order tuần", "Máy 30kg & 5kg · một bản cho cả phòng", can > 0 ? can + " cần làm" : ds.length + " lệnh",
       "px-2 py-1 rounded-lg bg-primary-container text-primary font-mono-num text-[11px] font-bold shrink-0"));
-    if (coQuyen("orderTao")) {
-      if (orderForm) view.appendChild(formOrder());
-      else {
-        var moi = nut(C.nutPhu + " w-full", "edit", "Lệnh order mới");
-        moi.onclick = function () {
-          var t = themNgayISO(anhChup.tuan, 7);
-          orderForm = { may: "30K", tu: t, den: themNgayISO(t, 6), loaiLenh: "chinh", dong: [{ sp: "", kg: "" }] };
-          renderApp();
-        };
-        view.appendChild(moi);
-      }
+    if (orderForm) view.appendChild(formOrder());  // thợ rang chỉ sửa, không tạo
+    else if (coQuyen("orderTao")) {
+      var moi = nut(C.nutPhu + " w-full", "edit", "Lệnh order mới");
+      moi.onclick = function () {
+        var t = themNgayISO(anhChup.tuan, 7);
+        orderForm = { may: "30K", tu: t, den: themNgayISO(t, 6), loaiLenh: "chinh", dong: [{ sp: "", kg: "" }] };
+        renderApp();
+      };
+      view.appendChild(moi);
     }
     // Việc của người đang xem lên đầu: anh/Minh = lệnh chờ; B.An/Vinh = lệnh còn phần chênh
     var canLam = function (l) { return demOrderCanLam([l], anhChup.quyenOrder) > 0; };
@@ -1602,7 +1600,8 @@
       var h2 = nut(C.nutPhu + " !h-[40px]", null, "Huỷ lệnh");
       h2.disabled = cho;
       h2.onclick = function () { if (window.confirm("Huỷ lệnh " + l.ma + "?")) guiOrder({ loai: "orderHuy", lenh: l.ma }); };
-      hang.appendChild(s); hang.appendChild(h2);
+      hang.appendChild(s);
+      if (coQuyen("orderHuy")) hang.appendChild(h2); else hang.className = "grid grid-cols-1 gap-2";
       the.appendChild(hang);
     }
     return the;
