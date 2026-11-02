@@ -1299,7 +1299,7 @@
 
         var checksMoi = [];
         t.loMoi.forEach(function (k) {
-          var lo = (anhChup.lo || []).find(function (l) { return l.khoa === k; });
+          var lo = (anhChup.lo || []).find(function (l) { return l.khoa === k; }) || { ngay: k.slice(0, 10), may: k.split("|")[1] };  // lô cũ hơn tuần trước: không có trong anhChup.lo, đọc ngày/máy từ khoá
           var row = el("label", "flex items-center gap-2 p-2 rounded-lg bg-surface-container border border-surface-container-highest/60 text-[12px] font-mono-num text-on-surface");
           var chk = el("input", "w-4 h-4 accent-purple-400");
           chk.type = "checkbox";
@@ -1339,7 +1339,7 @@
       var keys = t.loMoi && t.loMoi.length ? t.loMoi : (t.lo || []);
       var checks = [];
       keys.forEach(function (k) {
-        var lo = (anhChup.lo || []).find(function (l) { return l.khoa === k; });
+        var lo = (anhChup.lo || []).find(function (l) { return l.khoa === k; }) || { ngay: k.slice(0, 10), may: k.split("|")[1] };  // lô cũ hơn tuần trước: không có trong anhChup.lo, đọc ngày/máy từ khoá
         var row = el("label", "flex items-center gap-2 p-2 rounded-lg bg-surface-container border border-surface-container-highest/60 text-[12px] font-mono-num text-on-surface");
         var chk = el("input", "w-4 h-4 accent-purple-400");
         chk.type = "checkbox";
