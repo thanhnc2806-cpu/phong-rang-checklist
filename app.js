@@ -34,6 +34,7 @@
     numpadTitle = title || "NHẬP SỐ ĐO";
     numpadOnConfirm = onConfirm;
     numpadOpen = true;
+    if (inputEl && inputEl.scrollIntoView) inputEl.scrollIntoView({ block: "center" });  // dock cao ~300px che đáy trang
     var dock = document.getElementById("numpad-dock");
     if (dock) {
       dock.classList.remove("translate-y-full");
@@ -263,7 +264,7 @@
 
     var top = el("div", "flex items-center justify-between pb-1.5 border-b border-hairline");
     var tl = el("div", "flex items-center gap-2");
-    tl.appendChild(ic("pin", "text-[16px] text-amber"));
+    tl.appendChild(ic("scale", "text-[16px] text-amber"));
     tl.appendChild(el("span", "text-[12px] font-mono-num text-chalk tracking-wide uppercase font-bold", numpadTitle));
     top.appendChild(tl);
 
@@ -275,7 +276,7 @@
 
     var closeBtn = el("button", "btn-tactile text-titanium hover:text-chalk p-1");
     closeBtn.type = "button";
-    closeBtn.appendChild(ic("keyboard_arrow_down", "text-[20px]"));
+    var mui = ic("chevron_right", "text-[20px]"); mui.style.transform = "rotate(90deg)"; closeBtn.appendChild(mui);
     closeBtn.onclick = dongNumpad;
     tr.appendChild(closeBtn);
     top.appendChild(tr);
@@ -818,7 +819,7 @@
       if (st.mau === "xanh") {
         borderClass = "border-mint/50";
         bgClass = "bg-mint/10 text-mint";
-        iconHtml = '<span class="material-symbols-outlined text-[13px] text-mint">check</span>';
+        iconHtml = '<span class="material-symbols-outlined text-[13px] text-mint">task_alt</span>';
       } else if (st.mau === "vang") {
         borderClass = "border-amber/70 animate-signal";
         bgClass = "bg-amber/15 text-amber";
@@ -1077,19 +1078,20 @@
     dongNhap.appendChild(inp);
     dongNhap.appendChild(el("span", "text-[12px] font-mono-num text-on-surface-variant mr-1", "kg"));
 
+    var nutPhimSo = null;
     if (!chiXem) {
-      var nutPhimSo = el("button", "btn-tactile px-2 py-1.5 rounded-lg bg-surface-container-high border border-surface-container-highest hover:border-amber text-amber text-[10px] font-mono-num font-bold flex items-center gap-1 shrink-0");
+      nutPhimSo = el("button", "btn-tactile px-2 py-1.5 mt-1 rounded-lg bg-surface-container-high border border-surface-container-highest hover:border-amber text-amber text-[10px] font-mono-num font-bold flex items-center justify-center gap-1");
       nutPhimSo.type = "button";
-      nutPhimSo.appendChild(ic("dialpad", "text-[14px]"));
+      nutPhimSo.appendChild(ic("edit", "text-[14px]"));
       nutPhimSo.appendChild(el("span", null, "Phím số"));
       nutPhimSo.onclick = function () {
         moNumpad(inp, "CÂN RA · " + tenLo(batch), function () {
           luu.click();
         });
       };
-      dongNhap.appendChild(nutPhimSo);
     }
     oKg.appendChild(dongNhap);
+    if (nutPhimSo) oKg.appendChild(nutPhimSo);
     var chenh = el("span", "text-[10px] font-mono-num text-on-surface-variant mt-1");
     oKg.appendChild(chenh);
     luoi.appendChild(oKg);
@@ -1313,7 +1315,7 @@
         });
 
         if (!anhChup.chiXem) {
-          var layMoi = nut(C.nutTim + " w-full !h-[44px]", "add", "Thêm vào túi đã lấy");
+          var layMoi = nut(C.nutTim + " w-full !h-[44px]", "inventory_2", "Thêm vào túi đã lấy");
           var capNhatMoi = function () { layMoi.disabled = !checksMoi.some(function (c) { return c.checked; }); };
           checksMoi.forEach(function (c) { c.onchange = capNhatMoi; });
           capNhatMoi();
