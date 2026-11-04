@@ -193,6 +193,7 @@
     xaHangDoi(dangNhap, function (evt) {
       if (evt.loai === "da") {
         if (!dangNhap) return;  // đã Đổi người trong lúc đang gửi
+        if (evt.op && evt.op.loai === "orderXacNhan") { boNhap("chot|" + evt.op.lenh + "|"); boNhap("chotTay|" + evt.op.lenh + "|"); }  // nháp ô Chốt giữ tới khi máy chủ nhận: đang gửi vẫn thấy số vừa gõ
         taiAnhChup(dangNhap).then(function (res) {
           if (res && res.ok) anhChup = res;
           renderNen();
@@ -1576,7 +1577,7 @@
       "Blend trong lệnh cần cà rang trước mà lệnh chưa có dòng: " + l.nhac.join(", ") + ".", "Nhắc:"));
     if (!l.dong.length) the.appendChild(dai("xam", "inventory_2", "Lệnh đã huỷ — nhân đã xuất phải trả kho.", "Huỷ:"));
 
-    if (coQuyen("orderXacNhan") && l.trangThai === "cho") khoiXacNhan(the, l, cho);
+    if (coQuyen("orderXacNhan") && (l.trangThai === "cho" || (l.trangThai === "chot" && l.dong.length))) khoiXacNhan(the, l, cho);
     if (coQuyen("orderXuat") && l.trangThai === "chot") khoiXuat(the, l, cho);
 
     if (l.dong.length) {
@@ -1635,6 +1636,12 @@
       bang.appendChild(i);
     });
     khoi.appendChild(bang);
+    // Máy 5kg: mỗi dòng chia theo mẫu mẻ RATIO (1,2 · 2,4 · 3,6 · 4,8 kg nhân xanh)
+    (l.chiaMe || []).forEach(function (m) {
+      var chia = m.me.map(function (x) { return x.n + " × " + soVN(x.co, 1); }).join(" + ");
+      khoi.appendChild(el("p", "text-[11px] font-mono-num text-on-surface-variant", m.sp + " " + soVN(m.kg, 1) + " kg → mẻ " + chia + " = " + soVN(m.nx, 1) + " kg nhân xanh" +
+        (Math.abs(m.nx - m.kg * 1.2) > 0.05 ? " (làm tròn lên theo mẫu mẻ)" : "")));
+    });
     // Sản phẩm chưa có công thức: người xác nhận gõ loại nhân + kg
     var tay = [];
     (l.khongCT || []).forEach(function (sp) {
@@ -1654,7 +1661,7 @@
     });
     khoi.appendChild(el("p", "text-[10px] text-on-surface-variant", "Đề xuất = kg thành phẩm × 1,2 × tỉ lệ RATIO (bỏ phần rang trước). Sửa ô Chốt theo nhịp mẻ."));
     the.appendChild(khoi);
-    var xn = nutDo("verified", cho ? "Đang gửi…" : "Xác nhận lệnh");
+    var xn = nutDo("verified", cho ? "Đang gửi…" : l.trangThai === "chot" ? "Chốt lại số nhân xanh" : "Xác nhận lệnh");
     function docChot() {
       var sua = {};
       Object.keys(oChot).forEach(function (k) { sua[k] = oChot[k].value; });
@@ -1673,7 +1680,6 @@
     xn.onclick = function () {
       var chot = docChot();
       if (!chot) return;
-      boNhap("chot|" + l.ma + "|"); boNhap("chotTay|" + l.ma + "|");
       guiOrder({ loai: "orderXacNhan", lenh: l.ma, chot: chot });
     };
     the.appendChild(xn);
