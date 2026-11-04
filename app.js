@@ -1145,6 +1145,8 @@
     body.appendChild(thuoc);
 
     var luu = nut(C.nutChinh + " w-full", "done_all", batch.kgRa !== null && batch.kgRa !== undefined ? "Lưu lại" : "Lưu");
+    var giaCong = batch.sp === "Gia công";  // khách gia công có thể không yêu cầu kg thành phẩm: để trống vẫn lưu được
+    var chuLuu = luu.lastChild;
 
     function capNhat() {
       var ra = docSo(inp.value);
@@ -1168,7 +1170,9 @@
       } else {
         kimBoc.style.display = "none";
       }
-      luu.disabled = hh === null;  // cùng luật máy chủ: 0 < ra ≤ kg vào
+      var trong = giaCong && inp.value.trim() === "";
+      luu.disabled = hh === null && !trong;  // cùng luật máy chủ: 0 < ra ≤ kg vào (gia công: được bỏ trống)
+      chuLuu.textContent = trong ? "Lưu (không ghi kg thành phẩm)" : batch.kgRa !== null && batch.kgRa !== undefined ? "Lưu lại" : "Lưu";
     }
     inp.oninput = capNhat;
     capNhat();
@@ -1176,7 +1180,7 @@
     if (!chiXem) {
       luu.onclick = function () {
         var s = inp.value.trim();
-        if (haoHut(batch.kgVao, docSo(s)) === null) return;
+        if (haoHut(batch.kgVao, docSo(s)) === null && !(giaCong && s === "")) return;
         boNhap("can|" + batch.khoa);
         thucHienThaoTac({ loai: "can", khoa: batch.khoa, kgRa: s });
       };
