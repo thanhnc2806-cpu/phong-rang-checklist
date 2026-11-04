@@ -1627,10 +1627,10 @@
     var oChot = {};
     goc.forEach(function (g) {
       bang.appendChild(el("span", "text-[12px] text-on-surface truncate", g.loai));
-      bang.appendChild(el("span", "text-[12px] font-mono-num text-on-surface-variant text-right", dx.hasOwnProperty(g.loai) ? soVN(dx[g.loai], 1) : "—"));
+      bang.appendChild(el("span", "text-[12px] font-mono-num text-on-surface-variant text-right", dx.hasOwnProperty(g.loai) ? soVN(dx[g.loai], 2) : "—"));
       var i = el("input", C.nhapSo + " !text-[15px] text-right");
       i.inputMode = "decimal";
-      giuNhap(i, "chot|" + l.ma + "|" + g.loai, soVN(g.kg, 1));
+      giuNhap(i, "chot|" + l.ma + "|" + g.loai, soVN(g.kg, 2));
       i.addEventListener("input", function () { kiem(); });
       oChot[g.loai] = i;
       bang.appendChild(i);
@@ -1695,7 +1695,7 @@
         var h = el("div", "flex items-center justify-between gap-2");
         var chu = el("div", "min-w-0 flex flex-col");
         chu.appendChild(el("span", "font-mono-num text-[15px] font-bold " + (c.kg > 0 ? "text-on-surface" : "text-amber-300"),
-          c.kg > 0 ? "+" + soVN(c.kg, 1) + " kg" : "Trả kho " + soVN(-c.kg, 1) + " kg"));
+          c.kg > 0 ? "+" + soVN(c.kg, 2) + " kg" : "Trả kho " + soVN(-c.kg, 2) + " kg"));
         chu.appendChild(el("span", "text-[12px] text-on-surface-variant truncate", c.loai));
         h.appendChild(chu);
         var b = nutDo("done_all", c.kg > 0 ? "Đã xuất" : "Đã trả");
